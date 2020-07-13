@@ -22,20 +22,27 @@ public class BlenderArea extends JComponent implements ItemListener {
     protected JComboBox<BlenderPanel> comboBox;
     protected JMenuBar menuBar;
 
-    protected ComboBoxModel<BlenderPanel> model;
+    protected BlenderAreaModel model;
 
     protected BlenderPanel selected;
 
     public BlenderArea() {
         init();
 
-        setModel(new DefaultComboBoxModel<>());
+        setModel(new DefaultBlenderAreaModel());
     }
 
     public BlenderArea(BlenderPanel[] panels) {
         init();
 
-        setModel(new DefaultComboBoxModel<>(panels));
+        setModel(new DefaultBlenderAreaModel(panels));
+    }
+
+    // For shallow copy
+    protected BlenderArea(BlenderAreaModel model) {
+        init();
+
+        setModel(model);
     }
 
     protected void init() {
@@ -65,17 +72,25 @@ public class BlenderArea extends JComponent implements ItemListener {
 
     protected void switchComponents(BlenderPanel old, BlenderPanel newPanel) {
         if (old != null) {
-            menuBar.remove(old.getMenuBar());
+            if (old.getMenuBar() != null) {
+                menuBar.remove(old.getMenuBar());
+            }
 
             remove(old);
         }
 
-        menuBar.add(newPanel.getMenuBar(), MENU_CONSTRAINT);
+        if (newPanel.getMenuBar() != null) {
+            menuBar.add(newPanel.getMenuBar(), MENU_CONSTRAINT);
+        }
 
         add(newPanel, BorderLayout.CENTER);
 
         revalidate();
         repaint();
+    }
+
+    public BlenderArea shallowCopy() {
+        return new BlenderArea(model.shallowCopy());
     }
 
     @Override
@@ -97,13 +112,13 @@ public class BlenderArea extends JComponent implements ItemListener {
         Objects.requireNonNull(panel, "Attempt to add a null component");
 
         checkMutableComboBoxModel();
-        ((MutableComboBoxModel<BlenderPanel>) model).addElement(panel);
+        ((MutableBlenderAreaModel) model).addElement(panel);
     }
 
     public void removePanel(BlenderPanel panel) {
         if (panel != null) {
             checkMutableComboBoxModel();
-            ((MutableComboBoxModel<BlenderPanel>) model).removeElement(panel);
+            ((MutableBlenderAreaModel) model).removeElement(panel);
         }
     }
 
@@ -111,35 +126,51 @@ public class BlenderArea extends JComponent implements ItemListener {
         Objects.requireNonNull(panel, "Attempt to add a null component");
 
         checkMutableComboBoxModel();
-        ((MutableComboBoxModel<BlenderPanel>) model).insertElementAt(panel, index);
+        ((MutableBlenderAreaModel) model).insertElementAt(panel, index);
     }
 
     public void removePanelAt(int index) {
         checkMutableComboBoxModel();
-        ((MutableComboBoxModel<BlenderPanel>) model).removeElementAt(index);
+        ((MutableBlenderAreaModel) model).removeElementAt(index);
     }
 
     protected final void checkMutableComboBoxModel() {
-        if (!(model instanceof MutableComboBoxModel)) {
+        if (!(model instanceof MutableBlenderAreaModel)) {
             throw new RuntimeException("Cannot use this method with a non-Mutable data model.");
         }
     }
 
-    public void setModel(ComboBoxModel<BlenderPanel> model) {
+    public void setSelected(BlenderPanel panel) {
+        comboBox.setSelectedItem(panel);
+    }
+
+    public void setSelectedIndex(int index) {
+        comboBox.setSelectedIndex(index);
+    }
+
+    public BlenderPanel getSelected() {
+        return selected;
+    }
+
+    public void setModel(BlenderAreaModel model) {
         if (model != this.model && model != null) {
-            ComboBoxModel<BlenderPanel> old = this.model;
+            BlenderAreaModel old = this.model;
 
             this.model = model;
 
             comboBox.setModel(model);
 
-            selected = (BlenderPanel) model.getSelectedItem();
+            BlenderPanel selected = (BlenderPanel) model.getSelectedItem();
+
+            if (selected != null) {
+                switchComponents(this.selected, selected);
+            }
 
             firePropertyChange(MODEL_PROPERTY, old, model);
         }
     }
 
-    public ComboBoxModel<BlenderPanel> getModel() {
+    public BlenderAreaModel getModel() {
         return model;
     }
 
@@ -157,73 +188,4 @@ public class BlenderArea extends JComponent implements ItemListener {
             return label;
         }
     }
-
-    /*protected void initBar() {
-        setLayout(new BorderLayout());
-
-        bar = new BlenderPanelBar(this);
-
-        add(bar, BorderLayout.SOUTH);
-
-        show(0);
-    }
-
-    public void show(int index) {
-        if (index >= 0 && index < panels.size()) {
-            showImpl(panels.get(index));
-        }
-    }
-
-    public void show(AbstractBlenderPanel panel) {
-        if (panels.contains(panel)) {
-            showImpl(panel);
-        }
-    }
-
-    protected void showImpl(AbstractBlenderPanel panel) {
-        if (current != null) {
-            remove(current);
-        }
-
-        add(panel, BorderLayout.CENTER);
-
-        bar.reset();
-        bar.construct(panel);
-
-        this.current = panel;
-
-        revalidate();
-        repaint();
-    }
-
-    public void addPanel(AbstractBlenderPanel panel) {
-        panels.add(panel);
-        bar.add(panel);
-
-        if (panelSize() == 1) { // first component
-            show(panel);
-            bar.setSelected(panel);
-        }
-    }
-
-    public void removePanel(AbstractBlenderPanel panel) {
-        panels.remove(panel);
-        bar.remove(panel);
-    }
-
-    public boolean isEmpty() {
-        return panels.size() == 0;
-    }
-
-    public int panelSize() {
-        return panels.size();
-    }
-
-    public int getCurrentPaneIndex() {
-        return panels.indexOf(current);
-    }
-
-    public AbstractBlenderPanel getCurrentPanel() {
-        return current;
-    }*/
 }

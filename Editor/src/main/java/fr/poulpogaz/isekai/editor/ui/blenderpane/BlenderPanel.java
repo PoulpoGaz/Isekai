@@ -10,5 +10,5 @@ public abstract class BlenderPanel extends JComponent {
 
     public abstract String getText();
 
-    public abstract BlenderPanel shallowCopy(); // for BlenderSplitPane
+    public abstract BlenderPanel shallowCopy();
 }
