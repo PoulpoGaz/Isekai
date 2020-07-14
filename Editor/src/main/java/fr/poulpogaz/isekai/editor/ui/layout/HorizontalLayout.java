@@ -114,6 +114,10 @@ public class HorizontalLayout implements LayoutManager2 {
         Dimension dim = new Dimension();
 
         for (Component component : parent.getComponents()) {
+            if (!component.isVisible()) {
+                continue;
+            }
+
             HorizontalConstraint constraint = getConstraintFor(component);
 
             Dimension componentDim;
@@ -155,6 +159,10 @@ public class HorizontalLayout implements LayoutManager2 {
         Component rightEnd = null;
 
         for (Component component : components) {
+            if (!component.isVisible()) {
+                continue;
+            }
+
             Dimension compDim = component.getPreferredSize();
 
             HorizontalConstraint constraint = getConstraintFor(component);

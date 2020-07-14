@@ -7,7 +7,6 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
 
 public class BlenderSplitAreaUI extends FlatSplitPaneUI {
 
@@ -36,36 +35,17 @@ public class BlenderSplitAreaUI extends FlatSplitPaneUI {
         protected BlenderSplitPaneDivider(BasicSplitPaneUI ui) {
             super(ui);
 
-            updateBackground();
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent e) {
-            super.propertyChange(e);
-
-            if (e.getSource() == splitPane) {
-                if (e.getNewValue() == JSplitPane.ORIENTATION_PROPERTY) {
-                    updateBackground();
-                }
-            }
-        }
-
-        protected void updateBackground() {
-            if (orientation == JSplitPane.HORIZONTAL_SPLIT) {
-                setBackground(UIManager.getColor("BlenderSplitArea.dividerBackground"));
-            } else {
-                setBackground(null);
-            }
-
-            repaint();
+            setBackground(UIManager.getColor("BlenderSplitArea.dividerBackground"));
         }
 
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
+            if (orientation == JSplitPane.HORIZONTAL_SPLIT) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
         }
     }
 }

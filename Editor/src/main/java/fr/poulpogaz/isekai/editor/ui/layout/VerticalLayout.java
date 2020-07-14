@@ -113,6 +113,10 @@ public class VerticalLayout implements LayoutManager2 {
         Dimension dim = new Dimension();
 
         for (Component component : parent.getComponents()) {
+            if (!component.isVisible()) {
+                continue;
+            }
+
             VerticalConstraint constraint = getConstraintFor(component);
 
             Dimension componentDim;
@@ -152,6 +156,10 @@ public class VerticalLayout implements LayoutManager2 {
         Component botEnd = null;
 
         for (Component component : components) {
+            if (!component.isVisible()) {
+                return;
+            }
+
             Dimension compDim = component.getPreferredSize();
 
             VerticalConstraint constraint = getConstraintFor(component);
