@@ -10,11 +10,11 @@ import java.awt.image.BufferedImage;
 public abstract class AbstractIcon extends FlatAbstractIcon implements Icon, UIResource {
 
     public AbstractIcon() {
-        this(32, UIManager.getColor("AbstractIcon.color"));
+        this(16, UIManager.getColor("AbstractIcon.color"));
     }
 
     public AbstractIcon(Color color) {
-        this(32, color);
+        this(16, color);
     }
 
     public AbstractIcon(int size, Color color) {

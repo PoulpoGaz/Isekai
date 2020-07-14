@@ -18,6 +18,7 @@ public class Main {
             UIManager.put("BlenderSplitArea.dividerBackground", UIManager.getColor("MenuBar.background"));
             UIManager.put("BlenderSplitArea.dividerSize", 4);
             UIManager.put("BlenderSplitAreaUI", "fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderSplitAreaUI");
+            UIManager.put("Icon.color", UIManager.getColor("Table.sortIconColor"));
 
             new IsekaiEditor();
         });

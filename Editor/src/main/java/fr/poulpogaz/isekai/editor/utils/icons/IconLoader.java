@@ -17,6 +17,8 @@ public class IconLoader {
 
     private static final HashMap<String, AbstractIcon> ICONS = new HashMap<>();
 
+    public static final ImagePostProcess TO_LAF_ICON_COLOR;
+
     public static ImageIcon loadSVGIcon(String resource) {
         BufferedImage image;
 
@@ -36,6 +38,20 @@ public class IconLoader {
 
         try {
             image = GlobalImageLoader.loadSVG(resource, size, size);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            image = GlobalImageLoader.ERROR_IMAGE;
+        }
+
+        return new ImageIcon(image);
+    }
+
+    public static ImageIcon loadSVGIcon(String resource, int size, ImagePostProcess[] processes) {
+        BufferedImage image;
+
+        try {
+            image = GlobalImageLoader.loadSVG(resource, size, size, processes);
         } catch (IOException e) {
             e.printStackTrace();
 
@@ -111,5 +127,27 @@ public class IconLoader {
         }
 
         return null;
+    }
+
+    static {
+        TO_LAF_ICON_COLOR = new ImagePostProcess() {
+            @Override
+            public void process(BufferedImage input) {
+                Graphics2D g2d = input.createGraphics();
+
+                try {
+                    g2d.setComposite(AlphaComposite.SrcIn);
+                    g2d.setColor(UIManager.getColor("Icon.color"));
+                    g2d.fillRect(0, 0, input.getWidth(), input.getHeight());
+                } finally {
+                    g2d.dispose();
+                }
+            }
+
+            @Override
+            public String getName() {
+                return "IconPostProcessing";
+            }
+        };
     }
 }

@@ -1,5 +1,11 @@
 package fr.poulpogaz.isekai.editor.ui.blenderpane;
 
+import fr.poulpogaz.isekai.editor.ui.icons.CloseIcon;
+import fr.poulpogaz.isekai.editor.ui.icons.SplitHorizontallyIcon;
+import fr.poulpogaz.isekai.editor.ui.icons.SplitVerticallyIcon;
+import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
+import fr.poulpogaz.isekai.editor.utils.icons.ImagePostProcess;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -139,6 +145,8 @@ public class BlenderSplitArea extends JSplitPane {
 
     protected static class BlenderAreaImpl extends BlenderArea {
 
+        private static final ImagePostProcess[] PROCESS = new ImagePostProcess[] {IconLoader.TO_LAF_ICON_COLOR};
+
         protected JButton closeButton;
 
         public BlenderAreaImpl(BlenderAreaModel model) {
@@ -165,7 +173,6 @@ public class BlenderSplitArea extends JSplitPane {
             menuBar.add(createVerticalSplitButton());
 
             closeButton = createCloseButton();
-            closeButton.setVisible(false);
 
             menuBar.add(closeButton);
 
@@ -173,8 +180,9 @@ public class BlenderSplitArea extends JSplitPane {
         }
 
         protected JButton createCloseButton() {
-            JButton closeButton = new JButton("C");
+            JButton closeButton = new JButton();
 
+            closeButton.setIcon(IconLoader.load(CloseIcon.IDENTIFIER, CloseIcon.class));
             closeButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
 
             closeButton.addActionListener((e) -> {
@@ -185,12 +193,15 @@ public class BlenderSplitArea extends JSplitPane {
                 }
             });
 
+            closeButton.setVisible(false);
+
             return closeButton;
         }
 
         protected JButton createHorizontalSplitButton() {
-            JButton horizontalButton = new JButton("H");
+            JButton horizontalButton = new JButton();
 
+            horizontalButton.setIcon(IconLoader.load(SplitVerticallyIcon.IDENTIFIER, SplitVerticallyIcon.class));
             horizontalButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
 
             horizontalButton.addActionListener((e) -> {
@@ -205,8 +216,9 @@ public class BlenderSplitArea extends JSplitPane {
         }
 
         protected JButton createVerticalSplitButton() {
-            JButton verticalButton = new JButton("V");
+            JButton verticalButton = new JButton();
 
+            verticalButton.setIcon(IconLoader.load(SplitHorizontallyIcon.IDENTIFIER, SplitHorizontallyIcon.class));
             verticalButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
 
             verticalButton.addActionListener((e) -> {
