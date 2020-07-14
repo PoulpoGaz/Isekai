@@ -24,7 +24,9 @@ public class DefaultBlenderAreaModel extends DefaultComboBoxModel<BlenderPanel> 
             model.addElement(getElementAt(i).shallowCopy());
         }
 
-        model.setSelectedItem(getSelectedItem());
+        int index = getIndexOf(getSelectedItem());
+
+        model.setSelectedItem(model.getElementAt(index));
 
         return model;
     }

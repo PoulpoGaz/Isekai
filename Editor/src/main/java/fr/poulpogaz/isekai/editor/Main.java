@@ -15,6 +15,9 @@ public class Main {
             FlatDarculaLaf.install();
 
             UIManager.put("MenuItem.selectionType", "underline");
+            UIManager.put("BlenderSplitArea.dividerBackground", UIManager.getColor("MenuBar.background"));
+            UIManager.put("BlenderSplitArea.dividerSize", 4);
+            UIManager.put("BlenderSplitAreaUI", "fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderSplitAreaUI");
 
             new IsekaiEditor();
         });
