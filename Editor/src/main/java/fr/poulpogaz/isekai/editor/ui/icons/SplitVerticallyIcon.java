@@ -10,7 +10,7 @@ public class SplitVerticallyIcon extends AbstractIcon {
     public static final String IDENTIFIER = "SplitVerticallyIcon";
 
     public SplitVerticallyIcon() {
-        super(16, 16, UIManager.getColor("Icon.color"));
+        super(16, 16);
     }
 
     @Override

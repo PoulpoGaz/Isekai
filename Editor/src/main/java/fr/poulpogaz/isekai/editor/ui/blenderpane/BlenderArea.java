@@ -5,10 +5,13 @@ import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 
 import javax.swing.*;
+import javax.swing.plaf.ScrollPaneUI;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseWheelEvent;
 import java.util.Objects;
 
 import static fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint.DEFAULT_GAP;
@@ -24,6 +27,7 @@ public class BlenderArea extends JComponent implements ItemListener {
     protected static final HorizontalConstraint MENU_CONSTRAINT = new HorizontalConstraint(HCOrientation.LEFT, DEFAULT_GAP, DEFAULT_GAP, true, 0.5f, true);
 
     protected JComboBox<BlenderPanel> comboBox;
+    protected JScrollPane scrollPane; // the menu bar is wrapped inside this scrollPane
     protected JMenuBar menuBar;
     protected JMenuItem flipMenuBarTo;
 
@@ -56,8 +60,18 @@ public class BlenderArea extends JComponent implements ItemListener {
         comboBox = createComboBox();
         menuBar = createMenuBar();
 
+        scrollPane = new HorizontalScrollPane();
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        Dimension menuBarPrefSize = menuBar.getPreferredSize();
+
+        scrollPane.setPreferredSize(new Dimension(16, menuBarPrefSize.height));
+        scrollPane.setViewportView(menuBar);
+
         setLayout(new BorderLayout());
-        add(menuBar, BorderLayout.SOUTH);
+        add(scrollPane, BorderLayout.SOUTH);
     }
 
     protected JComboBox<BlenderPanel> createComboBox() {
@@ -214,9 +228,9 @@ public class BlenderArea extends JComponent implements ItemListener {
             this.menuBarPosition = menuBarPosition;
 
             if (menuBarPosition == TOP) {
-                add(menuBar, BorderLayout.NORTH);
+                add(scrollPane, BorderLayout.NORTH);
             } else {
-                add(menuBar, BorderLayout.SOUTH);
+                add(scrollPane, BorderLayout.SOUTH);
             }
 
             setFlipMenuBarToText();
@@ -240,6 +254,36 @@ public class BlenderArea extends JComponent implements ItemListener {
             label.setIcon(panel.getIcon());
 
             return label;
+        }
+    }
+
+    protected static class HorizontalScrollPane extends JScrollPane {
+
+        public HorizontalScrollPane() {
+            super();
+
+            setWheelScrollingEnabled(false);
+            initListeners();
+        }
+
+        protected void initListeners() {
+            JScrollBar horizontalScrollBar = getHorizontalScrollBar();
+
+            addMouseWheelListener(new MouseAdapter() {
+
+                public void mouseWheelMoved(MouseWheelEvent evt) {
+                    int scrollAmount = evt.getScrollAmount();
+                    int newValue = horizontalScrollBar.getValue() +
+                            horizontalScrollBar.getBlockIncrement() * scrollAmount * evt.getWheelRotation();
+
+                    if (evt.getWheelRotation() >= 1) {
+                        horizontalScrollBar.setValue(Math.min(newValue, horizontalScrollBar.getMaximum()));
+
+                    } else if (evt.getWheelRotation() <= -1) {
+                        horizontalScrollBar.setValue(Math.max(newValue, 0));
+                    }
+                }
+            });
         }
     }
 }
