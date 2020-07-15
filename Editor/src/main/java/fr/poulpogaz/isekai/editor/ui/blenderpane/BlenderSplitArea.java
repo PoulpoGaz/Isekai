@@ -8,6 +8,7 @@ import fr.poulpogaz.isekai.editor.utils.icons.ImagePostProcess;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 import static com.formdev.flatlaf.FlatClientProperties.BUTTON_TYPE;
 import static com.formdev.flatlaf.FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON;
@@ -145,9 +146,17 @@ public class BlenderSplitArea extends JSplitPane {
 
     protected static class BlenderAreaImpl extends BlenderArea {
 
-        private static final ImagePostProcess[] PROCESS = new ImagePostProcess[] {IconLoader.TO_LAF_ICON_COLOR};
-
+        protected JButton horizontalSplitButton;
+        protected JButton verticalSplitButton;
         protected JButton closeButton;
+
+        protected JMenuItem horizontalSplitMenu;
+        protected JMenuItem verticalSplitMenu;
+        protected JMenuItem closeMenu;
+        protected JMenuItem hideOrShowMenu;
+
+        protected boolean areButtonsVisible = true;
+        protected boolean isCloseButtonVisible = false;
 
         public BlenderAreaImpl(BlenderAreaModel model) {
             super(model);
@@ -159,7 +168,13 @@ public class BlenderSplitArea extends JSplitPane {
         }
 
         protected void setCloseButtonVisible(boolean visible) {
-            closeButton.setVisible(visible);
+            isCloseButtonVisible = visible;
+
+            if (areButtonsVisible) {
+                closeButton.setVisible(visible);
+            }
+
+            closeMenu.setVisible(visible);
 
             revalidate();
             repaint();
@@ -167,69 +182,113 @@ public class BlenderSplitArea extends JSplitPane {
 
         @Override
         protected JMenuBar createMenuBar() {
+            createHorizontalSplitButton();
+            createVerticalSplitButton();
+            createCloseButton();
+
             JMenuBar menuBar = super.createMenuBar();
 
-            menuBar.add(createHorizontalSplitButton());
-            menuBar.add(createVerticalSplitButton());
-
-            closeButton = createCloseButton();
-
+            menuBar.add(horizontalSplitButton);
+            menuBar.add(verticalSplitButton);
             menuBar.add(closeButton);
 
             return menuBar;
         }
 
-        protected JButton createCloseButton() {
-            JButton closeButton = new JButton();
+        protected void createHideOrShowMenu() {
+            hideOrShowMenu = new JMenuItem();
+            hideOrShowMenu.setText("Hide bar buttons");
 
+            hideOrShowMenu.addActionListener((e) -> {
+                setButtonsVisible(!areButtonsVisible);
+
+                if (areButtonsVisible) {
+                    hideOrShowMenu.setText("Hide bar buttons");
+                } else {
+                    hideOrShowMenu.setText("Show bat buttons");
+                }
+            });
+        }
+
+        protected void setButtonsVisible(boolean visible) {
+            areButtonsVisible = visible;
+
+            horizontalSplitButton.setVisible(visible);
+            verticalSplitButton.setVisible(visible);
+
+            if (isCloseButtonVisible) {
+                closeButton.setVisible(visible);
+            }
+        }
+
+        @Override
+        protected JPopupMenu createMenuBarPopupMenu() {
+            JPopupMenu menu = super.createMenuBarPopupMenu();
+
+            createHideOrShowMenu();
+
+            menu.addSeparator();
+
+            menu.add(hideOrShowMenu);
+
+            menu.add(horizontalSplitMenu);
+            menu.add(verticalSplitMenu);
+            menu.add(closeMenu);
+
+            return menu;
+        }
+
+        protected void createCloseButton() {
+            closeButton = new JButton();
+
+            closeButton.setToolTipText("Close");
             closeButton.setIcon(IconLoader.load(CloseIcon.IDENTIFIER, CloseIcon.class));
             closeButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
 
-            closeButton.addActionListener((e) -> {
-                Container parent = getParent();
-
-                if (parent instanceof BlenderSplitArea) {
-                    ((BlenderSplitArea) parent).close();
-                }
-            });
+            closeButton.addActionListener((e) -> close());
 
             closeButton.setVisible(false);
 
-            return closeButton;
+            closeMenu = new JMenuItem("Close");
+            closeMenu.setIcon(IconLoader.load(CloseIcon.IDENTIFIER, CloseIcon.class));
+            closeMenu.addActionListener((e) -> close());
+            closeMenu.setVisible(false);
         }
 
-        protected JButton createHorizontalSplitButton() {
-            JButton horizontalButton = new JButton();
+        protected void createHorizontalSplitButton() {
+            horizontalSplitButton = new JButton();
 
-            horizontalButton.setIcon(IconLoader.load(SplitVerticallyIcon.IDENTIFIER, SplitVerticallyIcon.class));
-            horizontalButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
+            horizontalSplitButton.setToolTipText("Vertical split");
+            horizontalSplitButton.setIcon(IconLoader.load(SplitVerticallyIcon.IDENTIFIER, SplitVerticallyIcon.class));
+            horizontalSplitButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
 
-            horizontalButton.addActionListener((e) -> {
-                Container parent = getParent();
+            horizontalSplitButton.addActionListener((e) -> split(HORIZONTAL_SPLIT));
 
-                if (parent instanceof BlenderSplitArea) {
-                    ((BlenderSplitArea) parent).split(HORIZONTAL_SPLIT);
-                }
-            });
-
-            return horizontalButton;
+            horizontalSplitMenu = new JMenuItem("Vertical split");
+            horizontalSplitMenu.setIcon(IconLoader.load(SplitVerticallyIcon.IDENTIFIER, SplitVerticallyIcon.class));
+            horizontalSplitMenu.addActionListener((e) -> split(HORIZONTAL_SPLIT));
         }
 
-        protected JButton createVerticalSplitButton() {
-            JButton verticalButton = new JButton();
+        protected void createVerticalSplitButton() {
+            verticalSplitButton = new JButton();
 
-            verticalButton.setIcon(IconLoader.load(SplitHorizontallyIcon.IDENTIFIER, SplitHorizontallyIcon.class));
-            verticalButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
+            verticalSplitButton.setToolTipText("Horizontal split");
+            verticalSplitButton.setIcon(IconLoader.load(SplitHorizontallyIcon.IDENTIFIER, SplitHorizontallyIcon.class));
+            verticalSplitButton.putClientProperty(BUTTON_TYPE, BUTTON_TYPE_TOOLBAR_BUTTON);
 
-            verticalButton.addActionListener((e) -> {
-                Container parent = getParent();
+            verticalSplitButton.addActionListener((e) -> split(VERTICAL_SPLIT));
 
-                if (parent instanceof BlenderSplitArea) {
-                    ((BlenderSplitArea) parent).split(VERTICAL_SPLIT);
-                }
-            });
+            verticalSplitMenu = new JMenuItem("Horizontal split");
+            verticalSplitMenu.setIcon(IconLoader.load(SplitHorizontallyIcon.IDENTIFIER, SplitHorizontallyIcon.class));
+            verticalSplitMenu.addActionListener((e) -> split(VERTICAL_SPLIT));
+        }
 
-            return verticalButton;
+        protected void close() {
+            ((BlenderSplitArea) getParent()).close();
+        }
+
+        protected void split(int orientation) {
+            ((BlenderSplitArea) getParent()).split(orientation);
         }
     }
 }

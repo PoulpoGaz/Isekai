@@ -16,11 +16,18 @@ import static fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint.DEFAULT_
 public class BlenderArea extends JComponent implements ItemListener {
 
     public static final String MODEL_PROPERTY = "BlenderModelProperty";
+    public static final String MENU_BAR_POSITION = "MenuBarPositionProperty";
+
+    public static final boolean BOTTOM = false;
+    public static final boolean TOP = true;
 
     protected static final HorizontalConstraint MENU_CONSTRAINT = new HorizontalConstraint(HCOrientation.LEFT, DEFAULT_GAP, DEFAULT_GAP, true, 0.5f, true);
 
     protected JComboBox<BlenderPanel> comboBox;
     protected JMenuBar menuBar;
+    protected JMenuItem flipMenuBarTo;
+
+    protected boolean menuBarPosition;
 
     protected BlenderAreaModel model;
 
@@ -66,8 +73,30 @@ public class BlenderArea extends JComponent implements ItemListener {
 
         bar.setLayout(new HorizontalLayout());
         bar.add(comboBox);
+        bar.setComponentPopupMenu(createMenuBarPopupMenu());
 
         return bar;
+    }
+
+    protected JPopupMenu createMenuBarPopupMenu() {
+        JPopupMenu menu = new JPopupMenu();
+
+        flipMenuBarTo = new JMenuItem();
+        setFlipMenuBarToText();
+
+        flipMenuBarTo.addActionListener((e) -> setMenuBarPosition(!menuBarPosition));
+
+        menu.add(flipMenuBarTo);
+
+        return menu;
+    }
+
+    protected void setFlipMenuBarToText() {
+        if (menuBarPosition == TOP) {
+            flipMenuBarTo.setText("Flip to bottom");
+        } else {
+            flipMenuBarTo.setText("Flip to top");
+        }
     }
 
     protected void switchComponents(BlenderPanel old, BlenderPanel newPanel) {
@@ -172,6 +201,31 @@ public class BlenderArea extends JComponent implements ItemListener {
 
     public BlenderAreaModel getModel() {
         return model;
+    }
+
+    public boolean getMenuBarPosition() {
+        return menuBarPosition;
+    }
+
+    public void setMenuBarPosition(boolean menuBarPosition) {
+        if (menuBarPosition != this.menuBarPosition) {
+            boolean old = this.menuBarPosition;
+
+            this.menuBarPosition = menuBarPosition;
+
+            if (menuBarPosition == TOP) {
+                add(menuBar, BorderLayout.NORTH);
+            } else {
+                add(menuBar, BorderLayout.SOUTH);
+            }
+
+            setFlipMenuBarToText();
+
+            firePropertyChange(MENU_BAR_POSITION, old, menuBarPosition);
+
+            revalidate();
+            repaint();
+        }
     }
 
     protected class ComboBoxRenderer extends BasicComboBoxRenderer {

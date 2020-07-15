@@ -42,10 +42,8 @@ public class BlenderSplitAreaUI extends FlatSplitPaneUI {
         public void paint(Graphics g) {
             super.paint(g);
 
-            if (orientation == JSplitPane.HORIZONTAL_SPLIT) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
         }
     }
 }
