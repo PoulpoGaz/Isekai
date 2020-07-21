@@ -16,9 +16,9 @@ public class Main {
 
             UIManager.put("MenuItem.selectionType", "underline");
 
-            UIManager.put("BlenderSplitArea.dividerBackground", UIManager.getColor("MenuBar.background"));
-            UIManager.put("BlenderSplitArea.dividerSize", 4);
-            UIManager.put("BlenderSplitAreaUI", "fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderSplitAreaUI");
+            UIManager.put("BSplitPane.dividerBackground", UIManager.getColor("MenuBar.background"));
+            UIManager.put("BSplitPane.dividerSize", 4);
+            UIManager.put("BSplitPaneUI", "fr.poulpogaz.isekai.editor.ui.area.BSplitPaneUI");
 
             UIManager.put("Icon.color", UIManager.getColor("Table.sortIconColor"));
 

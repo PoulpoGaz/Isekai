@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.ui.blenderpane;
+package fr.poulpogaz.isekai.editor.ui.area;
 
 import com.formdev.flatlaf.ui.FlatSplitPaneUI;
 
@@ -8,17 +8,17 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 
-public class BlenderSplitAreaUI extends FlatSplitPaneUI {
+public class BSplitPaneUI extends FlatSplitPaneUI {
 
     public static ComponentUI createUI(JComponent c) {
-        return new BlenderSplitAreaUI();
+        return new BSplitPaneUI();
     }
 
     @Override
     protected void installDefaults() {
         super.installDefaults();
 
-        Integer temp = (Integer) UIManager.get("BlenderSplitArea.dividerSize");
+        Integer temp = (Integer) UIManager.get("BSplitPane.dividerSize");
         LookAndFeel.installProperty(splitPane, "dividerSize", temp == null ? 4 : temp);
 
         divider.setDividerSize(splitPane.getDividerSize());
@@ -35,7 +35,7 @@ public class BlenderSplitAreaUI extends FlatSplitPaneUI {
         protected BlenderSplitPaneDivider(BasicSplitPaneUI ui) {
             super(ui);
 
-            setBackground(UIManager.getColor("BlenderSplitArea.dividerBackground"));
+            setBackground(UIManager.getColor("BSplitPane.dividerBackground"));
         }
 
         @Override

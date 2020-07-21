@@ -1,12 +1,12 @@
 package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
-import fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderPanel;
+import fr.poulpogaz.isekai.editor.ui.area.BRegionView;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ButtonPanel extends BlenderPanel {
+public class ButtonPanel extends BRegionView {
 
     private JMenuBar bar;
 
@@ -42,7 +42,7 @@ public class ButtonPanel extends BlenderPanel {
     }
 
     @Override
-    public BlenderPanel shallowCopy() {
+    public BRegionView copyWithDataLink() {
         return new ButtonPanel();
     }
 }

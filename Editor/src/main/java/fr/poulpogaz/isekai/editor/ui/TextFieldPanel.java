@@ -1,12 +1,12 @@
 package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeLeafIcon;
-import fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderPanel;
+import fr.poulpogaz.isekai.editor.ui.area.BRegionView;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class TextFieldPanel extends BlenderPanel {
+public class TextFieldPanel extends BRegionView {
 
     private JTextField field;
 
@@ -36,7 +36,7 @@ public class TextFieldPanel extends BlenderPanel {
     }
 
     @Override
-    public BlenderPanel shallowCopy() {
+    public BRegionView copyWithDataLink() {
         JTextField copy = new JTextField();
         copy.setDocument(field.getDocument());
 

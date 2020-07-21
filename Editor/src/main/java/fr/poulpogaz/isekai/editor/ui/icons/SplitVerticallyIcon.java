@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.ui.icons;
 
 import fr.poulpogaz.isekai.editor.utils.icons.AbstractIcon;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class SplitVerticallyIcon extends AbstractIcon {

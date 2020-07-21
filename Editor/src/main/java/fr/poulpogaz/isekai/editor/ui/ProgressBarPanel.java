@@ -1,12 +1,12 @@
 package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeClosedIcon;
-import fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderPanel;
+import fr.poulpogaz.isekai.editor.ui.area.BRegionView;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ProgressBarPanel extends BlenderPanel {
+public class ProgressBarPanel extends BRegionView {
 
     private JProgressBar bar;
 
@@ -83,7 +83,7 @@ public class ProgressBarPanel extends BlenderPanel {
     }
 
     @Override
-    public BlenderPanel shallowCopy() {
+    public BRegionView copyWithDataLink() {
         JProgressBar bar = new JProgressBar();
         bar.setModel(this.bar.getModel());
 

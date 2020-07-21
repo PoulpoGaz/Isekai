@@ -1,11 +1,10 @@
-package fr.poulpogaz.isekai.editor.ui.blenderpane;
+package fr.poulpogaz.isekai.editor.ui.area;
 
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 
 import javax.swing.*;
-import javax.swing.plaf.ScrollPaneUI;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.awt.event.ItemEvent;
@@ -16,7 +15,7 @@ import java.util.Objects;
 
 import static fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint.DEFAULT_GAP;
 
-public class BlenderArea extends JComponent implements ItemListener {
+public class BRegion extends JComponent implements ItemListener {
 
     public static final String MODEL_PROPERTY = "BlenderModelProperty";
     public static final String MENU_BAR_POSITION = "MenuBarPositionProperty";
@@ -26,38 +25,37 @@ public class BlenderArea extends JComponent implements ItemListener {
 
     protected static final HorizontalConstraint MENU_CONSTRAINT = new HorizontalConstraint(HCOrientation.LEFT, DEFAULT_GAP, DEFAULT_GAP, true, 0.5f, true);
 
-    protected JComboBox<BlenderPanel> comboBox;
+    protected JComboBox<BRegionView> viewComboBox;
     protected JScrollPane scrollPane; // the menu bar is wrapped inside this scrollPane
     protected JMenuBar menuBar;
     protected JMenuItem flipMenuBarTo;
 
     protected boolean menuBarPosition;
 
-    protected BlenderAreaModel model;
+    protected BRegionModel model;
 
-    protected BlenderPanel selected;
+    protected BRegionView selected;
 
-    public BlenderArea() {
+    public BRegion() {
         init();
 
-        setModel(new DefaultBlenderAreaModel());
+        setModel(new DefaultBRegionModel());
     }
 
-    public BlenderArea(BlenderPanel[] panels) {
+    public BRegion(BRegionView[] views) {
         init();
 
-        setModel(new DefaultBlenderAreaModel(panels));
+        setModel(new DefaultBRegionModel(views));
     }
 
-    // For shallow copy
-    protected BlenderArea(BlenderAreaModel model) {
+    public BRegion(BRegionModel model) {
         init();
 
         setModel(model);
     }
 
     protected void init() {
-        comboBox = createComboBox();
+        viewComboBox = createViewComboBox();
         menuBar = createMenuBar();
 
         scrollPane = new HorizontalScrollPane();
@@ -74,8 +72,8 @@ public class BlenderArea extends JComponent implements ItemListener {
         add(scrollPane, BorderLayout.SOUTH);
     }
 
-    protected JComboBox<BlenderPanel> createComboBox() {
-        JComboBox<BlenderPanel> comboBox = new JComboBox<>();
+    protected JComboBox<BRegionView> createViewComboBox() {
+        JComboBox<BRegionView> comboBox = new JComboBox<>();
         comboBox.setRenderer(new ComboBoxRenderer());
         comboBox.addItemListener(this);
 
@@ -86,7 +84,7 @@ public class BlenderArea extends JComponent implements ItemListener {
         JMenuBar bar = new JMenuBar();
 
         bar.setLayout(new HorizontalLayout());
-        bar.add(comboBox);
+        bar.add(viewComboBox);
         bar.setComponentPopupMenu(createMenuBarPopupMenu());
 
         return bar;
@@ -113,7 +111,7 @@ public class BlenderArea extends JComponent implements ItemListener {
         }
     }
 
-    protected void switchComponents(BlenderPanel old, BlenderPanel newPanel) {
+    protected void switchComponents(BRegionView old, BRegionView newView) {
         if (old != null) {
             if (old.getMenuBar() != null) {
                 menuBar.remove(old.getMenuBar());
@@ -122,88 +120,78 @@ public class BlenderArea extends JComponent implements ItemListener {
             remove(old);
         }
 
-        if (newPanel.getMenuBar() != null) {
-            menuBar.add(newPanel.getMenuBar(), MENU_CONSTRAINT);
+        if (newView.getMenuBar() != null) {
+            menuBar.add(newView.getMenuBar(), MENU_CONSTRAINT);
         }
 
-        add(newPanel, BorderLayout.CENTER);
+        add(newView, BorderLayout.CENTER);
 
         revalidate();
         repaint();
     }
 
-    public BlenderArea shallowCopy() {
-        return new BlenderArea(model.shallowCopy());
+    public BRegion copy() {
+        return new BRegion(model.copy());
     }
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        switchComponents(selected, (BlenderPanel) e.getItem());
+        switchComponents(selected, (BRegionView) e.getItem());
 
-        selected = (BlenderPanel) e.getItem();
+        selected = (BRegionView) e.getItem();
     }
 
     public void addItemListener(ItemListener listener) {
-        comboBox.addItemListener(listener);
+        viewComboBox.addItemListener(listener);
     }
 
     public void removeItemListener(ItemListener listener) {
-        comboBox.removeItemListener(listener);
+        viewComboBox.removeItemListener(listener);
     }
 
-    public void addPanel(BlenderPanel panel) {
-        Objects.requireNonNull(panel, "Attempt to add a null component");
+    public void addView(BRegionView view) {
+        Objects.requireNonNull(view, "Attempt to add a null component");
 
-        checkMutableComboBoxModel();
-        ((MutableBlenderAreaModel) model).addElement(panel);
+        model.addElement(view);
     }
 
-    public void removePanel(BlenderPanel panel) {
-        if (panel != null) {
-            checkMutableComboBoxModel();
-            ((MutableBlenderAreaModel) model).removeElement(panel);
+    public void removeView(BRegionView view) {
+        if (view != null) {
+            model.removeElement(view);
         }
     }
 
-    public void insertPanel(BlenderPanel panel, int index) {
-        Objects.requireNonNull(panel, "Attempt to add a null component");
+    public void insertView(BRegionView view, int index) {
+        Objects.requireNonNull(view, "Attempt to add a null component");
 
-        checkMutableComboBoxModel();
-        ((MutableBlenderAreaModel) model).insertElementAt(panel, index);
+        model.insertElementAt(view, index);
     }
 
-    public void removePanelAt(int index) {
-        checkMutableComboBoxModel();
-        ((MutableBlenderAreaModel) model).removeElementAt(index);
+    public void removeViewAt(int index) {
+        model.removeElementAt(index);
     }
 
-    protected final void checkMutableComboBoxModel() {
-        if (!(model instanceof MutableBlenderAreaModel)) {
-            throw new RuntimeException("Cannot use this method with a non-Mutable data model.");
-        }
-    }
-
-    public void setSelected(BlenderPanel panel) {
-        comboBox.setSelectedItem(panel);
+    public void setSelected(BRegionView view) {
+        viewComboBox.setSelectedItem(view);
     }
 
     public void setSelectedIndex(int index) {
-        comboBox.setSelectedIndex(index);
+        viewComboBox.setSelectedIndex(index);
     }
 
-    public BlenderPanel getSelected() {
+    public BRegionView getSelected() {
         return selected;
     }
 
-    public void setModel(BlenderAreaModel model) {
+    public void setModel(BRegionModel model) {
         if (model != this.model && model != null) {
-            BlenderAreaModel old = this.model;
+            BRegionModel old = this.model;
 
             this.model = model;
 
-            comboBox.setModel(model);
+            viewComboBox.setModel(model);
 
-            BlenderPanel selected = (BlenderPanel) model.getSelectedItem();
+            BRegionView selected = (BRegionView) model.getSelectedItem();
 
             if (selected != null) {
                 switchComponents(this.selected, selected);
@@ -213,7 +201,7 @@ public class BlenderArea extends JComponent implements ItemListener {
         }
     }
 
-    public BlenderAreaModel getModel() {
+    public BRegionModel getModel() {
         return model;
     }
 
@@ -242,16 +230,16 @@ public class BlenderArea extends JComponent implements ItemListener {
         }
     }
 
-    protected class ComboBoxRenderer extends BasicComboBoxRenderer {
+    protected static class ComboBoxRenderer extends BasicComboBoxRenderer {
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-            BlenderPanel panel = (BlenderPanel) value;
+            BRegionView view = (BRegionView) value;
 
-            label.setText(panel.getText());
-            label.setIcon(panel.getIcon());
+            label.setText(view.getText());
+            label.setIcon(view.getIcon());
 
             return label;
         }

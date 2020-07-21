@@ -4,8 +4,7 @@ import fr.poulpogaz.isekai.editor.ui.ButtonPanel;
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.ProgressBarPanel;
 import fr.poulpogaz.isekai.editor.ui.TextFieldPanel;
-import fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderArea;
-import fr.poulpogaz.isekai.editor.ui.blenderpane.BlenderSplitArea;
+import fr.poulpogaz.isekai.editor.ui.area.BArea;
 
 import javax.swing.*;
 
@@ -26,12 +25,12 @@ public class IsekaiEditor extends JFrame {
     }
 
     private void initComponents() {
-        BlenderArea container = new BlenderArea();
+        BArea container = new BArea();
 
-        container.addPanel(new ButtonPanel());
-        container.addPanel(new TextFieldPanel());
-        container.addPanel(new ProgressBarPanel());
+        container.addView(new ButtonPanel());
+        container.addView(new TextFieldPanel());
+        container.addView(new ProgressBarPanel());
 
-        setContentPane(new BlenderSplitArea(container));
+        setContentPane(container);
     }
 }
