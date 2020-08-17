@@ -1,10 +1,7 @@
 package fr.poulpogaz.isekai.editor;
 
-import fr.poulpogaz.isekai.editor.ui.ButtonPanel;
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
-import fr.poulpogaz.isekai.editor.ui.ProgressBarPanel;
-import fr.poulpogaz.isekai.editor.ui.TextFieldPanel;
-import fr.poulpogaz.isekai.editor.ui.area.BArea;
+import fr.poulpogaz.isekai.editor.ui.editor.EditorPanel;
 
 import javax.swing.*;
 
@@ -25,12 +22,6 @@ public class IsekaiEditor extends JFrame {
     }
 
     private void initComponents() {
-        BArea container = new BArea();
-
-        container.addView(new ButtonPanel());
-        container.addView(new TextFieldPanel());
-        container.addView(new ProgressBarPanel());
-
-        setContentPane(container);
+        setContentPane(new EditorPanel());
     }
 }
