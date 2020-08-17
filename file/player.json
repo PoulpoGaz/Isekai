@@ -1,0 +1,140 @@
+{
+    "left": {
+        "static": {
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 0,
+            "y": 0
+        },
+        "walk": {
+            "type": "animated_sprite",
+            "delay": 50,
+            "frames": [
+                {
+                    "image": "tileset",
+                    "x": 1,
+                    "y": 0
+                },
+                {
+                    "image": "tileset",
+                    "x": 2,
+                    "y": 0
+                },
+                {
+                    "image": "tileset",
+                    "x": 3,
+                    "y": 0
+                },
+                {
+                    "image": "tileset",
+                    "x": 4,
+                    "y": 0
+                }
+            ]
+        }
+    },
+    "right": {
+        "static": {
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 0,
+            "y": 1
+        },
+        "walk": {
+            "type": "animated_sprite",
+            "delay": 50,
+            "frames": [
+                {
+                    "image": "tileset",
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "image": "tileset",
+                    "x": 2,
+                    "y": 1
+                },
+                {
+                    "image": "tileset",
+                    "x": 3,
+                    "y": 1
+                },
+                {
+                    "image": "tileset",
+                    "x": 4,
+                    "y": 1
+                }
+            ]
+        }
+    },
+
+    "down": {
+        "static": {
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 0,
+            "y": 2
+        },
+        "walk": {
+            "type": "animated_sprite",
+            "delay": 50,
+            "frames": [
+                {
+                    "image": "tileset",
+                    "x": 1,
+                    "y": 2
+                },
+                {
+                    "image": "tileset",
+                    "x": 2,
+                    "y": 2
+                },
+                {
+                    "image": "tileset",
+                    "x": 3,
+                    "y": 2
+                },
+                {
+                    "image": "tileset",
+                    "x": 4,
+                    "y": 2
+                }
+            ]
+        }
+    },
+
+    "up": {
+        "static": {
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 0,
+            "y": 3
+        },
+        "walk": {
+            "type": "animated_sprite",
+            "delay": 50,
+            "frames": [
+                {
+                    "image": "tileset",
+                    "x": 1,
+                    "y": 3
+                },
+                {
+                    "image": "tileset",
+                    "x": 2,
+                    "y": 3
+                },
+                {
+                    "image": "tileset",
+                    "x": 3,
+                    "y": 3
+                },
+                {
+                    "image": "tileset",
+                    "x": 4,
+                    "y": 3
+                }
+            ]
+        }
+    }
+}

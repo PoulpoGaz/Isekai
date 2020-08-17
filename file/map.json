@@ -1,0 +1,56 @@
+{
+    "wall": {
+        "type": "sub_sprite",
+        "image": "tileset",
+        "x": 1,
+        "y": 0
+    },
+    "crate": {
+        "type": "sub_sprite",
+        "image": "tileset",
+        "x": 1,
+        "y": 0
+    },
+    "valid_crate": {
+        "type": "sub_sprite",
+        "image": "tileset",
+        "x": 0,
+        "y": 0
+    },
+    "floor": {
+        "type": "sub_sprite",
+        "image": "tileset",
+        "x": 3,
+        "y": 0
+    },
+    "target": {
+        "type": "animated_sprite",
+        "delay": 250,
+        "frames": [
+            {
+                "type": "sub_sprite",
+                "image": "tileset",
+                "x": 0,
+                "y": 1
+            },
+            {
+                "type": "sub_sprite",
+                "image": "tileset",
+                "x": 1,
+                "y": 1
+            },
+            {
+                "type": "sub_sprite",
+                "image": "tileset",
+                "x": 2,
+                "y": 1
+            },
+            {
+                "type": "sub_sprite",
+                "image": "tileset",
+                "x": 3,
+                "y": 1
+            }
+        ]
+    }
+}
