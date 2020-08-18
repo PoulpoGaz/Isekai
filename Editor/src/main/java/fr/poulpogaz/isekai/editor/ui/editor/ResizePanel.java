@@ -20,14 +20,14 @@ public class ResizePanel extends JPanel {
         widthSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_MAP_WIDTH, MINIMUM_MAP_WIDTH, MAXIMUM_MAP_WIDTH, 1));
         heightSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_MAP_HEIGHT, MINIMUM_MAP_HEIGHT, MAXIMUM_MAP_HEIGHT, 1));
 
-        widthSpinner.addChangeListener(this::fireResizeListener);
-        heightSpinner.addChangeListener(this::fireResizeListener);
+        //widthSpinner.addChangeListener(this::fireResizeListener);
+        //heightSpinner.addChangeListener(this::fireResizeListener);
 
         add(new JLabeledComponent("Width:", widthSpinner));
         add(new JLabeledComponent("Height:", heightSpinner));
     }
 
-    private void fireResizeListener(ChangeEvent e) {
+   /* private void fireResizeListener(ChangeEvent e) {
         ResizeListener[] listeners = listenerList.getListeners(ResizeListener.class);
 
         int nWidth = (int) widthSpinner.getValue();
@@ -44,5 +44,5 @@ public class ResizePanel extends JPanel {
 
     public void removeResizeListener(ResizeListener listener) {
         listenerList.remove(ResizeListener.class, listener);
-    }
+    }*/
 }

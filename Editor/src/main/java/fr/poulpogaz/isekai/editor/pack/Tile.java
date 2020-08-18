@@ -2,25 +2,24 @@ package fr.poulpogaz.isekai.editor.pack;
 
 public enum Tile {
 
-    CRATE(0, 0),
-    GRASS(1, 0),
-    TARGET(2, 0),
-    CRATE_ON_TARGET(0, 1),
-    WALL(1, 1),
-    VOID(2, 1);
+    CRATE("crate", Pack.CRATE),
+    FLOOR("floor", Pack.FLOOR),
+    TARGET("target", Pack.TARGET),
+    CRATE_ON_TARGET("crate_on_target", Pack.CRATE_ON_TARGET),
+    WALL("wall", Pack.WALL);
 
-    private final int texX;
-    private final int texY;
+    private final String sprite;
+    private final char symbol;
 
-    Tile(int texX, int texY) {
-        this.texX = texX;
-        this.texY = texY;
+    Tile(String sprite, char symbol) {
+        this.sprite = sprite;
+        this.symbol = symbol;
     }
 
     public static Tile of(char value) {
         return switch (value) {
             case '#' -> Tile.WALL;
-            case ' ', '@' -> Tile.GRASS;
+            case ' ', '@' -> Tile.FLOOR;
             case '$' -> Tile.CRATE;
             case '.', '+' -> Tile.TARGET;
             case '*' -> Tile.CRATE_ON_TARGET;
@@ -28,11 +27,7 @@ public enum Tile {
         };
     }
 
-    public int getTexX() {
-        return texX;
-    }
-
-    public int getTexY() {
-        return texY;
+    public String getSprite() {
+        return sprite;
     }
 }

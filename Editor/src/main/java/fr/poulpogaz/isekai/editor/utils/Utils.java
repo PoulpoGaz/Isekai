@@ -46,18 +46,28 @@ public class Utils {
     }
 
     public static int requireValueBetween(int value, int minInclusive, int maxExclusive) {
-        if (value < minInclusive && value >= maxExclusive) {
-            throw new IllegalStateException();
+        if (isBetween(value, minInclusive, maxExclusive)) {
+            return value;
         }
 
-        return value;
+        throw new IllegalStateException();
     }
 
     public static int requireValueBetween(int value, int minInclusive, int maxExclusive, String message) {
-        if (value < minInclusive && value >= maxExclusive) {
-            throw new IllegalStateException(message);
+        if (isBetween(value, minInclusive, maxExclusive)) {
+            return value;
         }
 
-        return value;
+        throw new IllegalStateException(message);
+    }
+
+    public static boolean isBetween(int value, int minInclusive, int maxExclusive) {
+        return value >= minInclusive && value < maxExclusive;
+    }
+
+    public static int clamp(int value, int minInclusive, int maxExclusive) {
+        if (value < minInclusive) {
+            return minInclusive;
+        } else return Math.min(value, maxExclusive);
     }
 }

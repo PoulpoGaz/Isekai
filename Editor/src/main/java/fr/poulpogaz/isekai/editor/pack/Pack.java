@@ -1,13 +1,25 @@
 package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.json.IJsonWriter;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Pack {
+
+    public static final char PLAYER = '@';
+    public static final char WALL = '#';
+    public static final char FLOOR = ' ';
+    public static final char CRATE = '$';
+    public static final char TARGET = '.';
+    public static final char CRATE_ON_TARGET = '*';
+
+    public static final String FLOOR_SPRITE = "floor";
+    public static final String WALL_SPRITE = "wall";
+    public static final String TARGET_SPRITE = "target";
+    public static final String CRATE_SPRITE = "crate";
+    public static final String CRATE_ON_TARGET_SPRITE = "crate_on_target";
 
     private HashMap<String, BufferedImage> images;
 
@@ -57,6 +69,10 @@ public class Pack {
 
     public void putImage(String name, BufferedImage image) {
         images.put(name, image);
+    }
+
+    public AbstractSprite getSprite(String name) {
+        return sprites.get(name);
     }
 
     public void putSprite(AbstractSprite sprite) {
@@ -134,4 +150,6 @@ public class Pack {
     public void setTimeline(Timeline timeline) {
         this.timeline = timeline;
     }
+
+
 }

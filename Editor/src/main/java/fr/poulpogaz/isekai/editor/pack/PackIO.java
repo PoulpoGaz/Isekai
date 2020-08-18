@@ -58,7 +58,7 @@ public class PackIO {
                     case "game_height" -> pack.setGameHeight(reader.nextInt());
                     case "tile_width" -> pack.setTileWidth(reader.nextInt());
                     case "tile_height" -> pack.setTileHeight(reader.nextInt());
-                    case "main_menu", "timeline", "number_of_levels" -> reader.skipValue();
+                    case "main_menu", "timeline" -> reader.skipValue();
                     default -> throw new IllegalStateException(key);
                 }
             }
@@ -76,7 +76,7 @@ public class PackIO {
             if (reader.hasNextKey()) {
                 String key = reader.nextKey();
 
-                if (!"wall".equals(key) && !"crate".equals(key) && !"target".equals(key) && !"valid_crate".equals(key) && !"floor".equals(key)) {
+                if (!"wall".equals(key) && !"crate".equals(key) && !"target".equals(key) && !"crate_on_target".equals(key) && !"floor".equals(key)) {
                     throw new IllegalStateException();
                 }
 
@@ -101,8 +101,8 @@ public class PackIO {
             if (reader.hasNextKey()) {
                 String key = reader.nextKey();
 
-                if (!"left".equals(key) && !"right".equals(key) && !"top".equals(key) && !"down".equals(key)) {
-                    throw new IllegalStateException();
+                if (!"left".equals(key) && !"right".equals(key) && !"up".equals(key) && !"down".equals(key)) {
+                    throw new IllegalStateException(key);
                 }
 
                 reader.beginObject();
@@ -197,6 +197,10 @@ public class PackIO {
 
         ArrayList<Level> levels = new ArrayList<>();
         for (Path levelPath : levelsPaths) {
+            if (Files.isDirectory(levelPath)) {
+                continue;
+            }
+
             BufferedReader br = Files.newBufferedReader(levelPath);
 
             int width = Integer.parseInt(br.readLine());
@@ -213,12 +217,17 @@ public class PackIO {
 
                 for (int x = 0; x < width; x++) {
                     Tile tile;
+
                     if (line.length() <= x) {
                         tile = Tile.WALL;
                     } else {
                         char c = line.charAt(x);
 
                         tile = Tile.of(c);
+
+                        if (c == '@') {
+                            level.setPlayer(x, y);
+                        }
                     }
 
                     level.setTile(x, y, tile);

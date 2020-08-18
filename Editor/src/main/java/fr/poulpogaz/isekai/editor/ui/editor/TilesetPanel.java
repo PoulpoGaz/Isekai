@@ -1,29 +1,32 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
+import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import static fr.poulpogaz.isekai.editor.ui.editor.Constant.*;
+import java.awt.image.BufferedImage;
 
 public class TilesetPanel extends JPanel {
 
-    private static final int TILESET_SCALE_FACTOR = 4;
+    private final Dimension PREFERRED_TILESET_DIMENSION = new Dimension(128, 128);
 
-    private static final int SCALED_TILE_WIDTH  = Constant.TILE_WIDTH  * TILESET_SCALE_FACTOR;
-    private static final int SCALED_TILE_HEIGHT = Constant.TILE_HEIGHT * TILESET_SCALE_FACTOR;
+    private BufferedImage tileset;
 
-    private static final int SCALED_TILESET_WIDTH = TILESET_SCALE_FACTOR * TILESET_WIDTH;
-    private static final int SCALED_TILESET_HEIGHT = TILESET_SCALE_FACTOR * TILESET_HEIGHT;
+    private int tileWidth;
+    private int tileHeight;
 
     private int selectedTileX;
     private int selectedTileY;
 
     public TilesetPanel() {
+        createTileset(IsekaiEditor.getInstance().getPack());
         setDimension();
 
         MouseAdapter adapter = getMouseAdapter();
@@ -38,11 +41,11 @@ public class TilesetPanel extends JPanel {
 
         Insets insets = getInsets();
 
-        g.drawImage(TILESET, insets.left, insets.top, SCALED_TILESET_WIDTH, SCALED_TILESET_HEIGHT, null);
+        g.drawImage(tileset, insets.left, insets.top, null);
 
         if (selectedTileX >= 0 && selectedTileY >= 0) {
             g.setColor(new Color(0, 217, 255, 64));
-            g.fillRect(selectedTileX * SCALED_TILE_WIDTH + insets.left, selectedTileY * SCALED_TILE_HEIGHT + insets.top, SCALED_TILE_WIDTH, SCALED_TILE_HEIGHT);
+            g.fillRect(selectedTileX * tileWidth + insets.left, selectedTileY  * tileHeight + insets.top, tileWidth, tileHeight);
         }
     }
 
@@ -58,7 +61,7 @@ public class TilesetPanel extends JPanel {
     private void setDimension() {
         Insets insets = getInsets();
 
-        Dimension dim = new Dimension(SCALED_TILESET_WIDTH + insets.left + insets.right, SCALED_TILESET_HEIGHT + insets.top + insets.bottom);
+        Dimension dim = new Dimension(tileset.getWidth() + insets.left + insets.right, tileset.getHeight() + insets.top + insets.bottom);
 
         setMinimumSize(dim);
         setPreferredSize(dim);
@@ -79,8 +82,8 @@ public class TilesetPanel extends JPanel {
     }
 
     private boolean isOnImage(Point wPoint) {
-        return wPoint.getX() >= 0 && wPoint.getX() < SCALED_TILESET_WIDTH &&
-                wPoint.getY() >= 0 && wPoint.getY() < SCALED_TILESET_HEIGHT;
+        return wPoint.getX() >= 0 && wPoint.getX() < tileset.getWidth() &&
+                wPoint.getY() >= 0 && wPoint.getY() < tileset.getHeight();
     }
 
     private Point toView(Point point) {
@@ -95,25 +98,54 @@ public class TilesetPanel extends JPanel {
     private void handleMouseEvent(MouseEvent e) {
         Point point = toView(e.getPoint());
 
+        System.out.println(point + " " + isOnImage(point));
+
         if (isOnImage(point)) {
             int oldX = selectedTileX;
             int oldY = selectedTileY;
 
-            selectedTileX = (int) (point.getX()) / SCALED_TILE_WIDTH;
-            selectedTileY = (int) (point.getY()) / SCALED_TILE_HEIGHT;
+            selectedTileX = (int) (point.getX()) / tileWidth;
+            selectedTileY = (int) (point.getY()) / tileHeight;
 
             if (oldX != selectedTileX || oldY != selectedTileY) {
-                TilesetListener[] listeners = listenerList.getListeners(TilesetListener.class);
-
-                Tile newTile = Tile.values()[selectedTileX + selectedTileY * COLUMNS];
-
-                for (TilesetListener listener : listeners) {
-                    listener.selectedTileChanged(newTile);
-                }
-
                 repaint();
             }
         }
+    }
+
+    private void createTileset(Pack pack) {
+        int width;
+        int height;
+
+        if (pack.getTileWidth() > pack.getTileHeight()) {
+            width = PREFERRED_TILESET_DIMENSION.width;
+            height = width * pack.getTileHeight() / pack.getTileWidth();
+        } else {
+            height = PREFERRED_TILESET_DIMENSION.height;
+            width = height * pack.getTileWidth() / pack.getTileHeight();
+        }
+
+        tileWidth = width / 3;
+        tileHeight = height / 3;
+
+        tileset = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = tileset.createGraphics();
+
+        try {
+            paintSpriteAt(g, pack.getSprite(Pack.FLOOR_SPRITE), 0, 0, tileWidth, tileHeight);
+            paintSpriteAt(g, pack.getSprite(Pack.WALL_SPRITE), tileWidth, 0, tileWidth, tileHeight);
+            paintSpriteAt(g, pack.getSprite(Pack.TARGET_SPRITE), tileWidth * 2, 0, tileWidth, tileHeight);
+            paintSpriteAt(g, pack.getSprite(Pack.CRATE_SPRITE), 0, tileHeight, tileWidth, tileHeight);
+            paintSpriteAt(g, pack.getSprite(Pack.CRATE_ON_TARGET_SPRITE), tileWidth, tileHeight, tileWidth, tileHeight);
+        } finally {
+            g.dispose();
+        }
+    }
+
+    private void paintSpriteAt(Graphics2D g, AbstractSprite sprite, int x, int y, int width, int height) {
+        BufferedImage img = sprite.getSprite();
+
+        g.drawImage(img, x, y, width, height, null);
     }
 
     public int getSelectedTileX() {
@@ -122,13 +154,5 @@ public class TilesetPanel extends JPanel {
 
     public int getSelectedTileY() {
         return selectedTileY;
-    }
-
-    public void addTilesetListener(TilesetListener listener) {
-        listenerList.add(TilesetListener.class, listener);
-    }
-
-    public void removeTilesetListener(TilesetListener listener) {
-        listenerList.remove(TilesetListener.class, listener);
     }
 }

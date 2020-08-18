@@ -52,7 +52,7 @@ public class SubSprite extends AbstractSprite {
     }
 
     public void setX(int x) {
-        this.x = Utils.requireValueBetween(x, 0, parent.getWidth());
+        this.x = x;//Utils.requireValueBetween(x, 0, parent.getWidth());
         subSprite = null;
     }
 
@@ -61,7 +61,7 @@ public class SubSprite extends AbstractSprite {
     }
 
     public void setY(int y) {
-        this.y = Utils.requireValueBetween(y, 0, parent.getHeight());
+        this.y = y;//Utils.requireValueBetween(y, 0, parent.getHeight());
         subSprite = null;
     }
 
@@ -70,7 +70,7 @@ public class SubSprite extends AbstractSprite {
     }
 
     public void setWidth(int width) {
-        this.width = Utils.requireValueBetween(width, 0, parent.getWidth() - x);
+        this.width = width;//Utils.requireValueBetween(width, 0, parent.getWidth() - x);
         subSprite = null;
     }
 
@@ -79,7 +79,7 @@ public class SubSprite extends AbstractSprite {
     }
 
     public void setHeight(int height) {
-        this.height = Utils.requireValueBetween(height, 0, parent.getHeight() - y);
+        this.height = height;//Utils.requireValueBetween(height, 0, parent.getHeight() - y + 1);
         subSprite = null;
     }
 }

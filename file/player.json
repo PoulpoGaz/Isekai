@@ -11,21 +11,25 @@
             "delay": 50,
             "frames": [
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 1,
                     "y": 0
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 2,
                     "y": 0
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 3,
                     "y": 0
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 4,
                     "y": 0
@@ -45,21 +49,25 @@
             "delay": 50,
             "frames": [
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 1,
                     "y": 1
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 2,
                     "y": 1
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 3,
                     "y": 1
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 4,
                     "y": 1
@@ -80,21 +88,25 @@
             "delay": 50,
             "frames": [
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 1,
                     "y": 2
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 2,
                     "y": 2
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 3,
                     "y": 2
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 4,
                     "y": 2
@@ -115,21 +127,25 @@
             "delay": 50,
             "frames": [
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 1,
                     "y": 3
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 2,
                     "y": 3
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 3,
                     "y": 3
                 },
                 {
+                    "type": "sub_sprite",
                     "image": "tileset",
                     "x": 4,
                     "y": 3

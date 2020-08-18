@@ -2,7 +2,6 @@
     "name": "Boxxle",
     "author": "Thinking Rabbit",
     "version": "1.0",
-    "number_of_levels": 5,
 
     "game_width": 320,
     "game_height": 240,

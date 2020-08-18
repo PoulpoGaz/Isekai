@@ -16,6 +16,9 @@ public class Level {
     private int width;
     private int height;
 
+    private int playerX;
+    private int playerY;
+
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
     }
@@ -28,7 +31,7 @@ public class Level {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                tiles[y][x] = Tile.VOID;
+                tiles[y][x] = Tile.WALL;
             }
         }
     }
@@ -42,12 +45,12 @@ public class Level {
                 if (y < this.height && x < this.width) {
                     newArray[y][x] = tiles[y][x];
                 } else {
-                    newArray[y][x] = Tile.VOID;
+                    newArray[y][x] = Tile.WALL;
                 }
             }
         }
 
-        tiles = newArray;;
+        tiles = newArray;
         this.width = newWidth;
         this.height = newHeight;
     }
@@ -60,6 +63,11 @@ public class Level {
 
     public Tile getTile(int x, int y) {
         return tiles[y][x];
+    }
+
+    public void setPlayer(int x, int y) {
+        playerX = x;
+        playerY = y;
     }
 
     public int getWidth() {

@@ -1,19 +1,11 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.utils.Utils;
-
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-import static fr.poulpogaz.isekai.editor.ui.editor.Constant.*;
+public class TileMapPanel extends JPanel {
 
-public class TileMapPanel extends JPanel implements TilesetListener, LevelListener {
 
-    public static final int SCALE_FACTOR = 2;
+    /*public static final int SCALE_FACTOR = 2;
 
     public static final int SCALED_TILE_WIDTH = TILE_WIDTH * SCALE_FACTOR;
     public static final int SCALED_TILE_HEIGHT = TILE_HEIGHT * SCALE_FACTOR;
@@ -164,5 +156,5 @@ public class TileMapPanel extends JPanel implements TilesetListener, LevelListen
         this.level = newLevel;
 
         repaint();
-    }
+    }*/
 }
