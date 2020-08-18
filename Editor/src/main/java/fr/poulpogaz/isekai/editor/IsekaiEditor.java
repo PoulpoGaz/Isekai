@@ -42,13 +42,13 @@ public class IsekaiEditor extends JFrame {
         this.pack = Objects.requireNonNull(pack);
 
 
-        setContentPane(new TilesetPanel());
+        setContentPane(new EditorPanel());
         revalidate();
         repaint();
     }
 
-    public Pack getPack() {
-        return pack;
+    public static Pack getPack() {
+        return getInstance().pack;
     }
 
     public static IsekaiEditor getInstance() {

@@ -65,6 +65,7 @@ public class SubSprite extends AbstractSprite {
         subSprite = null;
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
@@ -74,6 +75,7 @@ public class SubSprite extends AbstractSprite {
         subSprite = null;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }

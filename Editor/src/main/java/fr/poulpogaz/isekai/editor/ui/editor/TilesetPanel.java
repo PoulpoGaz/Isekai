@@ -4,7 +4,6 @@ import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -15,6 +14,8 @@ import java.awt.image.BufferedImage;
 
 public class TilesetPanel extends JPanel {
 
+    public static final String SELECTED_TILE_PROPERTY = "SelectedTileProperty";
+
     private final Dimension PREFERRED_TILESET_DIMENSION = new Dimension(128, 128);
 
     private BufferedImage tileset;
@@ -22,11 +23,12 @@ public class TilesetPanel extends JPanel {
     private int tileWidth;
     private int tileHeight;
 
-    private int selectedTileX;
-    private int selectedTileY;
+    private int selectedTileX = 0;
+    private int selectedTileY = 0;
+    private Tile selectedTile = Tile.FLOOR;
 
     public TilesetPanel() {
-        createTileset(IsekaiEditor.getInstance().getPack());
+        createTileset(IsekaiEditor.getPack());
         setDimension();
 
         MouseAdapter adapter = getMouseAdapter();
@@ -98,8 +100,6 @@ public class TilesetPanel extends JPanel {
     private void handleMouseEvent(MouseEvent e) {
         Point point = toView(e.getPoint());
 
-        System.out.println(point + " " + isOnImage(point));
-
         if (isOnImage(point)) {
             int oldX = selectedTileX;
             int oldY = selectedTileY;
@@ -108,6 +108,26 @@ public class TilesetPanel extends JPanel {
             selectedTileY = (int) (point.getY()) / tileHeight;
 
             if (oldX != selectedTileX || oldY != selectedTileY) {
+                Tile old = selectedTile;
+
+                if (selectedTileY == 0) {
+                    if (selectedTileX == 0) {
+                        selectedTile = Tile.FLOOR;
+                    } else if (selectedTileX == 1) {
+                        selectedTile = Tile.WALL;
+                    } else if (selectedTileX == 2) {
+                        selectedTile = Tile.TARGET;
+                    }
+                } else if (selectedTileY == 1) {
+                    if (selectedTileX == 0) {
+                        selectedTile = Tile.CRATE;
+                    } else if (selectedTileX == 1) {
+                        selectedTile = Tile.CRATE_ON_TARGET;
+                    }
+                }
+
+                firePropertyChange(SELECTED_TILE_PROPERTY, old, selectedTile);
+
                 repaint();
             }
         }
@@ -132,11 +152,11 @@ public class TilesetPanel extends JPanel {
         Graphics2D g = tileset.createGraphics();
 
         try {
-            paintSpriteAt(g, pack.getSprite(Pack.FLOOR_SPRITE), 0, 0, tileWidth, tileHeight);
-            paintSpriteAt(g, pack.getSprite(Pack.WALL_SPRITE), tileWidth, 0, tileWidth, tileHeight);
-            paintSpriteAt(g, pack.getSprite(Pack.TARGET_SPRITE), tileWidth * 2, 0, tileWidth, tileHeight);
-            paintSpriteAt(g, pack.getSprite(Pack.CRATE_SPRITE), 0, tileHeight, tileWidth, tileHeight);
-            paintSpriteAt(g, pack.getSprite(Pack.CRATE_ON_TARGET_SPRITE), tileWidth, tileHeight, tileWidth, tileHeight);
+            pack.getSprite(Pack.FLOOR_SPRITE).paint(g, 0, 0, tileWidth, tileHeight);
+            pack.getSprite(Pack.WALL_SPRITE).paint(g, tileWidth, 0, tileWidth, tileHeight);
+            pack.getSprite(Pack.TARGET_SPRITE).paint(g, tileWidth * 2, 0, tileWidth, tileHeight);
+            pack.getSprite(Pack.CRATE_SPRITE).paint(g, 0, tileHeight, tileWidth, tileHeight);
+            pack.getSprite(Pack.CRATE_ON_TARGET_SPRITE).paint(g, tileWidth, tileHeight, tileWidth, tileHeight);
         } finally {
             g.dispose();
         }
@@ -148,11 +168,7 @@ public class TilesetPanel extends JPanel {
         g.drawImage(img, x, y, width, height, null);
     }
 
-    public int getSelectedTileX() {
-        return selectedTileX;
-    }
-
-    public int getSelectedTileY() {
-        return selectedTileY;
+    public Tile getSelectedTile() {
+        return selectedTile;
     }
 }

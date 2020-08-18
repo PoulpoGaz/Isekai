@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import fr.poulpogaz.isekai.editor.utils.Cache;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;

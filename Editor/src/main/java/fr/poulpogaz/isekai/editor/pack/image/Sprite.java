@@ -16,6 +16,16 @@ public class Sprite extends AbstractSprite {
         return sprite;
     }
 
+    @Override
+    public int getWidth() {
+        return sprite.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return sprite.getHeight();
+    }
+
     public void setSprite(BufferedImage sprite) {
         this.sprite = Objects.requireNonNull(sprite);
     }

@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+
 public enum Tile {
 
     CRATE("crate", Pack.CRATE),
@@ -14,6 +16,10 @@ public enum Tile {
     Tile(String sprite, char symbol) {
         this.sprite = sprite;
         this.symbol = symbol;
+    }
+
+    public AbstractSprite getSprite(Pack pack) {
+        return pack.getSprite(sprite);
     }
 
     public static Tile of(char value) {

@@ -1,14 +1,22 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
+import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.pack.image.Animator;
+import fr.poulpogaz.isekai.editor.utils.Utils;
+
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class TileMapPanel extends JPanel {
 
-
-    /*public static final int SCALE_FACTOR = 2;
-
-    public static final int SCALED_TILE_WIDTH = TILE_WIDTH * SCALE_FACTOR;
-    public static final int SCALED_TILE_HEIGHT = TILE_HEIGHT * SCALE_FACTOR;
+    private static final int TILE_WIDTH = 32;
+    private static final int TILE_HEIGHT = 32;
 
     private Level level;
 
@@ -18,8 +26,8 @@ public class TileMapPanel extends JPanel {
     private Tile selectedTile = Tile.CRATE;
     private boolean hideTileCursor = true;
 
-    public TileMapPanel(Level level) {
-        this.level = level;
+    public TileMapPanel() {
+        level = IsekaiEditor.getPack().getLevel(0);
 
         initComponent();
     }
@@ -33,7 +41,7 @@ public class TileMapPanel extends JPanel {
     }
 
     private void setPreferredSize() {
-        setPreferredSize(new Dimension(level.getWidth() * SCALED_TILE_WIDTH, level.getHeight() * SCALED_TILE_HEIGHT));
+        setPreferredSize(new Dimension(level.getWidth() * TILE_WIDTH, level.getHeight() * TILE_HEIGHT));
     }
 
     @Override
@@ -51,7 +59,7 @@ public class TileMapPanel extends JPanel {
                 for (int x = 0; x < w; x++) {
                     Tile t = level.getTile(x, y);
 
-                    drawTile(g2d, offset.x + x * SCALED_TILE_WIDTH, offset.y + y * SCALED_TILE_HEIGHT, t);
+                    drawTile(g2d, offset.x + x * TILE_WIDTH, offset.y + y * TILE_HEIGHT, t);
                 }
             }
 
@@ -59,7 +67,7 @@ public class TileMapPanel extends JPanel {
                 Composite old = g2d.getComposite();
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.75f));
 
-                drawTile(g2d, offset.x + hoverX * SCALED_TILE_WIDTH, offset.y + hoverY * SCALED_TILE_HEIGHT, selectedTile);
+                drawTile(g2d, offset.x + hoverX * TILE_WIDTH, offset.y + hoverY * TILE_HEIGHT, selectedTile);
 
                 g2d.setComposite(old);
             }
@@ -69,13 +77,9 @@ public class TileMapPanel extends JPanel {
     }
 
     private void drawTile(Graphics2D g2d, int x, int y, Tile t) {
-        int texX = t.getTexX();
-        int texY = t.getTexY();
+        AbstractSprite sprite = t.getSprite(IsekaiEditor.getPack());
 
-        texX *= TILE_WIDTH;
-        texY *= TILE_HEIGHT;
-
-        g2d.drawImage(TILESET, x, y, x + SCALED_TILE_WIDTH, y + SCALED_TILE_HEIGHT, texX, texY, texX + TILE_WIDTH, texY + TILE_HEIGHT, null);
+        sprite.paint(g2d, x, y, TILE_WIDTH, TILE_HEIGHT);
     }
 
     private MouseAdapter getMouseAdapter() {
@@ -114,8 +118,8 @@ public class TileMapPanel extends JPanel {
     private void move(MouseEvent e) {
         Point offset = getOffset();
 
-        hoverX = (e.getX() - offset.x) / SCALED_TILE_WIDTH;
-        hoverY = (e.getY() - offset.y) / SCALED_TILE_HEIGHT;
+        hoverX = (e.getX() - offset.x) / TILE_WIDTH;
+        hoverY = (e.getY() - offset.y) / TILE_HEIGHT;
 
         repaint();
     }
@@ -137,24 +141,17 @@ public class TileMapPanel extends JPanel {
         // Apply offset only if the dimension of the component match the visible rect
         // because when they are equals, we try to center the tile map
         if (visible.width == dim.width) {
-            offset.x = (in.width - lvlWidth * SCALED_TILE_WIDTH) / 2;
+            offset.x = (in.width - lvlWidth * TILE_WIDTH) / 2;
         }
         if (visible.height == dim.height) {
-            offset.y = (in.height - lvlHeight * SCALED_TILE_HEIGHT) / 2;
+            offset.y = (in.height - lvlHeight * TILE_HEIGHT) / 2;
         }
 
         return offset;
     }
 
-    @Override
-    public void selectedTileChanged(Tile tile) {
-        selectedTile = tile;
-    }
-
-    @Override
-    public void levelChanged(Level newLevel) {
-        this.level = newLevel;
-
+    public void setSelectedTile(Tile newValue) {
+        selectedTile = newValue;
         repaint();
-    }*/
+    }
 }
