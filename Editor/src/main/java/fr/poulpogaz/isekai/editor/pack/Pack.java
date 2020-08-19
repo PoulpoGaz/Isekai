@@ -14,6 +14,7 @@ public class Pack {
     public static final char CRATE = '$';
     public static final char TARGET = '.';
     public static final char CRATE_ON_TARGET = '*';
+    public static final char PLAYER_ON_TARGET = '+';
 
     public static final String FLOOR_SPRITE = "floor";
     public static final String WALL_SPRITE = "wall";
@@ -75,8 +76,8 @@ public class Pack {
         return sprites.get(name);
     }
 
-    public void putSprite(AbstractSprite sprite) {
-        sprites.put(sprite.getName(), sprite);
+    public void putSprite(String name, AbstractSprite sprite) {
+        sprites.put(name, sprite);
     }
 
     public String getPackName() {
@@ -151,5 +152,7 @@ public class Pack {
         this.timeline = timeline;
     }
 
-
+    public HashMap<String, BufferedImage> getImages() {
+        return images;
+    }
 }

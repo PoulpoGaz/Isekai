@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack.image;
 
+import fr.poulpogaz.isekai.editor.pack.Pack;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -9,8 +11,8 @@ public class AnimatedSprite extends AbstractSprite {
     private final ArrayList<AbstractSprite> frames;
     private int delay;
 
-    public AnimatedSprite(String name, int delay) {
-        super(name);
+    public AnimatedSprite(Pack pack, int delay) {
+        super(pack);
         this.frames = new ArrayList<>();
         this.delay = delay;
     }
@@ -72,6 +74,16 @@ public class AnimatedSprite extends AbstractSprite {
         }
 
         return getSprite().getWidth();
+    }
+
+    @Override
+    public void setTexture(String texture) {
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public String getTexture() {
+        throw new IllegalStateException();
     }
 
     public int getDelay() {

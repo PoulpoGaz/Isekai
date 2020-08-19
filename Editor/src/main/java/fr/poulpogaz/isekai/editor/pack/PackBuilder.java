@@ -1,50 +1,70 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.pack.image.AnimatedSprite;
-import fr.poulpogaz.isekai.editor.pack.image.SubSprite;
+import fr.poulpogaz.isekai.editor.utils.Cache;
+import fr.poulpogaz.json.JsonException;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class PackBuilder {
 
-    public static Pack createDefaultPack() {
-        Pack pack = new Pack();
-        pack.setPackName("Default");
-        pack.setAuthor("Unknown");
-        pack.setVersion("1.0");
+    public static Pack loadDefaultPack() {
+        Path path = Cache.of("default.skb");
 
-        pack.setTileWidth(16);
-        pack.setTileHeight(16);
-        pack.setGameWidth(320);
-        pack.setGameHeight(240);
-
-        BufferedImage tileset;
-        BufferedImage player;
         try {
-            player = ImageIO.read(PackBuilder.class.getResourceAsStream("/pack/player.png"));
-            tileset = ImageIO.read(PackBuilder.class.getResourceAsStream("/pack/tileset.png"));
+            if (!Files.exists(path)) {
+                extract("/pack/default.skb", path);
+            } else {
+                MessageDigest digest;
 
-            pack.putImage("player", player);
-            pack.putImage("tileset", tileset);
-        } catch (IOException e) {
-            throw new InternalError(e);
+                try {
+                    digest = MessageDigest.getInstance("SHA-256");
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+
+                    return PackIO.deserialize(path);
+                }
+
+                digest.update(getBytes(path));
+                byte[] cache = digest.digest();
+
+                digest.reset();
+
+                digest.update(PackBuilder.class.getResourceAsStream("/pack/default.skb").readAllBytes());
+                byte[] internal = digest.digest();
+
+                if (!Arrays.equals(cache, internal)) {
+                    extract("/pack/default.skb", path);
+                }
+            }
+
+            return PackIO.deserialize(path);
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
         }
 
-        pack.putSprite(new SubSprite(Pack.CRATE_ON_TARGET_SPRITE, tileset, 0, 0, 16, 16));
-        pack.putSprite(new SubSprite(Pack.WALL_SPRITE, tileset, 16, 0, 16, 16));
-        pack.putSprite(new SubSprite(Pack.CRATE_SPRITE, tileset, 32, 0, 16, 16));
-        pack.putSprite(new SubSprite(Pack.FLOOR_SPRITE, tileset, 48, 0, 16, 16));
+        return null;
+    }
 
-        AnimatedSprite target = new AnimatedSprite("target", 250);
+    private static void extract(String from, Path to) throws IOException {
+        InputStream stream = PackBuilder.class.getResourceAsStream(from);
 
-        for (int i = 0; i < 4; i++) {
-            target.addFrame(new SubSprite(String.format("target_%d", i), tileset, 16 * i, 16, 16, 16));
+        if (stream == null) {
+            throw new InternalError("The default pack is missing");
         }
 
-        pack.putSprite(target);
+        Cache.copy(stream, to, StandardCopyOption.REPLACE_EXISTING);
+    }
 
-        return pack;
+    private static byte[] getBytes(Path path) throws IOException {
+        InputStream stream = Files.newInputStream(path);
+
+        return stream.readAllBytes();
     }
 }

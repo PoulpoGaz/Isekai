@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -12,11 +13,9 @@ import java.util.function.Consumer;
 
 public class PackPropertiesPanel extends JPanel {
 
-    private Pack pack;
+    private final Pack pack = IsekaiEditor.getPack();
 
-    public PackPropertiesPanel(Pack pack) {
-        this.pack = pack;
-
+    public PackPropertiesPanel() {
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Pack properties"));
 
@@ -24,13 +23,13 @@ public class PackPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
-        JTextField packNameField = new JTextField();
+        JTextField packNameField = new JTextField(pack.getPackName());
         packNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pack name");
-        addDocumentListener(packNameField, (newValue) -> pack.setPackName(newValue));
+        addDocumentListener(packNameField, pack::setPackName);
 
-        JTextField authorNameField = new JTextField();
+        JTextField authorNameField = new JTextField(pack.getAuthor());
         authorNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
-        addDocumentListener(packNameField, (newValue) -> pack.setAuthor(newValue));
+        addDocumentListener(packNameField, pack::setAuthor);
 
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
@@ -56,13 +55,5 @@ public class PackPropertiesPanel extends JPanel {
                 action.accept(field.getText());
             }
         });
-    }
-
-    public void setPack(Pack pack) {
-        this.pack = pack;
-    }
-
-    public Pack getPack() {
-        return pack;
     }
 }

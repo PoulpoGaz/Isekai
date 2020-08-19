@@ -85,4 +85,12 @@ public class Level {
     public void setHeight(int height) {
         resize(width, height);
     }
+
+    public int getPlayerX() {
+        return playerX;
+    }
+
+    public int getPlayerY() {
+        return playerY;
+    }
 }

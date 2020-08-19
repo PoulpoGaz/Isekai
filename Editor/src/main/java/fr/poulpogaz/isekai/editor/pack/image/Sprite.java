@@ -1,15 +1,19 @@
 package fr.poulpogaz.isekai.editor.pack.image;
 
+import fr.poulpogaz.isekai.editor.pack.Pack;
+
 import java.awt.image.BufferedImage;
-import java.util.Objects;
 
 public class Sprite extends AbstractSprite {
 
     protected BufferedImage sprite;
 
-    public Sprite(String name, BufferedImage sprite) {
-        super(name);
-        setSprite(sprite);
+    public Sprite(Pack pack) {
+        super(pack);
+    }
+
+    public Sprite(Pack pack, String texture) {
+        super(pack, texture);
     }
 
     public BufferedImage getSprite() {
@@ -26,7 +30,15 @@ public class Sprite extends AbstractSprite {
         return sprite.getHeight();
     }
 
-    public void setSprite(BufferedImage sprite) {
-        this.sprite = Objects.requireNonNull(sprite);
+    @Override
+    public void setTexture(String texture) {
+        BufferedImage image = pack.getImage(texture);
+
+        if (image == null) {
+            return;
+        }
+
+        this.texture = texture;
+        sprite = image;
     }
 }

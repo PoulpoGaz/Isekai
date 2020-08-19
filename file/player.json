@@ -12,25 +12,25 @@
             "frames": [
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 1,
                     "y": 0
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 2,
                     "y": 0
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 3,
                     "y": 0
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 4,
                     "y": 0
                 }
@@ -50,25 +50,25 @@
             "frames": [
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 1,
                     "y": 1
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 2,
                     "y": 1
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 3,
                     "y": 1
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 4,
                     "y": 1
                 }
@@ -89,25 +89,25 @@
             "frames": [
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 1,
                     "y": 2
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 2,
                     "y": 2
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 3,
                     "y": 2
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 4,
                     "y": 2
                 }
@@ -128,25 +128,25 @@
             "frames": [
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 1,
                     "y": 3
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 2,
                     "y": 3
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 3,
                     "y": 3
                 },
                 {
                     "type": "sub_sprite",
-                    "image": "tileset",
+                    "image": "player",
                     "x": 4,
                     "y": 3
                 }

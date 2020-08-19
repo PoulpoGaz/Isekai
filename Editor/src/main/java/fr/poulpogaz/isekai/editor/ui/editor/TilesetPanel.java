@@ -29,7 +29,8 @@ public class TilesetPanel extends JPanel {
 
     public TilesetPanel() {
         createTileset(IsekaiEditor.getPack());
-        setDimension();
+
+        setBorder(BorderFactory.createTitledBorder("Tileset"));
 
         MouseAdapter adapter = getMouseAdapter();
 
@@ -61,9 +62,13 @@ public class TilesetPanel extends JPanel {
     }
 
     private void setDimension() {
-        Insets insets = getInsets();
+        Dimension dim = new Dimension(tileset.getWidth(), tileset.getHeight());
 
-        Dimension dim = new Dimension(tileset.getWidth() + insets.left + insets.right, tileset.getHeight() + insets.top + insets.bottom);
+        Insets insets = getInsets();
+        if (insets != null) {
+            dim.width += insets.left + insets.right;
+            dim.height += insets.top + insets.bottom;
+        }
 
         setMinimumSize(dim);
         setPreferredSize(dim);

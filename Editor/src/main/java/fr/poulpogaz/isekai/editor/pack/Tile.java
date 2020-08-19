@@ -36,4 +36,8 @@ public enum Tile {
     public String getSprite() {
         return sprite;
     }
+
+    public char getSymbol() {
+        return symbol;
+    }
 }
