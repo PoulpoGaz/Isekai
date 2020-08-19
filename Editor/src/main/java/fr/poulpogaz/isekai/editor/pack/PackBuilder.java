@@ -45,7 +45,7 @@ public class PackBuilder {
             }
 
             return PackIO.deserialize(path);
-        } catch (IOException | JsonException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

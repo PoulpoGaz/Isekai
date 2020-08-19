@@ -6,6 +6,8 @@ import fr.poulpogaz.isekai.editor.pack.image.Sprite;
 import fr.poulpogaz.isekai.editor.pack.image.SubSprite;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.json.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,22 +22,36 @@ import java.util.stream.Stream;
 
 public class PackIO {
 
-    public static Pack deserialize(Path path) throws IOException, JsonException {
+    private static final Logger LOGGER = LogManager.getLogger(PackIO.class);
+
+    public static Pack deserialize(Path path) {
         if (!Utils.checkExtension(path, "skb")) {
-            throw new IOException();
+            return null;
         }
 
-        FileSystem system = FileSystems.newFileSystem(path);
+        LOGGER.info("Reading pack at {}", path);
 
-        Pack pack = new Pack();
-        readSettingsFile(pack, system.getPath("settings.json"));
-        readMapFile(pack, system);
-        readPlayerFile(pack, system);
-        pack.setLevels(readLevels(system.getPath("levels/")));
+        try {
+            FileSystem system = FileSystems.newFileSystem(path);
 
-        system.close();
+            Pack pack = new Pack();
+            readSettingsFile(pack, system.getPath("settings.json"));
+            readMapFile(pack, system);
+            readPlayerFile(pack, system);
+            pack.setLevels(readLevels(system.getPath("levels/")));
 
-        return pack;
+            system.close();
+
+            LOGGER.info("Finished reading");
+
+            return pack;
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+
+            LOGGER.error("Failed to load pack.");
+
+            return null;
+        }
     }
 
     private static void readSettingsFile(Pack pack, Path settingsPath) throws IOException, JsonException {
@@ -239,24 +255,36 @@ public class PackIO {
      * SERIALIZATION *
      *****************
      */
-
-    public static void serialize(Pack pack, Path out) throws IOException, JsonException {
+    public static boolean serialize(Pack pack, Path out) {
         if (!Utils.checkExtension(out, "skb")) {
-            throw new IOException();
+            return false;
         }
+
+        LOGGER.info("Writing pack at {}", out);
 
         Map<String, String> env = new HashMap<>();
         env.put("create", "true");
 
-        FileSystem system = FileSystems.newFileSystem(out, env);
+        try {
+            FileSystem system = FileSystems.newFileSystem(out, env);
 
-        writeSettingsFile(pack, system.getPath("settings.json"));
-        writeMapFile(pack, system);
-        writePlayerFile(pack, system);
-        writeImages(pack, system);
-        writeLevels(pack, system);
+            writeSettingsFile(pack, system.getPath("settings.json"));
+            writeMapFile(pack, system);
+            writePlayerFile(pack, system);
+            writeImages(pack, system);
+            writeLevels(pack, system);
 
-        system.close();
+            system.close();
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+            LOGGER.error("Failed to write pack.");
+
+            return false;
+        }
+
+        LOGGER.info("Writing finished");
+
+        return true;
     }
 
     private static void writeSettingsFile(Pack pack, Path out) throws IOException, JsonException {

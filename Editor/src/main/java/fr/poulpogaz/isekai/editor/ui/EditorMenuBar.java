@@ -74,15 +74,14 @@ public class EditorMenuBar extends JMenuBar {
         int result = chooser.showOpenDialog(IsekaiEditor.getInstance());
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            try {
-                Pack pack = PackIO.deserialize(chooser.getSelectedFile().toPath());
+            Pack pack = PackIO.deserialize(chooser.getSelectedFile().toPath());
+
+            if (pack != null) {
                 IsekaiEditor.getInstance().setPack(pack);
-
-            } catch (IOException | JsonException ioException) {
-                ioException.printStackTrace();
-
+            } else {
                 JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Corrupted file", "Error", JOptionPane.ERROR_MESSAGE);
             }
+
         }
     }
 
@@ -90,18 +89,14 @@ public class EditorMenuBar extends JMenuBar {
         int result = chooser.showSaveDialog(IsekaiEditor.getInstance());
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            try {
-                Path selectedFile = chooser.getSelectedFile().toPath();
-                String fileName = selectedFile.getFileName().toString();
+            Path selectedFile = chooser.getSelectedFile().toPath();
+            String fileName = selectedFile.getFileName().toString();
 
-                if (Utils.getExtension(fileName).equals(fileName)) {
-                    selectedFile = selectedFile.getParent().resolve(fileName + ".skb");
-                }
+            if (Utils.getExtension(fileName).equals(fileName)) {
+                selectedFile = selectedFile.getParent().resolve(fileName + ".skb");
+            }
 
-                PackIO.serialize(IsekaiEditor.getPack(), selectedFile);
-            } catch (IOException | JsonException ioException) {
-                ioException.printStackTrace();
-
+            if (!PackIO.serialize(IsekaiEditor.getPack(), selectedFile)) {
                 JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
