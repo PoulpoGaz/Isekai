@@ -1,4 +1,10 @@
 {
+    "floor": {
+        "type": "sub_sprite",
+        "image": "tileset",
+        "x": 0,
+        "y": 0
+    },
     "wall": {
         "type": "sub_sprite",
         "image": "tileset",
@@ -8,16 +14,10 @@
     "crate": {
         "type": "sub_sprite",
         "image": "tileset",
-        "x": 1,
+        "x": 2,
         "y": 0
     },
     "crate_on_target": {
-        "type": "sub_sprite",
-        "image": "tileset",
-        "x": 0,
-        "y": 0
-    },
-    "floor": {
         "type": "sub_sprite",
         "image": "tileset",
         "x": 3,

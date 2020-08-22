@@ -8,14 +8,6 @@ import java.util.HashMap;
 
 public class Pack {
 
-    public static final char PLAYER = '@';
-    public static final char WALL = '#';
-    public static final char FLOOR = ' ';
-    public static final char CRATE = '$';
-    public static final char TARGET = '.';
-    public static final char CRATE_ON_TARGET = '*';
-    public static final char PLAYER_ON_TARGET = '+';
-
     public static final String FLOOR_SPRITE = "floor";
     public static final String WALL_SPRITE = "wall";
     public static final String TARGET_SPRITE = "target";

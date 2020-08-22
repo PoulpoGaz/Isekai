@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui;
 
+import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackBuilder;
@@ -37,6 +38,10 @@ public class EditorMenuBar extends JMenuBar {
         JMenuItem newItem = new JMenuItem("New");
         newItem.addActionListener((e) -> {
             Pack pack = PackBuilder.loadDefaultPack();
+
+            if (pack == null) {
+                throw new InternalException();
+            }
 
             IsekaiEditor.getInstance().setPack(pack);
         });

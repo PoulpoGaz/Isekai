@@ -4,18 +4,16 @@ import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
 public enum Tile {
 
-    CRATE("crate", Pack.CRATE),
-    FLOOR("floor", Pack.FLOOR),
-    TARGET("target", Pack.TARGET),
-    CRATE_ON_TARGET("crate_on_target", Pack.CRATE_ON_TARGET),
-    WALL("wall", Pack.WALL);
+    FLOOR(Pack.FLOOR_SPRITE),
+    WALL(Pack.WALL_SPRITE),
+    CRATE(Pack.CRATE_SPRITE),
+    CRATE_ON_TARGET(Pack.CRATE_ON_TARGET_SPRITE),
+    TARGET(Pack.TARGET_SPRITE);
 
     private final String sprite;
-    private final char symbol;
 
-    Tile(String sprite, char symbol) {
+    Tile(String sprite) {
         this.sprite = sprite;
-        this.symbol = symbol;
     }
 
     public AbstractSprite getSprite(Pack pack) {
@@ -35,9 +33,5 @@ public enum Tile {
 
     public String getSprite() {
         return sprite;
-    }
-
-    public char getSymbol() {
-        return symbol;
     }
 }

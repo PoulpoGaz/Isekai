@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.utils.Cache;
-import fr.poulpogaz.json.JsonException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ public class PackBuilder {
 
                 try {
                     digest = MessageDigest.getInstance("SHA-256");
-                } catch (NoSuchAlgorithmException e) {
+                } catch (NoSuchAlgorithmException e) { // should not append
                     e.printStackTrace();
 
                     return PackIO.deserialize(path);
@@ -56,15 +56,21 @@ public class PackBuilder {
         InputStream stream = PackBuilder.class.getResourceAsStream(from);
 
         if (stream == null) {
-            throw new InternalError("The default pack is missing");
+            throw new InternalException("The default pack is missing");
         }
 
         Cache.copy(stream, to, StandardCopyOption.REPLACE_EXISTING);
+
+        stream.close();
     }
 
     private static byte[] getBytes(Path path) throws IOException {
         InputStream stream = Files.newInputStream(path);
 
-        return stream.readAllBytes();
+        byte[] bytes =  stream.readAllBytes();
+
+        stream.close();
+
+        return bytes;
     }
 }

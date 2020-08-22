@@ -1,7 +1,11 @@
 package fr.poulpogaz.isekai.editor.utils;
 
+import fr.poulpogaz.json.IJsonReader;
+import fr.poulpogaz.json.JsonException;
+
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class Utils {
@@ -69,5 +73,15 @@ public class Utils {
         if (value < minInclusive) {
             return minInclusive;
         } else return Math.min(value, maxExclusive);
+    }
+
+    public static IJsonReader assertKeyEquals(IJsonReader reader, String expectedKey) throws IOException, JsonException {
+        String key = reader.nextKey();
+
+        if (!key.equals(expectedKey)) {
+            throw new JsonException(String.format("Invalid key. Expected \"%s\" but was \"%s\"", expectedKey, key));
+        }
+
+        return reader;
     }
 }

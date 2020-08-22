@@ -2,6 +2,7 @@ package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackIO;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
@@ -16,7 +17,8 @@ public class TilesetPanel extends JPanel {
 
     public static final String SELECTED_TILE_PROPERTY = "SelectedTileProperty";
 
-    private final Dimension PREFERRED_TILESET_DIMENSION = new Dimension(128, 128);
+    private static final Dimension PREFERRED_TILESET_DIMENSION = new Dimension(128, 128);
+    private static final int NUMBER_OF_TILE_PER_ROW = 3;
 
     private BufferedImage tileset;
 
@@ -115,21 +117,15 @@ public class TilesetPanel extends JPanel {
             if (oldX != selectedTileX || oldY != selectedTileY) {
                 Tile old = selectedTile;
 
-                if (selectedTileY == 0) {
-                    if (selectedTileX == 0) {
-                        selectedTile = Tile.FLOOR;
-                    } else if (selectedTileX == 1) {
-                        selectedTile = Tile.WALL;
-                    } else if (selectedTileX == 2) {
-                        selectedTile = Tile.TARGET;
-                    }
-                } else if (selectedTileY == 1) {
-                    if (selectedTileX == 0) {
-                        selectedTile = Tile.CRATE;
-                    } else if (selectedTileX == 1) {
-                        selectedTile = Tile.CRATE_ON_TARGET;
-                    }
+                int i = selectedTileY * NUMBER_OF_TILE_PER_ROW + selectedTileX;
+
+                Tile[] tiles = Tile.values();
+
+                if (i < 0 || i >= tiles.length) {
+                    return;
                 }
+
+                selectedTile = tiles[i];
 
                 firePropertyChange(SELECTED_TILE_PROPERTY, old, selectedTile);
 
@@ -150,27 +146,31 @@ public class TilesetPanel extends JPanel {
             width = height * pack.getTileWidth() / pack.getTileHeight();
         }
 
-        tileWidth = width / 3;
-        tileHeight = height / 3;
+        tileWidth = width / NUMBER_OF_TILE_PER_ROW;
+        tileHeight = height / NUMBER_OF_TILE_PER_ROW;
 
         tileset = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = tileset.createGraphics();
 
         try {
-            pack.getSprite(Pack.FLOOR_SPRITE).paint(g, 0, 0, tileWidth, tileHeight);
-            pack.getSprite(Pack.WALL_SPRITE).paint(g, tileWidth, 0, tileWidth, tileHeight);
-            pack.getSprite(Pack.TARGET_SPRITE).paint(g, tileWidth * 2, 0, tileWidth, tileHeight);
-            pack.getSprite(Pack.CRATE_SPRITE).paint(g, 0, tileHeight, tileWidth, tileHeight);
-            pack.getSprite(Pack.CRATE_ON_TARGET_SPRITE).paint(g, tileWidth, tileHeight, tileWidth, tileHeight);
+            int x = 0;
+            int y = 0;
+
+            for (Tile tile : Tile.values()) {
+                AbstractSprite sprite = tile.getSprite(pack);
+
+                sprite.paint(g, x, y, tileWidth, tileHeight);
+
+                x += tileWidth;
+
+                if (x + tileWidth >= width) {
+                    x = 0;
+                    y += tileHeight;
+                }
+            }
         } finally {
             g.dispose();
         }
-    }
-
-    private void paintSpriteAt(Graphics2D g, AbstractSprite sprite, int x, int y, int width, int height) {
-        BufferedImage img = sprite.getSprite();
-
-        g.drawImage(img, x, y, width, height, null);
     }
 
     public Tile getSelectedTile() {

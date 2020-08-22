@@ -2,43 +2,8 @@
     "name": "Boxxle",
     "author": "Thinking Rabbit",
     "version": "1.0",
-
     "game_width": 320,
     "game_height": 240,
-
     "tile_width": 16,
-    "tile_height": 16,
-
-    "main_menu": {
-        "background": {
-            "image": "background"
-        }
-    },
-    "timeline": [
-        {
-            "level": "introduction",
-            "background": {
-                "image": "intro"
-            }
-        },
-        {
-            "level": 1,
-            "background": {
-                "image": "car"
-            },
-            "texts": [
-                {
-                    "x": 50,
-                    "y": 35,
-                    "text": "hello world!"
-                }
-            ]
-        },
-        {
-            "level": "end",
-            "background": {
-                "image": "end"
-            }
-        }
-    ]
+    "tile_height": 16
 }

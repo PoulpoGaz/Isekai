@@ -75,46 +75,6 @@
             ]
         }
     },
-
-    "down": {
-        "static": {
-            "type": "sub_sprite",
-            "image": "player",
-            "x": 0,
-            "y": 2
-        },
-        "walk": {
-            "type": "animated_sprite",
-            "delay": 50,
-            "frames": [
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 1,
-                    "y": 2
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 2,
-                    "y": 2
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 3,
-                    "y": 2
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 4,
-                    "y": 2
-                }
-            ]
-        }
-    },
-
     "up": {
         "static": {
             "type": "sub_sprite",
@@ -149,6 +109,44 @@
                     "image": "player",
                     "x": 4,
                     "y": 3
+                }
+            ]
+        }
+    },
+    "down": {
+        "static": {
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 0,
+            "y": 2
+        },
+        "walk": {
+            "type": "animated_sprite",
+            "delay": 50,
+            "frames": [
+                {
+                    "type": "sub_sprite",
+                    "image": "player",
+                    "x": 1,
+                    "y": 2
+                },
+                {
+                    "type": "sub_sprite",
+                    "image": "player",
+                    "x": 2,
+                    "y": 2
+                },
+                {
+                    "type": "sub_sprite",
+                    "image": "player",
+                    "x": 3,
+                    "y": 2
+                },
+                {
+                    "type": "sub_sprite",
+                    "image": "player",
+                    "x": 4,
+                    "y": 2
                 }
             ]
         }

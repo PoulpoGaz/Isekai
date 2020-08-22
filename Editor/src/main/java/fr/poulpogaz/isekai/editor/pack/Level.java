@@ -5,8 +5,8 @@ public class Level {
     public static final int MINIMUM_MAP_WIDTH = 5;
     public static final int MINIMUM_MAP_HEIGHT = 5;
 
-    public static final int MAXIMUM_MAP_WIDTH = 64;
-    public static final int MAXIMUM_MAP_HEIGHT = 64;
+    public static final int MAXIMUM_MAP_WIDTH = 256;
+    public static final int MAXIMUM_MAP_HEIGHT = 256;
 
     public static final int DEFAULT_MAP_WIDTH = 16;
     public static final int DEFAULT_MAP_HEIGHT = 16;

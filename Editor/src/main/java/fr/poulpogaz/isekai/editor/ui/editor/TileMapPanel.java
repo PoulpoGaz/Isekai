@@ -67,7 +67,10 @@ public class TileMapPanel extends JPanel {
                 Composite old = g2d.getComposite();
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.75f));
 
-                drawTile(g2d, offset.x + hoverX * TILE_WIDTH, offset.y + hoverY * TILE_HEIGHT, selectedTile);
+                int x = offset.x + hoverX * TILE_WIDTH;
+                int y = offset.y + hoverY * TILE_HEIGHT;
+
+                drawTile(g2d, x, y, selectedTile);
 
                 g2d.setComposite(old);
             }

@@ -24,27 +24,12 @@ public class PackIO {
 
     private static final Logger LOGGER = LogManager.getLogger(PackIO.class);
 
+    private static final String[] PLAYER_DIRECTIONS = new String[] {"left", "right", "up", "down"};
+    private static final String[] PLAYER_SPRITE_TYPES = new String[] {"static", "walk"};
+
     public static Pack deserialize(Path path) {
-        if (!Utils.checkExtension(path, "skb")) {
-            return null;
-        }
-
-        LOGGER.info("Reading pack at {}", path);
-
         try {
-            FileSystem system = FileSystems.newFileSystem(path);
-
-            Pack pack = new Pack();
-            readSettingsFile(pack, system.getPath("settings.json"));
-            readMapFile(pack, system);
-            readPlayerFile(pack, system);
-            pack.setLevels(readLevels(system.getPath("levels/")));
-
-            system.close();
-
-            LOGGER.info("Finished reading");
-
-            return pack;
+            return deserializeWithoutCatchingException(path);
         } catch (IOException | JsonException e) {
             e.printStackTrace();
 
@@ -54,27 +39,41 @@ public class PackIO {
         }
     }
 
+    public static Pack deserializeWithoutCatchingException(Path path) throws IOException, JsonException {
+        if (!Utils.checkExtension(path, "skb")) {
+            return null;
+        }
+
+        LOGGER.info("Reading pack at {}", path);
+
+        FileSystem system = FileSystems.newFileSystem(path);
+
+        Pack pack = new Pack();
+        readSettingsFile(pack, system.getPath("settings.json"));
+        readMapFile(pack, system);
+        readPlayerFile(pack, system);
+        pack.setLevels(readLevels(system.getPath("levels/")));
+
+        system.close();
+
+        LOGGER.info("Finished reading");
+
+        return pack;
+    }
+
     private static void readSettingsFile(Pack pack, Path settingsPath) throws IOException, JsonException {
         IJsonReader reader = new JsonReader(Files.newBufferedReader(settingsPath));
 
         reader.beginObject();
-        while (!reader.isObjectEnd()) {
-            if (reader.hasNextKey()) {
-                String key = reader.nextKey();
 
-                switch (key) {
-                    case "name" -> pack.setPackName(reader.nextString());
-                    case "author" -> pack.setAuthor(reader.nextString());
-                    case "version" -> pack.setVersion(reader.nextString());
-                    case "game_width" -> pack.setGameWidth(reader.nextInt());
-                    case "game_height" -> pack.setGameHeight(reader.nextInt());
-                    case "tile_width" -> pack.setTileWidth(reader.nextInt());
-                    case "tile_height" -> pack.setTileHeight(reader.nextInt());
-                    case "main_menu", "timeline" -> reader.skipValue();
-                    default -> throw new IllegalStateException(key);
-                }
-            }
-        }
+        pack.setPackName(Utils.assertKeyEquals(reader, "name").nextString());
+        pack.setAuthor(Utils.assertKeyEquals(reader, "author").nextString());
+        pack.setVersion(Utils.assertKeyEquals(reader, "version").nextString());
+        pack.setGameWidth(Utils.assertKeyEquals(reader, "game_width").nextInt());
+        pack.setGameHeight(Utils.assertKeyEquals(reader, "game_height").nextInt());
+        pack.setTileWidth(Utils.assertKeyEquals(reader, "tile_width").nextInt());
+        pack.setTileHeight(Utils.assertKeyEquals(reader, "tile_height").nextInt());
+
         reader.endObject();
         reader.close();
     }
@@ -84,20 +83,16 @@ public class PackIO {
 
         reader.beginObject();
 
-        while (!reader.isObjectEnd()) {
-            if (reader.hasNextKey()) {
-                String key = reader.nextKey();
+        for (Tile tile : Tile.values()) {
+            String spriteName = tile.getSprite();
 
-                if (!"wall".equals(key) && !"crate".equals(key) && !"target".equals(key) && !"crate_on_target".equals(key) && !"floor".equals(key)) {
-                    throw new IllegalStateException();
-                }
+            Utils.assertKeyEquals(reader, spriteName);
 
-                reader.beginObject();
-                AbstractSprite sprite = parseSprite(pack, reader, system, true);
-                reader.endObject();
+            reader.beginObject();
+            AbstractSprite sprite = parseSprite(pack, reader, system, true);
+            reader.endObject();
 
-                pack.putSprite(key, sprite);
-            }
+            pack.putSprite(spriteName, sprite);
         }
 
         reader.endObject();
@@ -109,30 +104,22 @@ public class PackIO {
 
         reader.beginObject();
 
-        while (!reader.isObjectEnd()) {
-            if (reader.hasNextKey()) {
-                String key = reader.nextKey();
+        for (String direction : PLAYER_DIRECTIONS) {
+            Utils.assertKeyEquals(reader, direction);
 
-                if (!"left".equals(key) && !"right".equals(key) && !"up".equals(key) && !"down".equals(key)) {
-                    throw new IllegalStateException(key);
-                }
+            reader.beginObject();
+
+            for (String type : PLAYER_SPRITE_TYPES) {
+                Utils.assertKeyEquals(reader, type);
 
                 reader.beginObject();
-
-                for (int i = 0; i < 2; i++) {
-                    String key2 = reader.nextKey();
-
-                    reader.beginObject();
-
-                    AbstractSprite sprite = parseSprite(pack, reader, system, true);
-
-                    pack.putSprite(key + "_" + key2, sprite);
-
-                    reader.endObject();
-                }
+                AbstractSprite sprite = parseSprite(pack, reader, system, true);
+                pack.putSprite(direction + "_" + type, sprite);
 
                 reader.endObject();
             }
+
+            reader.endObject();
         }
 
         reader.endObject();
@@ -140,31 +127,31 @@ public class PackIO {
     }
 
     private static AbstractSprite parseSprite(Pack pack, IJsonReader reader, FileSystem system, boolean acceptAnimatedSprite) throws IOException, JsonException {
-        String type = reader.skipKey().nextString();
+        String type = Utils.assertKeyEquals(reader, "type").nextString();
 
         switch (type) {
             case "sprite" -> {
-                String image = reader.skipKey().nextString();
+                String image = Utils.assertKeyEquals(reader, "image").nextString();
                 loadIfNeeded(image, pack, system);
 
                 return new Sprite(pack, image);
             }
             case "sub_sprite" -> {
-                String image = reader.skipKey().nextString();
+                String image = Utils.assertKeyEquals(reader, "image").nextString();
                 loadIfNeeded(image, pack, system);
 
-                int x = reader.skipKey().nextInt() * pack.getTileWidth();
-                int y = reader.skipKey().nextInt() * pack.getTileHeight();
+                int x = Utils.assertKeyEquals(reader, "x").nextInt() * pack.getTileWidth();
+                int y = Utils.assertKeyEquals(reader, "y").nextInt() * pack.getTileHeight();
 
                 return new SubSprite(pack, image, x, y, pack.getTileWidth(), pack.getTileWidth());
             }
             case "animated_sprite" -> {
                 if (acceptAnimatedSprite) {
-                    int delay = reader.skipKey().nextInt();
+                    int delay =  Utils.assertKeyEquals(reader, "delay").nextInt();
 
                     AnimatedSprite sprite = new AnimatedSprite(pack, delay);
 
-                    reader.skipKey().beginArray(); // frames
+                    Utils.assertKeyEquals(reader, "frames").beginArray(); // frames
 
                     while (!reader.isArrayEnd()) {
                         reader.beginObject();
@@ -196,7 +183,7 @@ public class PackIO {
         }
     }
 
-    private static ArrayList<Level> readLevels(Path levelDirectory) throws IOException {
+    private static ArrayList<Level> readLevels(Path levelDirectory) throws IOException, JsonException {
         List<Path> levelsPaths;
 
         try (Stream<Path> levelPath = Files.walk(levelDirectory)) {
@@ -209,7 +196,9 @@ public class PackIO {
                 continue;
             }
 
-            BufferedReader br = Files.newBufferedReader(levelPath);
+            Level level = LevelIO.deserialize(levelPath);
+
+            /*BufferedReader br = Files.newBufferedReader(levelPath);
 
             int width = Integer.parseInt(br.readLine());
             int height = Integer.parseInt(br.readLine());
@@ -242,7 +231,7 @@ public class PackIO {
                 }
             }
 
-            br.close();
+            br.close();*/
 
             levels.add(level);
         }
@@ -397,37 +386,14 @@ public class PackIO {
         }
     }
 
-    private static void writeLevels(Pack pack, FileSystem system) throws IOException {
+    private static void writeLevels(Pack pack, FileSystem system) throws IOException, JsonException {
         ArrayList<Level> levels = pack.getLevels();
 
         createDirectory("levels", system);
         for (int i = 0, levelsSize = levels.size(); i < levelsSize; i++) {
             Level level = levels.get(i);
 
-            BufferedWriter writer = Files.newBufferedWriter(system.getPath("levels/" + i));
-
-            writer.write(String.format("%d\n%d\n", level.getWidth(), level.getHeight()));
-
-            for (int y = 0; y < level.getHeight(); y++) {
-                for (int x = 0; x < level.getWidth(); x++) {
-                    Tile tile = level.getTile(x, y);
-
-                    if (level.getPlayerX() == x && level.getPlayerY() == y) {
-
-                        if (tile == Tile.FLOOR) {
-                            writer.write(Pack.PLAYER);
-                        } else if (tile == Tile.TARGET) {
-                            writer.write(Pack.PLAYER_ON_TARGET);
-                        }
-                    } else {
-                        writer.write(tile.getSymbol());
-                    }
-                }
-
-                writer.write("\n");
-            }
-
-            writer.close();
+            LevelIO.serialize(level, system.getPath("levels/" + i));
         }
     }
 
