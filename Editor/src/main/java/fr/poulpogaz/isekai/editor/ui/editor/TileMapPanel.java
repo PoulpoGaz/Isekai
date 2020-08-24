@@ -2,6 +2,7 @@ package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.Animator;
@@ -13,12 +14,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-public class TileMapPanel extends JPanel {
+public class TileMapPanel extends JPanel implements LevelListener {
 
     private static final int TILE_WIDTH = 32;
     private static final int TILE_HEIGHT = 32;
 
+    private final Pack pack = IsekaiEditor.getPack();
+
     private Level level;
+    private int index;
 
     private int hoverX;
     private int hoverY;
@@ -27,8 +31,8 @@ public class TileMapPanel extends JPanel {
     private boolean hideTileCursor = true;
 
     public TileMapPanel() {
-        level = IsekaiEditor.getPack().getLevel(0);
-
+        index = 0;
+        level = pack.getLevel(index);
         initComponent();
     }
 
@@ -155,6 +159,38 @@ public class TileMapPanel extends JPanel {
 
     public void setSelectedTile(Tile newValue) {
         selectedTile = newValue;
+        repaint();
+    }
+
+    @Override
+    public void levelInserted(Level insertedLevel, int index) {
+        // does nothing
+        // see selectedLevelChange(Level, int)
+    }
+
+    @Override
+    public void levelDeleted(Level deletedLevel, int index) {
+        int size = pack.getLevels().size() - 1;
+
+        level = pack.getLevel(Math.min(index, size));
+
+        setPreferredSize();
+        repaint();
+    }
+
+    @Override
+    public void levelMoved(int from, int to) {
+        // does nothing
+        // see selectedLevelChange(Level, int)
+    }
+
+    @Override
+    public void selectedLevelChanged(Level newLevel, int index) {
+        this.level = newLevel;
+        this.index = index;
+
+        setPreferredSize();
+
         repaint();
     }
 }

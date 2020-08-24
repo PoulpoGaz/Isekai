@@ -198,41 +198,6 @@ public class PackIO {
 
             Level level = LevelIO.deserialize(levelPath);
 
-            /*BufferedReader br = Files.newBufferedReader(levelPath);
-
-            int width = Integer.parseInt(br.readLine());
-            int height = Integer.parseInt(br.readLine());
-
-            Level level = new Level(width, height);
-
-            for (int y = 0; y < height; y++) {
-                String line = br.readLine();
-
-                if (line.length() > width) {
-                    throw new IOException();
-                }
-
-                for (int x = 0; x < width; x++) {
-                    Tile tile;
-
-                    if (line.length() <= x) {
-                        tile = Tile.WALL;
-                    } else {
-                        char c = line.charAt(x);
-
-                        tile = Tile.of(c);
-
-                        if (c == '@') {
-                            level.setPlayer(x, y);
-                        }
-                    }
-
-                    level.setTile(x, y, tile);
-                }
-            }
-
-            br.close();*/
-
             levels.add(level);
         }
 
@@ -393,7 +358,7 @@ public class PackIO {
         for (int i = 0, levelsSize = levels.size(); i < levelsSize; i++) {
             Level level = levels.get(i);
 
-            LevelIO.serialize(level, system.getPath("levels/" + i));
+            LevelIO.serialize(level, system.getPath("levels/" + i + ".json"));
         }
     }
 

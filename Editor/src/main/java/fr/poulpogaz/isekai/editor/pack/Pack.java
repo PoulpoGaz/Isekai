@@ -40,12 +40,20 @@ public class Pack {
         levels.add(new Level());
     }
 
-    public Level newLevel() {
-        Level newLevel = new Level();
+    public void addLevel(Level level) {
+        levels.add(level);
+    }
 
-        levels.add(newLevel);
+    public void addLevel(Level level, int index) {
+        levels.add(index, level);
+    }
 
-        return newLevel;
+    public void setLevel(Level level, int index) {
+        levels.set(index, level);
+    }
+
+    public Level removeLevel(int index) {
+        return levels.remove(index);
     }
 
     public boolean removeLevel(Level level) {

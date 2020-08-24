@@ -19,6 +19,10 @@ public class Utils {
         return out;
     }
 
+    public static Dimension from(Insets insets) {
+        return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+    }
+
     public static String getExtension(File file) {
         return getExtension(file.getName());
     }

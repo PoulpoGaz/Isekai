@@ -8,9 +8,15 @@ import java.awt.*;
 
 public class EditorPanel extends JPanel {
 
+    private TileMapPanel tileMapPanel;
+    private TilesetPanel tilesetPanel;
+    private PackPropertiesPanel packPropertiesPanel;
+    private LevelPanel levelPanel;
+
     public EditorPanel() {
         setLayout(new BorderLayout());
         initComponents();
+        initListeners();
     }
 
     private void initComponents() {
@@ -19,22 +25,28 @@ public class EditorPanel extends JPanel {
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 
+        // init components
+        tileMapPanel = new TileMapPanel();
+        tilesetPanel = new TilesetPanel();
+        packPropertiesPanel = new PackPropertiesPanel();
+        levelPanel = new LevelPanel();
 
-        TileMapPanel tileMapPanel = new TileMapPanel();
-        TilesetPanel tilesetPanel = new TilesetPanel();
-        PackPropertiesPanel packPropertiesPanel = new PackPropertiesPanel();
+        tileMapPanel.setSelectedTile(tilesetPanel.getSelectedTile());
 
+        // layout
         eastPanel.add(packPropertiesPanel, constraint);
         eastPanel.add(tilesetPanel, constraint);
-
-
-        tilesetPanel.addPropertyChangeListener(TilesetPanel.SELECTED_TILE_PROPERTY, (e) -> {
-            tileMapPanel.setSelectedTile(tilesetPanel.getSelectedTile());
-        });
-        tileMapPanel.setSelectedTile(tilesetPanel.getSelectedTile());
+        eastPanel.add(levelPanel, constraint);
 
         add(tileMapPanel, BorderLayout.CENTER);
         add(eastPanel, BorderLayout.EAST);
     }
 
+    private void initListeners() {
+        tilesetPanel.addPropertyChangeListener(TilesetPanel.SELECTED_TILE_PROPERTY, (e) -> {
+            tileMapPanel.setSelectedTile(tilesetPanel.getSelectedTile());
+        });
+
+        levelPanel.addLevelListener(tileMapPanel);
+    }
 }

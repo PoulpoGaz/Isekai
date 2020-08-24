@@ -1,18 +1,18 @@
 package fr.poulpogaz.isekai.editor.ui;
 
+import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackBuilder;
 import fr.poulpogaz.isekai.editor.pack.PackIO;
 import fr.poulpogaz.isekai.editor.utils.Utils;
-import fr.poulpogaz.json.JsonException;
+import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
@@ -36,6 +36,7 @@ public class EditorMenuBar extends JMenuBar {
         JMenu file = new JMenu("File");
 
         JMenuItem newItem = new JMenuItem("New");
+        newItem.setIcon(IconLoader.loadSVGIcon("/icons/new.svg"));
         newItem.addActionListener((e) -> {
             Pack pack = PackBuilder.loadDefaultPack();
 
@@ -47,9 +48,11 @@ public class EditorMenuBar extends JMenuBar {
         });
 
         JMenuItem open = new JMenuItem("Open");
+        open.setIcon(new FlatTreeOpenIcon());
         open.addActionListener((e) -> open());
 
         JMenuItem save = new JMenuItem("Save");
+        save.setIcon(IconLoader.loadSVGIcon("/icons/save.svg"));
         save.addActionListener((e) -> save());
 
         JMenuItem saveAs = new JMenuItem("Save as");
