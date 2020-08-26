@@ -6,6 +6,8 @@ import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.Animator;
+import fr.poulpogaz.isekai.editor.tools.PaintTool;
+import fr.poulpogaz.isekai.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
@@ -14,7 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-public class TileMapPanel extends JPanel implements LevelListener {
+public class TileMapPanel extends JPanel implements LevelListener, ResizeListener {
 
     private static final int TILE_WIDTH = 32;
     private static final int TILE_HEIGHT = 32;
@@ -27,8 +29,10 @@ public class TileMapPanel extends JPanel implements LevelListener {
     private int hoverX;
     private int hoverY;
 
-    private Tile selectedTile = Tile.CRATE;
+    private Tile selectedTile;
     private boolean hideTileCursor = true;
+
+    private Tool tool;
 
     public TileMapPanel() {
         index = 0;
@@ -94,13 +98,19 @@ public class TileMapPanel extends JPanel implements LevelListener {
             @Override
             public void mousePressed(MouseEvent e) {
                 move(e);
-                level.setTile(hoverX, hoverY, selectedTile);
+
+                if (isCursorInsideMap()) {
+                    tool.apply(level, selectedTile, hoverX, hoverY);
+                }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 move(e);
-                level.setTile(hoverX, hoverY, selectedTile);
+
+                if (isCursorInsideMap()) {
+                    tool.apply(level, selectedTile, hoverX, hoverY);
+                }
             }
 
             @Override
@@ -120,6 +130,11 @@ public class TileMapPanel extends JPanel implements LevelListener {
                 repaint();
             }
         };
+    }
+
+    private boolean isCursorInsideMap() {
+        return hoverX >= 0 && hoverX < level.getWidth() &&
+                hoverY >= 0 && hoverY < level.getHeight();
     }
 
     private void move(MouseEvent e) {
@@ -164,8 +179,7 @@ public class TileMapPanel extends JPanel implements LevelListener {
 
     @Override
     public void levelInserted(Level insertedLevel, int index) {
-        // does nothing
-        // see selectedLevelChange(Level, int)
+        // does nothing because when the LevelPanel class adds a level, it changes the selected level
     }
 
     @Override
@@ -180,8 +194,7 @@ public class TileMapPanel extends JPanel implements LevelListener {
 
     @Override
     public void levelMoved(int from, int to) {
-        // does nothing
-        // see selectedLevelChange(Level, int)
+        // does nothing because when the LevelPanel class moves a level, it changes the selected level
     }
 
     @Override
@@ -192,5 +205,19 @@ public class TileMapPanel extends JPanel implements LevelListener {
         setPreferredSize();
 
         repaint();
+    }
+
+    @Override
+    public void levelResized(Level level, int width, int height) {
+        setPreferredSize();
+        repaint();
+    }
+
+    public Tool getTool() {
+        return tool;
+    }
+
+    public void setTool(Tool tool) {
+        this.tool = tool;
     }
 }
