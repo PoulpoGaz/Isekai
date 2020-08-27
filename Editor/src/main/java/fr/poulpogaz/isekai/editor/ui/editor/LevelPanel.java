@@ -11,7 +11,6 @@ import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 
 public class LevelPanel extends JPanel {
 
@@ -21,7 +20,7 @@ public class LevelPanel extends JPanel {
 
     public LevelPanel() {
         setLayout(new VerticalLayout(6));
-        setBorder(BorderFactory.createTitledBorder("Pack properties"));
+        setBorder(BorderFactory.createTitledBorder("Level order"));
 
         initComponents();
     }

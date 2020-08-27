@@ -56,7 +56,7 @@
          id="layer1"
          transform="translate(0,-292.76664)">
         <rect
-             style="opacity:1;fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.26458332;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:16;stroke-opacity:1;paint-order:normal"
+             style="opacity:1;fill:#adadad;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.26458332;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:16;stroke-opacity:1;paint-order:normal"
              id="rect845"
              width="0.52916664"
              height="2.6458333"
@@ -66,7 +66,7 @@
              transform="scale(-1)" />
         <path
              sodipodi:type="star"
-             style="opacity:1;fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:#808080;stroke-width:0.26458332;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:16;stroke-opacity:1;paint-order:normal"
+             style="opacity:1;fill:#adadad;fill-opacity:1;fill-rule:nonzero;stroke:#adadad;stroke-width:0.26458332;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:16;stroke-opacity:1;paint-order:normal"
              id="path859"
              sodipodi:sides="3"
              sodipodi:cx="-2.1166666"

@@ -50,6 +50,9 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
 
     private void setPreferredSize() {
         setPreferredSize(new Dimension(level.getWidth() * TILE_WIDTH, level.getHeight() * TILE_HEIGHT));
+
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -60,11 +63,10 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
         try {
             Point offset = getOffset();
 
-            int w = level.getWidth();
-            int h = level.getHeight();
+            Rectangle visible = getVisibleTiles();
 
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
+            for (int y = visible.y; y < visible.y + visible.height; y++) {
+                for (int x = visible.x; x < visible.x + visible.width; x++) {
                     Tile t = level.getTile(x, y);
 
                     drawTile(g2d, offset.x + x * TILE_WIDTH, offset.y + y * TILE_HEIGHT, t);
@@ -85,6 +87,20 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
         } finally {
             g2d.dispose();
         }
+    }
+
+    private Rectangle getVisibleTiles() {
+        Rectangle visible = getVisibleRect();
+
+        int x = visible.x / TILE_WIDTH;
+        int y = visible.y / TILE_HEIGHT;
+        int w = (int) Math.ceil((float) visible.width / TILE_WIDTH);
+        int h = (int) Math.ceil((float) visible.height / TILE_HEIGHT);
+
+        return new Rectangle(Utils.clamp(x, 0, level.getWidth()),
+                Utils.clamp(y, 0, level.getHeight()),
+                Utils.clamp(w, 0, level.getWidth()),
+                Utils.clamp(h, 0, level.getHeight()));
     }
 
     private void drawTile(Graphics2D g2d, int x, int y, Tile t) {
