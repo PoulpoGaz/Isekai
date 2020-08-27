@@ -57,6 +57,8 @@ public class PackIO {
         system.close();
 
         LOGGER.info("Finished reading");
+        LOGGER.info("{} levels loaded", pack.getLevels().size());
+        LOGGER.info("{} images loader", pack.getImages().size());
 
         return pack;
     }
