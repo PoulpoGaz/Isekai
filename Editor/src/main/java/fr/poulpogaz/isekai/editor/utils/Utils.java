@@ -73,10 +73,10 @@ public class Utils {
         return value >= minInclusive && value < maxExclusive;
     }
 
-    public static int clamp(int value, int minInclusive, int maxExclusive) {
+    public static int clamp(int value, int minInclusive, int maxInclusive) {
         if (value < minInclusive) {
             return minInclusive;
-        } else return Math.min(value, maxExclusive);
+        } else return Math.min(value, maxInclusive);
     }
 
     public static IJsonReader assertKeyEquals(IJsonReader reader, String expectedKey) throws IOException, JsonException {

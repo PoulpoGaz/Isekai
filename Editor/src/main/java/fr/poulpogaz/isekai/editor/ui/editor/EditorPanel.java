@@ -6,6 +6,7 @@ import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.AdjustmentListener;
 
 public class EditorPanel extends JPanel {
 
@@ -53,7 +54,16 @@ public class EditorPanel extends JPanel {
     }
 
     private JScrollPane wrap(Component component) {
-        return new JScrollPane(component);
+        JScrollPane scrollPane = new JScrollPane(component);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(10);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+
+        AdjustmentListener repaint = (e) -> tileMapPanel.repaint();
+
+        scrollPane.getVerticalScrollBar().addAdjustmentListener(repaint);
+        scrollPane.getHorizontalScrollBar().addAdjustmentListener(repaint);
+
+        return scrollPane;
     }
 
     private void initListeners() {

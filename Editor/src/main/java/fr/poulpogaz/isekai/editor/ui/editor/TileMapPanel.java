@@ -8,6 +8,7 @@ import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.Animator;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.Tool;
+import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
@@ -63,13 +64,16 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
         try {
             Point offset = getOffset();
 
-            Rectangle visible = getVisibleTiles();
+            Bounds bounds = getTileBounds();
 
-            for (int y = visible.y; y < visible.y + visible.height; y++) {
-                for (int x = visible.x; x < visible.x + visible.width; x++) {
+            for (int y = bounds.getMinY(); y < bounds.getMaxY(); y++) {
+               for (int x = bounds.getMinX(); x < bounds.getMaxX(); x++) {
                     Tile t = level.getTile(x, y);
 
                     drawTile(g2d, offset.x + x * TILE_WIDTH, offset.y + y * TILE_HEIGHT, t);
+
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawString(x + "," + y, offset.x + x * TILE_WIDTH, offset.y + y * TILE_HEIGHT + 12);
                 }
             }
 
@@ -89,18 +93,18 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
         }
     }
 
-    private Rectangle getVisibleTiles() {
+    private Bounds getTileBounds() {
         Rectangle visible = getVisibleRect();
 
         int x = visible.x / TILE_WIDTH;
         int y = visible.y / TILE_HEIGHT;
-        int w = (int) Math.ceil((float) visible.width / TILE_WIDTH);
-        int h = (int) Math.ceil((float) visible.height / TILE_HEIGHT);
+        int w = (int) Math.ceil((float) visible.width / TILE_WIDTH) + 1;
+        int h = (int) Math.ceil((float) visible.height / TILE_HEIGHT) + 1;
 
-        return new Rectangle(Utils.clamp(x, 0, level.getWidth()),
+        return new Bounds(Utils.clamp(x, 0, level.getWidth()),
                 Utils.clamp(y, 0, level.getHeight()),
-                Utils.clamp(w, 0, level.getWidth()),
-                Utils.clamp(h, 0, level.getHeight()));
+                Utils.clamp(w + x, 0, level.getWidth()),
+                Utils.clamp(h + y, 0, level.getHeight()));
     }
 
     private void drawTile(Graphics2D g2d, int x, int y, Tile t) {

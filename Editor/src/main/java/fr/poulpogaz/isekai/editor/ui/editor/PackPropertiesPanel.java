@@ -40,6 +40,7 @@ public class PackPropertiesPanel extends JPanel {
 
         add(packNameField, constraint);
         add(authorNameField, constraint);
+        add(versionField, constraint);
     }
 
     private void addDocumentListener(JTextField field, Consumer<String> action) {

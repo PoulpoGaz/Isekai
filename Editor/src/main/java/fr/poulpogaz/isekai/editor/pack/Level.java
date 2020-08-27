@@ -1,6 +1,11 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Level {
+
+    private static final Logger LOGGER = LogManager.getLogger(Level.class);
 
     public static final int MINIMUM_MAP_WIDTH = 5;
     public static final int MINIMUM_MAP_HEIGHT = 5;
@@ -62,7 +67,13 @@ public class Level {
     }
 
     public Tile getTile(int x, int y) {
-        return tiles[y][x];
+        if (x >= 0 && x < width && y >= 0 && y < height) {
+            return tiles[y][x];
+        } else {
+            LOGGER.warn("x or y out of bounds (x = {}, y = {}, w = {}, h = {}", x, y, width, height);
+
+            return null;
+        }
     }
 
     public void setPlayer(int x, int y) {
