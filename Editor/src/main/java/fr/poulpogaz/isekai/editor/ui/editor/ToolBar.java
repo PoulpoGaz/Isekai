@@ -10,21 +10,37 @@ import javax.swing.*;
 public class ToolBar extends JToolBar {
 
     public static final String TOOL_PROPERTY = "ToolProperty";
+    public static final String SHOW_GRID_PROPERTY = "ShowGridProperty";
 
     private Tool tool = PaintTool.getInstance();
+    private boolean showGrid = true;
 
     public ToolBar() {
         initComponents();
     }
 
     private void initComponents() {
-        JButton edit = new JButton(IconLoader.loadSVGIcon("/icons/edit.svg"));
+        ButtonGroup buttonGroup = new ButtonGroup();
+
+        JToggleButton edit = new JToggleButton(IconLoader.loadSVGIcon("/icons/edit.svg"));
         edit.addActionListener((e) -> changeTool(PaintTool.getInstance()));
-        JButton fill = new JButton(IconLoader.loadSVGIcon("/icons/fill.svg"));
+        edit.getModel().setSelected(true); // selected by default
+        JToggleButton fill = new JToggleButton(IconLoader.loadSVGIcon("/icons/fill.svg"));
         fill.addActionListener((e) -> changeTool(FillTool.getInstance()));
+
+        buttonGroup.add(edit);
+        buttonGroup.add(fill);
+
+        JToggleButton showGridButton = new JToggleButton(IconLoader.loadSVGIcon("/icons/grid.svg"));
+        showGridButton.addActionListener((e) -> {
+            showGrid(showGridButton.getModel().isSelected());
+        });
+        showGridButton.getModel().setSelected(showGrid);
 
         add(edit);
         add(fill);
+        addSeparator();
+        add(showGridButton);
     }
 
     private void changeTool(Tool newTool) {
@@ -37,7 +53,21 @@ public class ToolBar extends JToolBar {
         }
     }
 
+    private void showGrid(boolean showGrid) {
+        if (showGrid != this.showGrid) {
+            boolean old = this.showGrid;
+
+            this.showGrid = showGrid;
+
+            firePropertyChange(SHOW_GRID_PROPERTY, old, showGrid);
+        }
+    }
+
     public Tool getTool() {
         return tool;
+    }
+
+    public boolean isShowingGrid() {
+        return showGrid;
     }
 }

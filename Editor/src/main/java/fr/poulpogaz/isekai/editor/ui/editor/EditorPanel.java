@@ -41,6 +41,7 @@ public class EditorPanel extends JPanel {
 
         tileMapPanel.setSelectedTile(tilesetPanel.getSelectedTile());
         tileMapPanel.setTool(toolBar.getTool());
+        tileMapPanel.setShowGrid(toolBar.isShowingGrid());
 
         // layout
         eastPanel.add(packPropertiesPanel, constraint);
@@ -72,6 +73,9 @@ public class EditorPanel extends JPanel {
         });
         toolBar.addPropertyChangeListener(ToolBar.TOOL_PROPERTY, (e) -> {
             tileMapPanel.setTool((Tool) e.getNewValue());
+        });
+        toolBar.addPropertyChangeListener(ToolBar.SHOW_GRID_PROPERTY, (e) -> {
+            tileMapPanel.setShowGrid((boolean) e.getNewValue());
         });
 
         levelPanel.addLevelListener(tileMapPanel);

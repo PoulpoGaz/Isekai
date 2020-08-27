@@ -31,8 +31,8 @@ public class PackPropertiesPanel extends JPanel {
         authorNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
         addDocumentListener(packNameField, pack::setAuthor);
 
-        JTextField versionField = new JTextField(pack.getAuthor());
-        authorNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Version");
+        JTextField versionField = new JTextField(pack.getVersion());
+        versionField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Version");
         addDocumentListener(versionField, pack::setVersion);
 
         VerticalConstraint constraint = new VerticalConstraint();

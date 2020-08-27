@@ -34,6 +34,9 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
     private boolean hideTileCursor = true;
 
     private Tool tool;
+    private boolean showGrid;
+
+    private Rectangle cachedVisibleRect;
 
     public TileMapPanel() {
         index = 0;
@@ -71,9 +74,6 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
                     Tile t = level.getTile(x, y);
 
                     drawTile(g2d, offset.x + x * TILE_WIDTH, offset.y + y * TILE_HEIGHT, t);
-
-                    g2d.setColor(Color.BLACK);
-                    g2d.drawString(x + "," + y, offset.x + x * TILE_WIDTH, offset.y + y * TILE_HEIGHT + 12);
                 }
             }
 
@@ -88,8 +88,42 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
 
                 g2d.setComposite(old);
             }
+
+            if (showGrid) {
+                drawGrid(g2d, offset, bounds);
+            }
+
         } finally {
             g2d.dispose();
+        }
+
+        cachedVisibleRect = null; // clear cache, some changes can happen
+    }
+
+    private void drawGrid(Graphics2D g2d, Point offset, Bounds bounds) {
+        g2d.setColor(Color.BLACK);
+
+        Rectangle visible = getVisibleRect();
+
+        // minimum and maximum value in screen coordinate
+        int boundsMinX = offset.x;
+        int boundsMinY = offset.y;
+        int boundsMaxX = offset.x + bounds.getMaxX() * TILE_WIDTH;
+        int boundsMaxY = offset.y + bounds.getMaxY() * TILE_HEIGHT;
+
+        int maxX = visible.x + visible.width;
+        int maxY = visible.y + visible.height;
+
+        for (int x = bounds.getMinX(); x <= bounds.getMaxX(); x++) { // Vertical lines
+            int x_ = offset.x + x * TILE_WIDTH;
+
+            g2d.drawLine(x_, Math.max(visible.y, boundsMinY), x_, Math.min(maxY, boundsMaxY));
+        }
+
+        for (int y = bounds.getMinY(); y <= bounds.getMaxY(); y++) { // Horizontal lines
+            int y_ = offset.y + y * TILE_HEIGHT;
+
+            g2d.drawLine(Math.max(visible.x, boundsMinX), y_, Math.min(maxX, boundsMaxX), y_);
         }
     }
 
@@ -192,6 +226,15 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
         return offset;
     }
 
+    @Override
+    public Rectangle getVisibleRect() {
+        if (cachedVisibleRect == null) {
+            cachedVisibleRect = super.getVisibleRect();
+        }
+
+        return cachedVisibleRect;
+    }
+
     public void setSelectedTile(Tile newValue) {
         selectedTile = newValue;
         repaint();
@@ -239,5 +282,17 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
 
     public void setTool(Tool tool) {
         this.tool = tool;
+    }
+
+    public boolean isShowingGrid() {
+        return showGrid;
+    }
+
+    public void setShowGrid(boolean showGrid) {
+        if (this.showGrid != showGrid) {
+            this.showGrid = showGrid;
+
+            repaint();
+        }
     }
 }
