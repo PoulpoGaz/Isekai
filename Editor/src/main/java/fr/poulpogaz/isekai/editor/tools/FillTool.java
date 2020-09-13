@@ -12,6 +12,12 @@ import java.util.Stack;
 public class FillTool implements Tool {
 
     private static final FillTool INSTANCE = new FillTool();
+    private static final Point[] directions = new Point[] {
+        new Point(-1, 0), // LEFT
+        new Point(1, 0), // RIGHT
+        new Point(0, -1), // DOWN
+        new Point(0, 1) // UP
+    };
 
     private FillTool() {
 
@@ -25,39 +31,24 @@ public class FillTool implements Tool {
             return;
         }
 
-        ArrayList<Point> visitedPoints = new ArrayList<>();
-
         Stack<Point> points = new Stack<>();
         points.push(new Point(tileX, tileY));
+        level.setTile(tileX, tileY, tile);
 
         while (!points.isEmpty()) {
             Point point = points.pop();
 
-            visitedPoints.add(point);
-            level.setTile(point.x, point.y, tile);
+            for (Point direction : directions) {
+                Point p2 = new Point(point.x + direction.x, point.y + direction.y);
 
-            for (int y = -1; y < 2; y++) {
-                int y2 = y + point.y;
-
-                if (y2 < 0 || y2 >= level.getHeight()) {
+                if (p2.x < 0 || p2.y < 0 || p2.x >= level.getWidth() || p2.y >= level.getHeight()) {
                     continue;
                 }
 
-                for (int x = -1; x < 2; x++) {
-                    if (x == 0 && y == 0) {
-                        continue;
-                    }
+                if (level.getTile(p2.x, p2.y) == toBeReplaced) {
+                    level.setTile(p2.x, p2.y, tile);
 
-                    int x2 = x + point.x;
-                    if (x2 < 0 || x2 >= level.getWidth()) {
-                        continue;
-                    }
-
-                    Point p = new Point(x2, y2);
-
-                    if (level.getTile(x2, y2) == toBeReplaced && !visitedPoints.contains(p)) {
-                        points.push(p);
-                    }
+                    points.push(p2);
                 }
             }
         }

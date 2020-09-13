@@ -10,6 +10,7 @@ import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Utils;
+import fr.poulpogaz.isekai.editor.utils.concurrent.AppExecutor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -154,7 +155,11 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
                 move(e);
 
                 if (isCursorInsideMap()) {
-                    tool.apply(level, selectedTile, hoverX, hoverY);
+                    AppExecutor.getExecutor().submit(() -> {
+                        tool.apply(level, selectedTile, hoverX, hoverY);
+
+                        repaint();
+                    });
                 }
             }
 
@@ -163,7 +168,11 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
                 move(e);
 
                 if (isCursorInsideMap()) {
-                    tool.apply(level, selectedTile, hoverX, hoverY);
+                    AppExecutor.getExecutor().submit(() -> {
+                        tool.apply(level, selectedTile, hoverX, hoverY);
+
+                        repaint();
+                    });
                 }
             }
 
