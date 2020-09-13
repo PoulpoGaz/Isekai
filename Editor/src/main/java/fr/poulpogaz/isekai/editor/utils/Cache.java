@@ -36,8 +36,16 @@ public class Cache {
         ROOT = Path.of(root);
     }
 
+    public static void setRoot(String root, String... more) {
+        ROOT = Path.of(root, more);
+    }
+
     public static Path of(String path) {
         return resolve(Path.of(path));
+    }
+
+    public static Path of(String path, String more) {
+        return resolve(Path.of(path, more));
     }
 
     public static Path resolve(Path path) {
