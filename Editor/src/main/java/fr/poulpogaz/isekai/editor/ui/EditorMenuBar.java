@@ -11,7 +11,6 @@ import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Path;

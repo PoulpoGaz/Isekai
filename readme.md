@@ -37,20 +37,10 @@ A skb file is a zip file. His tree is represented below.
             * walk (sprite)
         * right
             * static (sprite)
-              * walk (sprite)
+            * walk (sprite)
         * up
-              * static (sprite)
-              * walk (sprite)
+            * static (sprite)
+            * walk (sprite)
         * down
             * static (sprite)
             * walk (sprite)
-
-## Levels format
-
-'#' = wall
-'$' = crate
-'.' = target
-'*' = crate on target
-'@' = player
-'+' = player on target
-' ' = floor

@@ -2,9 +2,9 @@ package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.PackIO;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.tools.ToolHelper;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -15,10 +15,10 @@ import java.awt.image.BufferedImage;
 
 public class TilesetPanel extends JPanel {
 
-    public static final String SELECTED_TILE_PROPERTY = "SelectedTileProperty";
-
     private static final Dimension PREFERRED_TILESET_DIMENSION = new Dimension(128, 128);
     private static final int NUMBER_OF_TILE_PER_ROW = 3;
+
+    private final ToolHelper toolHelper;
 
     private BufferedImage tileset;
 
@@ -27,9 +27,10 @@ public class TilesetPanel extends JPanel {
 
     private int selectedTileX = 0;
     private int selectedTileY = 0;
-    private Tile selectedTile = Tile.FLOOR;
 
-    public TilesetPanel() {
+    public TilesetPanel(EditorPanel editor) {
+        toolHelper = editor.getToolHelper();
+
         createTileset(IsekaiEditor.getPack());
 
         setBorder(BorderFactory.createTitledBorder("Tileset"));
@@ -115,8 +116,6 @@ public class TilesetPanel extends JPanel {
             selectedTileY = (int) (point.getY()) / tileHeight;
 
             if (oldX != selectedTileX || oldY != selectedTileY) {
-                Tile old = selectedTile;
-
                 int i = selectedTileY * NUMBER_OF_TILE_PER_ROW + selectedTileX;
 
                 Tile[] tiles = Tile.values();
@@ -125,9 +124,7 @@ public class TilesetPanel extends JPanel {
                     return;
                 }
 
-                selectedTile = tiles[i];
-
-                firePropertyChange(SELECTED_TILE_PROPERTY, old, selectedTile);
+                toolHelper.setSelectedTile(tiles[i]);
 
                 repaint();
             }
@@ -171,9 +168,5 @@ public class TilesetPanel extends JPanel {
         } finally {
             g.dispose();
         }
-    }
-
-    public Tile getSelectedTile() {
-        return selectedTile;
     }
 }

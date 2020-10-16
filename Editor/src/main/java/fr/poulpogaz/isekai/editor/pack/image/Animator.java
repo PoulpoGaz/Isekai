@@ -10,8 +10,8 @@ public class Animator {
     private int currentFrame = -1;
     private boolean running = false;
 
-    public Animator() {
-
+    public Animator(AnimatedSprite sprite) {
+        this.sprite = sprite;
     }
 
     public void paint(Graphics2D g2d, int x, int y) {
@@ -21,6 +21,8 @@ public class Animator {
     public void paint(Graphics2D g2d, int x, int y, int width, int height) {
         if (running) {
             if (System.currentTimeMillis() + sprite.getDelay() > time) {
+                time = System.currentTimeMillis();
+
                 currentFrame++;
 
                 if (currentFrame >= sprite.getFrames().size()) {
@@ -57,4 +59,11 @@ public class Animator {
         return running;
     }
 
+    public AnimatedSprite getSprite() {
+        return sprite;
+    }
+
+    public void setSprite(AnimatedSprite sprite) {
+        this.sprite = sprite;
+    }
 }

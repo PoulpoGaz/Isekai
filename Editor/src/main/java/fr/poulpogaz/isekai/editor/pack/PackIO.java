@@ -11,8 +11,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +61,8 @@ public class PackIO {
         system.close();
 
         LOGGER.info("Finished reading");
-        LOGGER.info("{} levels loaded", pack.getLevels().size());
-        LOGGER.info("{} images loader", pack.getImages().size());
+        LOGGER.info("{} level(s) loaded", pack.getLevels().size());
+        LOGGER.info("{} image(s) loaded", pack.getImages().size());
 
         return pack;
     }

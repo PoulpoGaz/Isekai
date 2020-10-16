@@ -4,10 +4,8 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLaf;
 import fr.poulpogaz.isekai.editor.utils.Cache;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 public class Main {
 

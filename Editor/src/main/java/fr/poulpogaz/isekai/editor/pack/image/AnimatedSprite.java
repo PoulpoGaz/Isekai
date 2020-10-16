@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.pack.image;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 

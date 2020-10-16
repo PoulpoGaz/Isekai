@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import fr.poulpogaz.json.*;
 
 import java.io.IOException;
@@ -16,8 +17,10 @@ public class LevelIO {
         writer.field("width", level.getWidth());
         writer.field("height", level.getHeight());
 
-        writer.field("playerX", level.getPlayerX());
-        writer.field("playerY", level.getPlayerY());
+        Vector2i pos = level.getPlayerPos();
+
+        writer.field("playerX", pos.getX());
+        writer.field("playerY", pos.getY());
 
         writer.key("data").beginArray();
 
@@ -43,7 +46,7 @@ public class LevelIO {
         int playerY = reader.skipKey().nextInt();
 
         Level level = new Level(width, height);
-        level.setPlayer(playerX, playerY);
+        level.setPlayerPos(new Vector2i(playerX, playerY));
 
         reader.skipKey().beginArray();
 

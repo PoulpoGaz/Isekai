@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,8 +22,7 @@ public class Level {
     private int width;
     private int height;
 
-    private int playerX;
-    private int playerY;
+    private Player player;
 
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
@@ -36,9 +36,11 @@ public class Level {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                tiles[y][x] = Tile.WALL;
+                tiles[y][x] = Tile.FLOOR;
             }
         }
+
+        player = new Player(this);
     }
 
     public void resize(int newWidth, int newHeight) {
@@ -62,6 +64,15 @@ public class Level {
 
     public void setTile(int x, int y, Tile tile) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
+
+            if (tile.isSolid()) {
+                Vector2i pos = player.getPos();
+
+                if (pos.x == x && pos.y == y) {
+                    return;
+                }
+            }
+
             tiles[y][x] = tile;
         }
     }
@@ -74,11 +85,6 @@ public class Level {
 
             return null;
         }
-    }
-
-    public void setPlayer(int x, int y) {
-        playerX = x;
-        playerY = y;
     }
 
     public int getWidth() {
@@ -97,11 +103,15 @@ public class Level {
         resize(width, height);
     }
 
-    public int getPlayerX() {
-        return playerX;
+    public void setPlayerPos(Vector2i v) {
+        player.setPos(v);
     }
 
-    public int getPlayerY() {
-        return playerY;
+    public Vector2i getPlayerPos() {
+        return player.getPos();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

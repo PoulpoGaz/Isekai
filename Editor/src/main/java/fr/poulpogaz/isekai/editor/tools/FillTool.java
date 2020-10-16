@@ -1,12 +1,12 @@
 package fr.poulpogaz.isekai.editor.tools;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 
 public class FillTool implements Tool {
@@ -46,12 +46,23 @@ public class FillTool implements Tool {
                 }
 
                 if (level.getTile(p2.x, p2.y) == toBeReplaced) {
+                    Vector2i pos = level.getPlayerPos();
+
+                    if (pos.x == p2.x && pos.y == p2.y && toBeReplaced.isSolid()) {
+                        continue;
+                    }
+
                     level.setTile(p2.x, p2.y, tile);
 
                     points.push(p2);
                 }
             }
         }
+    }
+
+    @Override
+    public AbstractSprite getToolSprite(Pack pack, Tile tile) {
+        return tile.getSprite(pack);
     }
 
     public static FillTool getInstance() {
