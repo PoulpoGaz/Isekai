@@ -1,11 +1,14 @@
 package fr.poulpogaz.isekai.editor.utils;
 
+import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.json.IJsonReader;
 import fr.poulpogaz.json.JsonException;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 public class Utils {
@@ -87,5 +90,14 @@ public class Utils {
         }
 
         return reader;
+    }
+
+    public static File getJARLocation() {
+        try {
+            return new File(EditorMenuBar.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

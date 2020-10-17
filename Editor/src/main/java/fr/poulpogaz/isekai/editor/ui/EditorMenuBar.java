@@ -6,29 +6,22 @@ import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackBuilder;
 import fr.poulpogaz.isekai.editor.pack.PackIO;
+import fr.poulpogaz.isekai.editor.pack.TIPackIO;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 public class EditorMenuBar extends JMenuBar {
 
-    private final JFileChooser chooser;
+    private static final FileFilter FILTER = new FileNameExtensionFilter("SKB files", "skb");
+    private final JFileChooser chooser = new JFileChooser();
 
     public EditorMenuBar() {
         initMenuBar();
-
-        chooser = new JFileChooser();
-        try {
-            chooser.setCurrentDirectory(new File(EditorMenuBar.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        chooser.setFileFilter(new FileNameExtensionFilter("SKB files", "skb"));
     }
 
     private void initMenuBar() {
@@ -58,6 +51,7 @@ public class EditorMenuBar extends JMenuBar {
 
         JMenuItem importFile = new JMenuItem("Import");
         JMenuItem exportFile = new JMenuItem("Export");
+        exportFile.addActionListener((e) -> export());
 
         JMenuItem settings = new JMenuItem("Settings");
         JMenuItem quit = new JMenuItem("Quit");
@@ -77,7 +71,16 @@ public class EditorMenuBar extends JMenuBar {
         add(file);
     }
 
+    private void initFileChooserForSKB() {
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileFilter(FILTER);
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setSelectedFile(Utils.getJARLocation());
+    }
+
     private void open() {
+        initFileChooserForSKB();
+
         int result = chooser.showOpenDialog(IsekaiEditor.getInstance());
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -93,6 +96,8 @@ public class EditorMenuBar extends JMenuBar {
     }
 
     private void save() {
+        initFileChooserForSKB();
+
         int result = chooser.showSaveDialog(IsekaiEditor.getInstance());
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -106,6 +111,26 @@ public class EditorMenuBar extends JMenuBar {
             if (!PackIO.serialize(IsekaiEditor.getPack(), selectedFile)) {
                 JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    private void initFileChooserForX8V() {
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.removeChoosableFileFilter(FILTER);
+        chooser.setSelectedFile(Utils.getJARLocation());
+    }
+
+    private void export() {
+        initFileChooserForX8V();
+        
+        int result = chooser.showSaveDialog(IsekaiEditor.getInstance());
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            Path directory = chooser.getSelectedFile().toPath();
+
+            /*if (!TIPackIO.serialize(IsekaiEditor.getPack(), directory)) {
+                JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
+            }*/
         }
     }
 }
