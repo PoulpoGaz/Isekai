@@ -22,7 +22,7 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
     private static final int TILE_WIDTH = 32;
     private static final int TILE_HEIGHT = 32;
 
-    private final Pack pack = IsekaiEditor.getPack();
+    private final Pack pack = IsekaiEditor.getInstance().getPack();
     private final ToolHelper toolHelper;
 
     private Level level;
@@ -152,7 +152,7 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
     }
 
     private void drawTile(Graphics2D g2d, int x, int y, Tile t) {
-        AbstractSprite sprite = t.getSprite(IsekaiEditor.getPack());
+        AbstractSprite sprite = t.getSprite(pack);
 
         drawSprite(g2d, x, y, sprite);
     }

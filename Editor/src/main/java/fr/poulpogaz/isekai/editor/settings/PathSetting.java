@@ -5,6 +5,7 @@ import fr.poulpogaz.json.tree.JsonElement;
 import fr.poulpogaz.json.tree.JsonObject;
 import fr.poulpogaz.json.tree.JsonValue;
 
+import javax.swing.*;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.Objects;
@@ -20,8 +21,8 @@ public class PathSetting extends SettingElement<File, JPathTextField> {
     @Override
     public JPathTextField createComponent() {
         JPathTextField component = new JPathTextField();
-        component.setDirectory(defaultValue);
-        component.addPropertyChangeListener(JPathTextField.DIRECTORY_CHANGE, this::onChange);
+        component.setPath(defaultValue);
+        component.getChooser().addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, this::onChange);
 
         return component;
     }
@@ -31,7 +32,7 @@ public class PathSetting extends SettingElement<File, JPathTextField> {
             fireListener(VALUE_CHANGED);
         }
 
-        value = getComponent().getDirectory();
+        value = getComponent().getPath();
     }
 
     @Override
@@ -64,7 +65,7 @@ public class PathSetting extends SettingElement<File, JPathTextField> {
             fire = false;
 
             value = v;
-            getComponent().setDirectory(v);
+            getComponent().setPath(v);
 
             fire = true;
         }

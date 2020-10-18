@@ -20,7 +20,7 @@ public class IsekaiEditor extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
 
-        setJMenuBar(new EditorMenuBar());
+        setJMenuBar(new EditorMenuBar(this));
 
         pack();
 
@@ -39,8 +39,8 @@ public class IsekaiEditor extends JFrame {
         repaint();
     }
 
-    public static Pack getPack() {
-        return getInstance().pack;
+    public Pack getPack() {
+        return pack;
     }
 
     public static IsekaiEditor getInstance() {

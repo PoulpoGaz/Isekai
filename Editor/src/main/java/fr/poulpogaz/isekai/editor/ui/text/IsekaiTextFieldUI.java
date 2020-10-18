@@ -9,6 +9,7 @@ import fr.poulpogaz.isekai.editor.utils.Math2;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
@@ -118,8 +119,16 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
     protected void propertyChange(PropertyChangeEvent e) {
         super.propertyChange(e);
 
-        if(FlatClientProperties.PLACEHOLDER_TEXT.equals(e.getPropertyName())) {
-            getComponent().repaint();
+        Component c = getComponent();
+        switch(e.getPropertyName()) {
+            case FlatClientProperties.PLACEHOLDER_TEXT:
+            case FlatClientProperties.COMPONENT_ROUND_RECT:
+                c.repaint();
+                break;
+
+            case FlatClientProperties.MINIMUM_WIDTH:
+                c.revalidate();
+                break;
         }
     }
 
@@ -134,31 +143,30 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
 
     @Override
     protected void paintBackground(Graphics g) {
-        JTextComponent c = getComponent();
+        JComponent c = getComponent();
 
         // do not paint background if:
         //   - not opaque and
         //   - border is not a flat border and
         //   - opaque was explicitly set (to false)
         // (same behaviour as in AquaTextFieldUI)
-        if(!c.isOpaque() && !(c.getBorder() instanceof FlatBorder) && FlatUIUtils.hasOpaqueBeenExplicitlySet(c)) {
+        if( !c.isOpaque() && FlatUIUtils.getOutsideFlatBorder( c ) == null && FlatUIUtils.hasOpaqueBeenExplicitlySet( c ) )
             return;
-        }
+
+        float focusWidth = FlatUIUtils.getBorderFocusWidth( c );
+        float arc = FlatUIUtils.getBorderArc( c );
 
         // fill background if opaque to avoid garbage if user sets opaque to true
-        if(c.isOpaque() && focusWidth > 0) {
-            FlatUIUtils.paintParentBackground(g, c);
-        }
+        if( c.isOpaque() && (focusWidth > 0 || arc > 0) )
+            FlatUIUtils.paintParentBackground( g, c );
 
         // paint background
         Graphics2D g2 = (Graphics2D) g.create();
         try {
             FlatUIUtils.setRenderingHints( g2 );
 
-            float fFocusWidth = (c.getBorder() instanceof FlatBorder) ? scale( (float) focusWidth ) : 0;
-
             g2.setColor(getBackground(c));
-            FlatUIUtils.paintComponentBackground(g2, 0, 0, c.getWidth(), c.getHeight(), fFocusWidth, 0);
+            FlatUIUtils.paintComponentBackground( g2, 0, 0, c.getWidth(), c.getHeight(), focusWidth, arc );
         } finally {
             g2.dispose();
         }
@@ -166,28 +174,27 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
 
     protected void paintPlaceholder(Graphics g, JIsekaiTextField c) {
         // check whether text component is empty
-        if (c.getDocument().getLength() > 0) {
+        if( c.getDocument().getLength() > 0 )
             return;
-        }
+
+        // check for JComboBox
+        Container parent = c.getParent();
+        JComponent jc = (parent instanceof JComboBox) ? (JComboBox<?>) parent : c;
 
         // get placeholder text
-        String placeholder = c.getPlaceholder();
-        if(placeholder == null) {
+        Object placeholder = jc.getClientProperty( FlatClientProperties.PLACEHOLDER_TEXT );
+        if( !(placeholder instanceof String) )
             return;
-        }
 
         // compute placeholder location
         Insets insets = c.getInsets();
-        FontMetrics fm = c.getFontMetrics(c.getFont());
-
-        Dimension leadDim = getLeadingDim(getOrientation(c), true);
-
-        int x = insets.left + leadDim.width;
+        FontMetrics fm = c.getFontMetrics( c.getFont() );
+        int x = insets.left;
         int y = insets.top + fm.getAscent() + ((c.getHeight() - insets.top - insets.bottom - fm.getHeight()) / 2);
 
         // paint placeholder
-        g.setColor(placeholderForeground);
-        FlatUIUtils.drawString(c, g, placeholder, x, y);
+        g.setColor( placeholderForeground );
+        FlatUIUtils.drawString( c, g, (String) placeholder, x, y );
     }
 
     @Override

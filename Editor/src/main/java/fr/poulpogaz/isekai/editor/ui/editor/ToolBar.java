@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.tools.FillTool;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.ToolHelper;

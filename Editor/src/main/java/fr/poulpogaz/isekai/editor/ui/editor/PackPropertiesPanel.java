@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class PackPropertiesPanel extends JPanel {
 
-    private final Pack pack = IsekaiEditor.getPack();
+    private final Pack pack = IsekaiEditor.getInstance().getPack();
 
     public PackPropertiesPanel() {
         setLayout(new VerticalLayout(6));

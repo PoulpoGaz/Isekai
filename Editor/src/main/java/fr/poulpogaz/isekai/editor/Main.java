@@ -20,23 +20,21 @@ public class Main {
         }
 
         Cache.setRoot(System.getProperty("user.home"), ".PoulpoGaz/Isekai/editor");
+
+        FlatLaf.registerCustomDefaultsSource("theme");
+        FlatDarculaLaf.install();
+
         Settings.initSettings();
         Settings.read();
 
         EventQueue.invokeLater(() -> {
-            FlatLaf.registerCustomDefaultsSource("theme");
-
-            FlatDarculaLaf.install();
-
             IsekaiEditor editor = IsekaiEditor.getInstance();
-
             editor.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     Settings.write();
                 }
             });
-
             editor.setVisible(true);
         });
     }

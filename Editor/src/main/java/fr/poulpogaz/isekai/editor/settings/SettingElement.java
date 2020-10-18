@@ -1,12 +1,9 @@
 package fr.poulpogaz.isekai.editor.settings;
 
-import fr.poulpogaz.json.tree.JsonObject;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class SettingElement<T, C extends Component> extends SettingObject {

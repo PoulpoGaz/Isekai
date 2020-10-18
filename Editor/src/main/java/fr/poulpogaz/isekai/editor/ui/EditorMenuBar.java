@@ -6,7 +6,6 @@ import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackBuilder;
 import fr.poulpogaz.isekai.editor.pack.PackIO;
-import fr.poulpogaz.isekai.editor.pack.TIPackIO;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
@@ -17,10 +16,19 @@ import java.nio.file.Path;
 
 public class EditorMenuBar extends JMenuBar {
 
-    private static final FileFilter FILTER = new FileNameExtensionFilter("SKB files", "skb");
-    private final JFileChooser chooser = new JFileChooser();
+    private final IsekaiEditor editor;
 
-    public EditorMenuBar() {
+    private static final FileFilter FILTER = new FileNameExtensionFilter("SKB files", "skb");
+
+    private final JFileChooser chooser;
+    private final SettingsDialog settingsDialog;
+
+    public EditorMenuBar(IsekaiEditor editor) {
+        this.editor = editor;
+
+        chooser = new JFileChooser();
+        settingsDialog = new SettingsDialog(editor);
+
         initMenuBar();
     }
 
@@ -36,7 +44,7 @@ public class EditorMenuBar extends JMenuBar {
                 throw new InternalException();
             }
 
-            IsekaiEditor.getInstance().setPack(pack);
+            editor.setPack(pack);
         });
 
         JMenuItem open = new JMenuItem("Open");
@@ -54,7 +62,10 @@ public class EditorMenuBar extends JMenuBar {
         exportFile.addActionListener((e) -> export());
 
         JMenuItem settings = new JMenuItem("Settings");
+        settings.addActionListener((e) -> settingsDialog.setVisible(true));
+
         JMenuItem quit = new JMenuItem("Quit");
+        quit.addActionListener((e) -> editor.dispose());
 
         file.add(newItem);
         file.add(open);
@@ -81,15 +92,15 @@ public class EditorMenuBar extends JMenuBar {
     private void open() {
         initFileChooserForSKB();
 
-        int result = chooser.showOpenDialog(IsekaiEditor.getInstance());
+        int result = chooser.showOpenDialog(editor);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             Pack pack = PackIO.deserialize(chooser.getSelectedFile().toPath());
 
             if (pack != null) {
-                IsekaiEditor.getInstance().setPack(pack);
+                editor.setPack(pack);
             } else {
-                JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Corrupted file", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(editor, "Corrupted file", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         }
@@ -98,7 +109,7 @@ public class EditorMenuBar extends JMenuBar {
     private void save() {
         initFileChooserForSKB();
 
-        int result = chooser.showSaveDialog(IsekaiEditor.getInstance());
+        int result = chooser.showSaveDialog(editor);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             Path selectedFile = chooser.getSelectedFile().toPath();
@@ -108,8 +119,8 @@ public class EditorMenuBar extends JMenuBar {
                 selectedFile = selectedFile.getParent().resolve(fileName + ".skb");
             }
 
-            if (!PackIO.serialize(IsekaiEditor.getPack(), selectedFile)) {
-                JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
+            if (!PackIO.serialize(editor.getPack(), selectedFile)) {
+                JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -123,13 +134,13 @@ public class EditorMenuBar extends JMenuBar {
     private void export() {
         initFileChooserForX8V();
         
-        int result = chooser.showSaveDialog(IsekaiEditor.getInstance());
+        int result = chooser.showSaveDialog(editor);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             Path directory = chooser.getSelectedFile().toPath();
 
-            /*if (!TIPackIO.serialize(IsekaiEditor.getPack(), directory)) {
-                JOptionPane.showMessageDialog(IsekaiEditor.getInstance(), "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
+            /*if (!TIPackIO.serialize(editor.getPack(), directory)) {
+                JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
             }*/
         }
     }

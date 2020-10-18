@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class PlayerPosPanel extends JPanel {
 
-    private final Pack pack = IsekaiEditor.getPack();
+    private final Pack pack = IsekaiEditor.getInstance().getPack();
     private final ToolHelper toolHelper;
 
     public PlayerPosPanel(EditorPanel panel) {

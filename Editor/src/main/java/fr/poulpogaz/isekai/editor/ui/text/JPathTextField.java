@@ -1,25 +1,29 @@
 package fr.poulpogaz.isekai.editor.ui.text;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatUIUtils;
 import fr.poulpogaz.isekai.editor.ui.ButtonFactory;
 import fr.poulpogaz.isekai.editor.utils.icons.AbstractIcon;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import static javax.swing.JFileChooser.FILES_ONLY;
+
 public class JPathTextField extends JIsekaiTextField {
 
-    public static final String DIRECTORY_CHANGE = "Directory change";
-    public static final String OK_COLOR_CHANGE = "Ok color change";
-    public static final String ERROR_COLOR_CHANGE = "Error color change";
+    public static final String OK_COLOR_CHANGED = "Ok color changed";
+    public static final String ERROR_COLOR_CHANGED = "Error color changed";
 
+    private final JFileChooser chooser;
     private LockableDocumentListener listener;
 
-    private File directory;
     private Color okForeground;
     private Color errorForeground;
 
@@ -27,11 +31,14 @@ public class JPathTextField extends JIsekaiTextField {
         initBrowseButton();
         initListener();
 
+        putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Unknown");
+
         okForeground = getForeground();
         errorForeground = UIManager.getColor("PathTextField.errorColor");
 
-        directory = FileSystemView.getFileSystemView().getHomeDirectory();
-        setText(directory.getAbsolutePath());
+        chooser = new JFileChooser();
+        chooser.setSelectedFile(FileSystemView.getFileSystemView().getHomeDirectory());
+        setText(chooser.getSelectedFile().getAbsolutePath());
     }
 
     protected void initBrowseButton() {
@@ -47,12 +54,12 @@ public class JPathTextField extends JIsekaiTextField {
         listener = new LockableDocumentListener() {
             @Override
             public void insertUpdateImpl(DocumentEvent e) {
-                update();
+                setFontColor();
             }
 
             @Override
             public void removeUpdateImpl(DocumentEvent e) {
-                update();
+                setFontColor();
             }
         };
 
@@ -60,47 +67,67 @@ public class JPathTextField extends JIsekaiTextField {
     }
 
     protected void openDialog(ActionEvent e) {
-        JFileChooser chooser = new JFileChooser(directory);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        String text = getText();
+        File file = new File(text);
+
+        if (file.exists() && file.isDirectory()) {
+            chooser.setCurrentDirectory(file);
+        }
 
         int value = chooser.showDialog(SwingUtilities.getWindowAncestor(this), "Choose");
 
         if (value == JFileChooser.APPROVE_OPTION) {
-            setDirectory(chooser.getSelectedFile());
+            setPath(chooser.getSelectedFile());
         }
     }
 
-    protected void update() {
+    protected void setFontColor() {
         String text = getText();
 
         File file = new File(text);
 
-        if (file.isDirectory()) {
+        if (isCorrect(file)) {
             setForeground(okForeground);
 
-            if (!this.directory.getAbsolutePath().equals(file.getAbsolutePath())) {
-                lock(); // do not fire a document listener
-                setDirectory(file);
+            File current = chooser.getSelectedFile().getAbsoluteFile();
+
+            if (!current.equals(file.getAbsoluteFile())) {
+                lock(); // do not rewrite text
+                setPath(file);
             }
         } else {
             setForeground(errorForeground);
         }
     }
 
-    public File getDirectory() {
-        return directory;
+    private boolean isCorrect(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+
+        boolean result = switch (getFileSelectionMode()) {
+            case DIRECTORIES_ONLY -> file.isDirectory();
+            case FILES_ONLY -> file.isFile();
+            default -> true;
+        };
+
+        if (result && file.isFile()) {
+            return chooser.accept(file);
+        }
+
+        return result;
     }
 
-    public void setDirectory(File directory) {
-        if (!this.directory.getAbsolutePath().equals(directory.getAbsolutePath()) && directory.isDirectory()) {
+    public File getPath() {
+        return chooser.getSelectedFile();
+    }
 
-            File old = this.directory;
-            this.directory = directory;
-
-            listener.lock(); // Do not fire update function
-            setText(directory.getAbsolutePath());
-
-            firePropertyChange(DIRECTORY_CHANGE, old, directory);
+    public void setPath(File path) {
+        if (path != null) {
+            chooser.setSelectedFile(path);
+            listener.lock();
+            setText(path.getAbsolutePath());
+            setFontColor();
         }
     }
 
@@ -113,9 +140,9 @@ public class JPathTextField extends JIsekaiTextField {
             Color old = this.okForeground;
 
             this.okForeground = okForeground;
-            update();
+            setFontColor();
 
-            firePropertyChange(OK_COLOR_CHANGE, old, okForeground);
+            firePropertyChange(OK_COLOR_CHANGED, old, okForeground);
         }
     }
 
@@ -128,10 +155,38 @@ public class JPathTextField extends JIsekaiTextField {
             Color old = this.errorForeground;
 
             this.errorForeground = errorForeground;
-            update();
+            setFontColor();
 
-            firePropertyChange(ERROR_COLOR_CHANGE, old, errorForeground);
+            firePropertyChange(ERROR_COLOR_CHANGED, old, errorForeground);
         }
+    }
+
+    public int getFileSelectionMode() {
+        return chooser.getFileSelectionMode();
+    }
+
+    public void setFileSelectionMode(int mode) {
+        chooser.setFileSelectionMode(mode);
+    }
+
+    public void setFileFilter(FileFilter filter) {
+        chooser.setFileFilter(filter);
+    }
+
+    public FileFilter getFileFilter() {
+        return chooser.getFileFilter();
+    }
+
+    public void addChoosableFileFilter(FileFilter filter) {
+        chooser.addChoosableFileFilter(filter);
+    }
+
+    public void removeChoosableFileFilter(FileFilter filter) {
+        chooser.removeChoosableFileFilter(filter);
+    }
+
+    public JFileChooser getChooser() {
+        return chooser;
     }
 
     /**

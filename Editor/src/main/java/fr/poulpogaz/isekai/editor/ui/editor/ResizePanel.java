@@ -12,7 +12,7 @@ import static fr.poulpogaz.isekai.editor.pack.Level.*;
 
 public class ResizePanel extends JPanel implements LevelListener {
 
-    private final Pack pack = IsekaiEditor.getPack();
+    private final Pack pack = IsekaiEditor.getInstance().getPack();
 
     private Level level;
 

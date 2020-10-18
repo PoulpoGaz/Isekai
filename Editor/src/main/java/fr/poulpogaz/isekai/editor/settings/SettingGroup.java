@@ -3,6 +3,7 @@ package fr.poulpogaz.isekai.editor.settings;
 import fr.poulpogaz.json.tree.JsonElement;
 import fr.poulpogaz.json.tree.JsonObject;
 
+import java.util.Collection;
 import java.util.Hashtable;
 
 public class SettingGroup extends SettingObject {
@@ -59,6 +60,10 @@ public class SettingGroup extends SettingObject {
 
     public SettingObject get(String name) {
         return settings.get(name);
+    }
+
+    public Collection<SettingObject> getChilds() {
+        return settings.values();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class TilesetPanel extends JPanel {
     public TilesetPanel(EditorPanel editor) {
         toolHelper = editor.getToolHelper();
 
-        createTileset(IsekaiEditor.getPack());
+        createTileset(IsekaiEditor.getInstance().getPack());
 
         setBorder(BorderFactory.createTitledBorder("Tileset"));
 

@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 
 public class LevelPanel extends JPanel {
 
-    private final Pack pack = IsekaiEditor.getPack();
+    private final Pack pack = IsekaiEditor.getInstance().getPack();
 
     private JComboBox<Integer> levelsComboBox;
 
