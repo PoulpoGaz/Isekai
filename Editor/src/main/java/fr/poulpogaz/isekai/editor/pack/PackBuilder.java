@@ -3,6 +3,7 @@ package fr.poulpogaz.isekai.editor.pack;
 import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.utils.Cache;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -21,25 +22,10 @@ public class PackBuilder {
             if (!Files.exists(path)) {
                 extract("/pack/default.skb", path);
             } else {
-                MessageDigest digest;
+                byte[] out = getBytes(path);
+                byte[] in = PackBuilder.class.getResourceAsStream("/pack/default.skb").readAllBytes();
 
-                try {
-                    digest = MessageDigest.getInstance("SHA-256");
-                } catch (NoSuchAlgorithmException e) { // should not append
-                    e.printStackTrace();
-
-                    return PackIO.deserialize(path);
-                }
-
-                digest.update(getBytes(path));
-                byte[] cache = digest.digest();
-
-                digest.reset();
-
-                digest.update(PackBuilder.class.getResourceAsStream("/pack/default.skb").readAllBytes());
-                byte[] internal = digest.digest();
-
-                if (!Arrays.equals(cache, internal)) {
+                if (!Arrays.equals(out, in)) {
                     extract("/pack/default.skb", path);
                 }
             }

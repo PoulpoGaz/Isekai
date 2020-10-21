@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AdjustmentListener;
 
-public class EditorPanel extends JPanel {
+public class MapEditor extends JPanel {
 
     private final ToolHelper toolHelper;
 
@@ -21,7 +21,7 @@ public class EditorPanel extends JPanel {
 
     private ToolBar toolBar;
 
-    public EditorPanel() {
+    public MapEditor() {
         toolHelper = new ToolHelper();
 
         setLayout(new BorderLayout());

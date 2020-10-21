@@ -37,7 +37,7 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
 
     private Rectangle cachedVisibleRect;
 
-    public TileMapPanel(EditorPanel editor) {
+    public TileMapPanel(MapEditor editor) {
         toolHelper = editor.getToolHelper();
         index = 0;
         level = pack.getLevel(index);

@@ -30,8 +30,6 @@ public class Pack {
 
     private ArrayList<Level> levels;
 
-    private Timeline timeline;
-
     public Pack() {
         this.levels = new ArrayList<>();
         images = new HashMap<>();
@@ -142,14 +140,6 @@ public class Pack {
 
     public void setLevels(ArrayList<Level> levels) {
         this.levels = levels;
-    }
-
-    public Timeline getTimeline() {
-        return timeline;
-    }
-
-    public void setTimeline(Timeline timeline) {
-        this.timeline = timeline;
     }
 
     public HashMap<String, BufferedImage> getImages() {

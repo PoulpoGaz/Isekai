@@ -15,7 +15,7 @@ public class PlayerPosPanel extends JPanel {
     private final Pack pack = IsekaiEditor.getInstance().getPack();
     private final ToolHelper toolHelper;
 
-    public PlayerPosPanel(EditorPanel panel) {
+    public PlayerPosPanel(MapEditor panel) {
         toolHelper = panel.getToolHelper();
 
         setBorder(BorderFactory.createTitledBorder("Set player position"));

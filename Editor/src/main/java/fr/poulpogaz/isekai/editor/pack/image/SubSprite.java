@@ -34,20 +34,7 @@ public class SubSprite extends AbstractSprite {
     @Override
     public BufferedImage getSprite() {
         if (subSprite == null) {
-            try {
-                subSprite = parent.getSubimage(x, y, width, height);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(parent.getWidth() + " " + parent.getHeight() + " " + x + " " + y + " " + width + " " + height);
-
-                try {
-                    ImageIO.write(parent, "png", new File("t.png"));
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-
-                System.exit((int) (Math.random() * 123456789));
-            }
+            subSprite = parent.getSubimage(x, y, width, height);
         }
 
         return subSprite;

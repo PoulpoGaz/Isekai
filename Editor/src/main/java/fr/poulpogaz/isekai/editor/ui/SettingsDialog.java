@@ -8,12 +8,10 @@ import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
-import java.util.Collection;
 import java.util.HashMap;
 
 public class SettingsDialog extends JDialog {

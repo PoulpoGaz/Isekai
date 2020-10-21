@@ -15,7 +15,7 @@ public class ToolBar extends JToolBar {
 
     private boolean showGrid = Default.SHOW_GRID;
 
-    public ToolBar(EditorPanel editor) {
+    public ToolBar(MapEditor editor) {
         toolHelper = editor.getToolHelper();
 
         initComponents();

@@ -35,6 +35,10 @@ public class PackPropertiesPanel extends JPanel {
         versionField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Version");
         addDocumentListener(versionField, pack::setVersion);
 
+        JSpinner tileWidth = new JSpinner();
+
+        JSpinner tileHeight = new JSpinner();
+
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 

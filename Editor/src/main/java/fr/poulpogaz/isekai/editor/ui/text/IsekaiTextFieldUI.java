@@ -9,7 +9,6 @@ import fr.poulpogaz.isekai.editor.utils.Math2;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;

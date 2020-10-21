@@ -28,7 +28,7 @@ public class TilesetPanel extends JPanel {
     private int selectedTileX = 0;
     private int selectedTileY = 0;
 
-    public TilesetPanel(EditorPanel editor) {
+    public TilesetPanel(MapEditor editor) {
         toolHelper = editor.getToolHelper();
 
         createTileset(IsekaiEditor.getInstance().getPack());
