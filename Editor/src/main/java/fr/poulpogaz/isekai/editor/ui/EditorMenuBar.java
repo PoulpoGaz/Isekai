@@ -4,6 +4,10 @@ import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.*;
+import fr.poulpogaz.isekai.editor.pack.io.PackBuilder;
+import fr.poulpogaz.isekai.editor.pack.io.PackIO;
+import fr.poulpogaz.isekai.editor.pack.io.TIPackIO;
+import fr.poulpogaz.isekai.editor.pack.io.TIPackIOException;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 

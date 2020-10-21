@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
+import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.mvc.PackController;
 import fr.poulpogaz.isekai.editor.tools.ToolHelper;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -9,6 +11,8 @@ import java.awt.*;
 import java.awt.event.AdjustmentListener;
 
 public class MapEditor extends JPanel {
+
+    private PackController controller;
 
     private final ToolHelper toolHelper;
 
@@ -22,6 +26,8 @@ public class MapEditor extends JPanel {
     private ToolBar toolBar;
 
     public MapEditor() {
+        controller = new PackController(IsekaiEditor.getInstance().getPack());
+
         toolHelper = new ToolHelper();
 
         setLayout(new BorderLayout());
@@ -38,7 +44,7 @@ public class MapEditor extends JPanel {
         // init components
         tileMapPanel = new TileMapPanel(this);
         tilesetPanel = new TilesetPanel(this);
-        packPropertiesPanel = new PackPropertiesPanel();
+        packPropertiesPanel = new PackPropertiesPanel(controller);
         resizePanel = new ResizePanel();
         levelPanel = new LevelPanel();
         playerPosPanel = new PlayerPosPanel(this);

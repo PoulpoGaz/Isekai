@@ -1,5 +1,8 @@
-package fr.poulpogaz.isekai.editor.pack;
+package fr.poulpogaz.isekai.editor.pack.io;
 
+import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.AnimatedSprite;
 import fr.poulpogaz.isekai.editor.pack.image.Sprite;
@@ -71,14 +74,14 @@ public class PackIO {
         IJsonReader reader = new JsonReader(Files.newBufferedReader(settingsPath));
 
         reader.beginObject();
-
-        pack.setPackName(Utils.assertKeyEquals(reader, "name").nextString());
-        pack.setAuthor(Utils.assertKeyEquals(reader, "author").nextString());
-        pack.setVersion(Utils.assertKeyEquals(reader, "version").nextString());
-        pack.setGameWidth(Utils.assertKeyEquals(reader, "game_width").nextInt());
-        pack.setGameHeight(Utils.assertKeyEquals(reader, "game_height").nextInt());
-        pack.setTileWidth(Utils.assertKeyEquals(reader, "tile_width").nextInt());
-        pack.setTileHeight(Utils.assertKeyEquals(reader, "tile_height").nextInt());
+        
+        pack.setName(reader.assertKeyEquals("name").nextString());
+        pack.setAuthor(reader.assertKeyEquals("author").nextString());
+        pack.setVersion(reader.assertKeyEquals("version").nextString());
+        pack.setGameWidth(reader.assertKeyEquals("game_width").nextInt());
+        pack.setGameHeight(reader.assertKeyEquals("game_height").nextInt());
+        pack.setTileWidth(reader.assertKeyEquals("tile_width").nextInt());
+        pack.setTileHeight(reader.assertKeyEquals("tile_height").nextInt());
 
         reader.endObject();
         reader.close();
@@ -92,7 +95,7 @@ public class PackIO {
         for (Tile tile : Tile.values()) {
             String spriteName = tile.getSprite();
 
-            Utils.assertKeyEquals(reader, spriteName);
+            reader.assertKeyEquals(spriteName);
 
             reader.beginObject();
             AbstractSprite sprite = parseSprite(pack, reader, system, true);
@@ -111,12 +114,12 @@ public class PackIO {
         reader.beginObject();
 
         for (String direction : PLAYER_DIRECTIONS) {
-            Utils.assertKeyEquals(reader, direction);
+            reader.assertKeyEquals(direction);
 
             reader.beginObject();
 
             for (String type : PLAYER_SPRITE_TYPES) {
-                Utils.assertKeyEquals(reader, type);
+                reader.assertKeyEquals(type);
 
                 reader.beginObject();
                 AbstractSprite sprite = parseSprite(pack, reader, system, true);
@@ -133,31 +136,31 @@ public class PackIO {
     }
 
     private static AbstractSprite parseSprite(Pack pack, IJsonReader reader, FileSystem system, boolean acceptAnimatedSprite) throws IOException, JsonException {
-        String type = Utils.assertKeyEquals(reader, "type").nextString();
+        String type = reader.assertKeyEquals("type").nextString();
 
         switch (type) {
             case "sprite" -> {
-                String image = Utils.assertKeyEquals(reader, "image").nextString();
+                String image = reader.assertKeyEquals("image").nextString();
                 loadIfNeeded(image, pack, system);
 
                 return new Sprite(pack, image);
             }
             case "sub_sprite" -> {
-                String image = Utils.assertKeyEquals(reader, "image").nextString();
+                String image = reader.assertKeyEquals("image").nextString();
                 loadIfNeeded(image, pack, system);
 
-                int x = Utils.assertKeyEquals(reader, "x").nextInt() * pack.getTileWidth();
-                int y = Utils.assertKeyEquals(reader, "y").nextInt() * pack.getTileHeight();
+                int x = reader.assertKeyEquals("x").nextInt() * pack.getTileWidth();
+                int y = reader.assertKeyEquals("y").nextInt() * pack.getTileHeight();
 
                 return new SubSprite(pack, image, x, y, pack.getTileWidth(), pack.getTileWidth());
             }
             case "animated_sprite" -> {
                 if (acceptAnimatedSprite) {
-                    int delay =  Utils.assertKeyEquals(reader, "delay").nextInt();
+                    int delay =  reader.assertKeyEquals("delay").nextInt();
 
                     AnimatedSprite sprite = new AnimatedSprite(pack, delay);
 
-                    Utils.assertKeyEquals(reader, "frames").beginArray(); // frames
+                    reader.assertKeyEquals("frames").beginArray(); // frames
 
                     while (!reader.isArrayEnd()) {
                         reader.beginObject();
@@ -252,7 +255,7 @@ public class PackIO {
 
         writer.beginObject();
 
-        writer.field("name", pack.getPackName());
+        writer.field("name", pack.getName());
         writer.field("author", pack.getAuthor());
         writer.field("version", pack.getVersion());
         writer.field("game_width", pack.getGameWidth());
@@ -269,25 +272,13 @@ public class PackIO {
 
         writer.beginObject();
 
-        writer.key("wall").beginObject();
-        writeSprite(pack, pack.getSprite("wall"), writer);
-        writer.endObject();
+        for (Tile tile : Tile.values()) {
+            String key = tile.name().toLowerCase();
 
-        writer.key("crate").beginObject();
-        writeSprite(pack, pack.getSprite("crate"), writer);
-        writer.endObject();
-
-        writer.key("crate_on_target").beginObject();
-        writeSprite(pack, pack.getSprite("crate_on_target"), writer);
-        writer.endObject();
-
-        writer.key("floor").beginObject();
-        writeSprite(pack, pack.getSprite("floor"), writer);
-        writer.endObject();
-
-        writer.key("target").beginObject();
-        writeSprite(pack, pack.getSprite("target"), writer);
-        writer.endObject();
+            writer.key(key).beginObject();
+            writeSprite(pack, pack.getSprite(key), writer);
+            writer.endObject();
+        }
 
         writer.endObject();
         writer.close();
@@ -298,16 +289,15 @@ public class PackIO {
 
         writer.beginObject();
 
-        final String[] direction = new String[]{"left", "right", "down", "up"};
-        for (int i = 0; i < 4; i++) {
-            writer.key(direction[i]).beginObject();
+        for (String direction : PLAYER_DIRECTIONS) {
+            writer.key(direction).beginObject();
 
             writer.key("static").beginObject();
-            writeSprite(pack, pack.getSprite(direction[i] + "_static"), writer);
+            writeSprite(pack, pack.getSprite(direction + "_static"), writer);
             writer.endObject();
 
             writer.key("walk").beginObject();
-            writeSprite(pack, pack.getSprite(direction[i] + "_walk"), writer);
+            writeSprite(pack, pack.getSprite(direction + "_walk"), writer);
             writer.endObject();
 
             writer.endObject();

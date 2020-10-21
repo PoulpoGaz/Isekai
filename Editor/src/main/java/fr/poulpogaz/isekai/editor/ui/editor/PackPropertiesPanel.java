@@ -2,6 +2,8 @@ package fr.poulpogaz.isekai.editor.ui.editor;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.mvc.PackController;
+import fr.poulpogaz.isekai.editor.mvc.PackView;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -9,13 +11,17 @@ import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.beans.PropertyChangeEvent;
 import java.util.function.Consumer;
 
-public class PackPropertiesPanel extends JPanel {
+public class PackPropertiesPanel extends JPanel implements PackView {
 
-    private final Pack pack = IsekaiEditor.getInstance().getPack();
+    private final PackController controller;
 
-    public PackPropertiesPanel() {
+    public PackPropertiesPanel(PackController controller) {
+        this.controller = controller;
+        controller.addView(this);
+
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Pack properties"));
 
@@ -23,21 +29,17 @@ public class PackPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
-        JTextField packNameField = new JTextField(pack.getPackName());
+        JTextField packNameField = new JTextField(controller.getName());
         packNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pack name");
-        addDocumentListener(packNameField, pack::setPackName);
+        addDocumentListener(packNameField, controller::setName);
 
-        JTextField authorNameField = new JTextField(pack.getAuthor());
+        JTextField authorNameField = new JTextField(controller.getAuthor());
         authorNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
-        addDocumentListener(packNameField, pack::setAuthor);
+        addDocumentListener(packNameField, controller::setAuthor);
 
-        JTextField versionField = new JTextField(pack.getVersion());
+        JTextField versionField = new JTextField(controller.getVersion());
         versionField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Version");
-        addDocumentListener(versionField, pack::setVersion);
-
-        JSpinner tileWidth = new JSpinner();
-
-        JSpinner tileHeight = new JSpinner();
+        addDocumentListener(versionField, controller::setVersion);
 
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
@@ -64,5 +66,10 @@ public class PackPropertiesPanel extends JPanel {
                 action.accept(field.getText());
             }
         });
+    }
+
+    @Override
+    public void modelPropertyChange(PropertyChangeEvent event) {
+
     }
 }

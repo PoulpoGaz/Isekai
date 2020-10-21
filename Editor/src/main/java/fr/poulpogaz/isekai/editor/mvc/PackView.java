@@ -1,4 +1,8 @@
 package fr.poulpogaz.isekai.editor.mvc;
-public class PackView {
 
+import java.beans.PropertyChangeEvent;
+
+public interface PackView {
+
+    void modelPropertyChange(PropertyChangeEvent event);
 }

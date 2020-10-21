@@ -1,16 +1,14 @@
-package fr.poulpogaz.isekai.editor.pack;
+package fr.poulpogaz.isekai.editor.pack.io;
 
 import com.sun.jdi.InternalException;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.utils.Cache;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class PackBuilder {

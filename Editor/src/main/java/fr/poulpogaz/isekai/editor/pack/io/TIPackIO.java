@@ -1,5 +1,8 @@
-package fr.poulpogaz.isekai.editor.pack;
+package fr.poulpogaz.isekai.editor.pack.io;
 
+import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.process.CommandExecutor;
 import fr.poulpogaz.isekai.editor.settings.PathSetting;
 import fr.poulpogaz.isekai.editor.settings.Settings;
@@ -69,7 +72,7 @@ public class TIPackIO {
             writeLevels(pack.getLevels(), os);
             os.close();
 
-            String p = pack.getPackName();
+            String p = pack.getName();
             String packName = p.substring(0, Math.min(p.length(), 7)) + "0";
 
             LOGGER.info("Exporting to 8xv");
@@ -88,7 +91,7 @@ public class TIPackIO {
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {
-        byte[] name = pack.getPackName().getBytes();
+        byte[] name = pack.getName().getBytes();
         os.write(name, 0, Math.min(name.length, 31));
         os.write('\0'); // string end
 

@@ -3,8 +3,11 @@ package fr.poulpogaz.isekai.editor.pack;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Pack {
 
@@ -14,11 +17,17 @@ public class Pack {
     public static final String CRATE_SPRITE = "crate";
     public static final String CRATE_ON_TARGET_SPRITE = "crate_on_target";
 
+    public static final String NAME_PROPERTY = "NameProperty";
+    public static final String AUTHOR_PROPERTY = "AuthorProperty";
+    public static final String VERSION_PROPERTY = "VersionProperty";
+
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
     private HashMap<String, BufferedImage> images;
 
     private HashMap<String, AbstractSprite> sprites;
 
-    private String packName;
+    private String name;
     private String author;
     private String version;
 
@@ -37,6 +46,49 @@ public class Pack {
 
         levels.add(new Level());
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (!Objects.equals(this.name, name)) {
+            String old = this.name;
+
+            this.name = name;
+
+            changeSupport.firePropertyChange(NAME_PROPERTY, old, name);
+        }
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        if (!Objects.equals(this.author, author)) {
+            String old = this.author;
+
+            this.author = author;
+
+            changeSupport.firePropertyChange(AUTHOR_PROPERTY, old, author);
+        }
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        if (!Objects.equals(this.version, version)) {
+            String old = this.version;
+
+            this.version = version;
+
+            changeSupport.firePropertyChange(VERSION_PROPERTY, old, version);
+        }
+    }
+
 
     public void addLevel(Level level) {
         levels.add(level);
@@ -76,30 +128,6 @@ public class Pack {
 
     public void putSprite(String name, AbstractSprite sprite) {
         sprites.put(name, sprite);
-    }
-
-    public String getPackName() {
-        return packName;
-    }
-
-    public void setPackName(String packName) {
-        this.packName = packName;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public int getTileWidth() {
@@ -144,5 +172,24 @@ public class Pack {
 
     public HashMap<String, BufferedImage> getImages() {
         return images;
+    }
+
+    /**
+     *  PROPERTY CHANGE SUPPORT
+     */
+    public void addPropertyListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void addPropertyListener(String property, PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(property, listener);
+    }
+
+    public void removePropertyListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
+    }
+
+    public void removePropertyListener(String property, PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(property, listener);
     }
 }

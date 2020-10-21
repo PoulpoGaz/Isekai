@@ -1,5 +1,7 @@
-package fr.poulpogaz.isekai.editor.pack;
+package fr.poulpogaz.isekai.editor.pack.io;
 
+import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import fr.poulpogaz.json.*;
 

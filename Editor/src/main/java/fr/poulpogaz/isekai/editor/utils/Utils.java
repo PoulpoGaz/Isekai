@@ -81,16 +81,6 @@ public class Utils {
         } else return Math.min(value, maxInclusive);
     }
 
-    public static IJsonReader assertKeyEquals(IJsonReader reader, String expectedKey) throws IOException, JsonException {
-        String key = reader.nextKey();
-
-        if (!key.equals(expectedKey)) {
-            throw new JsonException(String.format("Invalid key. Expected \"%s\" but was \"%s\"", expectedKey, key));
-        }
-
-        return reader;
-    }
-
     public static File getJARLocation() {
         try {
             return new File(EditorMenuBar.class.getProtectionDomain().getCodeSource().getLocation().toURI());
