@@ -6,3 +6,8 @@
 *.map
 IsekaiTI83-84/bin
 IsekaiTI83-84/obj
+
+*.iml
+.idea/
+Editor/target
+Sokoban/target
