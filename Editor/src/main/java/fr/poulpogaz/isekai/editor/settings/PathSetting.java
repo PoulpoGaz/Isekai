@@ -53,7 +53,7 @@ public class PathSetting extends SettingElement<File, JPathTextField> {
 
             File f = new File(jsonValue.getAsString());
 
-            if (f.isDirectory()) {
+            if (getComponent().accept(f)) {
                 setValue(f);
             }
         }

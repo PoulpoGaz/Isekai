@@ -3,9 +3,7 @@ package fr.poulpogaz.isekai.editor.ui;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.PackBuilder;
-import fr.poulpogaz.isekai.editor.pack.PackIO;
+import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
@@ -139,9 +137,12 @@ public class EditorMenuBar extends JMenuBar {
         if (result == JFileChooser.APPROVE_OPTION) {
             Path directory = chooser.getSelectedFile().toPath();
 
-            /*if (!TIPackIO.serialize(editor.getPack(), directory)) {
+            try {
+                TIPackIO.serialize(editor.getPack(), directory);
+            } catch (TIPackIOException e) {
+                e.printStackTrace();
                 JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
-            }*/
+            }
         }
     }
 }

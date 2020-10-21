@@ -12,11 +12,17 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Settings {
+
+    public static final String CONV_BIN = "convbin path";
+    public static final String CONV_IMG = "convimg path";
 
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
@@ -25,10 +31,14 @@ public class Settings {
 
     public static void initSettings() {
         SettingGroup ti83_84 = new SettingGroup("TI-83/84");
-        PathSetting setting = new PathSetting("convimg path", null);
-        setting.getComponent().setFileSelectionMode(JFileChooser.FILES_ONLY);
+        PathSetting convimgPath = new PathSetting(CONV_IMG, new File(""));
+        convimgPath.getComponent().setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        ti83_84.add(new PathSetting("convimg path", null));
+        PathSetting convbinPath = new PathSetting(CONV_BIN, new File(""));
+        convbinPath.getComponent().setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        ti83_84.add(convimgPath);
+        ti83_84.add(convbinPath);
 
         settings.add(ti83_84);
         settings.init();
@@ -38,6 +48,8 @@ public class Settings {
         if (!Files.exists(SETTING_PATH)) {
             return;
         }
+
+        LOGGER.info("Reading settings");
 
         JsonObject object;
         try {
@@ -52,8 +64,9 @@ public class Settings {
     }
 
     public static void write() {
-        JsonObject root = new JsonObject();
+        LOGGER.info("Writing settings");
 
+        JsonObject root = new JsonObject();
         settings.write(root);
 
         try {
@@ -62,6 +75,26 @@ public class Settings {
         } catch (IOException | JsonException e) {
             LOGGER.warn("Failed to save settings", e);
         }
+    }
+
+    public static SettingObject[] find(String name) {
+        return find(name, settings).toArray(new SettingObject[0]);
+    }
+
+    private static List<SettingObject> find(String name, SettingGroup group) {
+        ArrayList<SettingObject> objects = new ArrayList<>();
+
+        for (SettingObject object : group.getChilds()) {
+            if (object.getName().equals(name)) {
+                objects.add(object);
+            }
+
+            if (object.isGroup()) {
+                objects.addAll(find(name, (SettingGroup) object));
+            }
+        }
+
+        return objects;
     }
 
     public static SettingGroup getSettings() {

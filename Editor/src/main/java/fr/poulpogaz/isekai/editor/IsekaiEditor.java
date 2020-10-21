@@ -17,7 +17,7 @@ public class IsekaiEditor extends JFrame {
     private IsekaiEditor() {
         super("Editor");
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initComponents();
 
         setJMenuBar(new EditorMenuBar(this));

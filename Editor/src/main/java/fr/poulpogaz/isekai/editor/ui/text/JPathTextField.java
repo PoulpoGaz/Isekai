@@ -86,7 +86,7 @@ public class JPathTextField extends JIsekaiTextField {
 
         File file = new File(text);
 
-        if (isCorrect(file)) {
+        if (accept(file)) {
             setForeground(okForeground);
 
             File current = chooser.getSelectedFile().getAbsoluteFile();
@@ -100,7 +100,7 @@ public class JPathTextField extends JIsekaiTextField {
         }
     }
 
-    private boolean isCorrect(File file) {
+    public boolean accept(File file) {
         if (!file.exists()) {
             return false;
         }
