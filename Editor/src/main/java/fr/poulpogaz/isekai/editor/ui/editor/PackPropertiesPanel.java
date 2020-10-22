@@ -18,6 +18,10 @@ public class PackPropertiesPanel extends JPanel implements PackView {
 
     private final PackController controller;
 
+    private JTextField nameField;
+    private JTextField authorField;
+    private JTextField versionField;
+
     public PackPropertiesPanel(PackController controller) {
         this.controller = controller;
         controller.addView(this);
@@ -29,23 +33,23 @@ public class PackPropertiesPanel extends JPanel implements PackView {
     }
 
     private void initComponents() {
-        JTextField packNameField = new JTextField(controller.getName());
-        packNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pack name");
-        addDocumentListener(packNameField, controller::setName);
+        nameField = new JTextField(controller.getName());
+        nameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pack name");
+        addDocumentListener(nameField, controller::setName);
 
-        JTextField authorNameField = new JTextField(controller.getAuthor());
-        authorNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
-        addDocumentListener(packNameField, controller::setAuthor);
+        authorField = new JTextField(controller.getAuthor());
+        authorField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
+        addDocumentListener(authorField, controller::setAuthor);
 
-        JTextField versionField = new JTextField(controller.getVersion());
+        versionField = new JTextField(controller.getVersion());
         versionField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Version");
         addDocumentListener(versionField, controller::setVersion);
 
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 
-        add(packNameField, constraint);
-        add(authorNameField, constraint);
+        add(nameField, constraint);
+        add(authorField, constraint);
         add(versionField, constraint);
     }
 
@@ -70,6 +74,16 @@ public class PackPropertiesPanel extends JPanel implements PackView {
 
     @Override
     public void modelPropertyChange(PropertyChangeEvent event) {
+        switch (event.getPropertyName()) {
+            case Pack.NAME_PROPERTY -> setText((String) event.getNewValue(), nameField);
+            case Pack.AUTHOR_PROPERTY -> setText((String) event.getNewValue(), authorField);
+            case Pack.VERSION_PROPERTY -> setText((String) event.getNewValue(), versionField);
+        }
+    }
 
+    private void setText(String text, JTextField field) {
+        if (!field.getText().equals(text)) {
+            field.setText(text);
+        }
     }
 }

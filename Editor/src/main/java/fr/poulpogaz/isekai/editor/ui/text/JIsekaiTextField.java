@@ -9,11 +9,8 @@ public class JIsekaiTextField extends JTextField {
 
     public static final String TRAILING_CHANGED_PROPERTY = "TrailingChanged";
     public static final String LEADING_CHANGED_PROPERTY = "LeadingChanged";
-    public static final String PLACEHOLDER_CHANGED_PROPERTY = "PlaceholderChanged";
 
     private transient boolean lock;
-
-    private String placeholder;
 
     private Component trailingComponent;
     private Component leadingComponent;
@@ -24,12 +21,6 @@ public class JIsekaiTextField extends JTextField {
 
     public JIsekaiTextField(String text) {
         super(text);
-        setLayout(new IsekaiTextFieldLayout());
-    }
-
-    public JIsekaiTextField(String text, String placeholder) {
-        super(text);
-        this.placeholder = placeholder;
         setLayout(new IsekaiTextFieldLayout());
     }
 
@@ -46,24 +37,6 @@ public class JIsekaiTextField extends JTextField {
     public JIsekaiTextField(Document doc, String text, int columns) {
         super(doc, text, columns);
         setLayout(new IsekaiTextFieldLayout());
-    }
-
-    public String getPlaceholder() {
-        return placeholder;
-    }
-
-    public void setPlaceholder(String placeholder) {
-        if (!Objects.equals(this.placeholder, placeholder)) {
-            String old = this.placeholder;
-
-            this.placeholder = placeholder;
-
-            if (getDocument().getLength() == 0) {
-                repaint();
-            }
-
-            firePropertyChange(TRAILING_CHANGED_PROPERTY, old, placeholder);
-        }
     }
 
     public Component getTrailingComponent() {

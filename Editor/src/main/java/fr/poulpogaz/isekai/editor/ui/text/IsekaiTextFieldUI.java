@@ -1,29 +1,17 @@
 package fr.poulpogaz.isekai.editor.ui.text;
 
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.ui.FlatBorder;
-import com.formdev.flatlaf.ui.FlatCaret;
-import com.formdev.flatlaf.ui.FlatUIUtils;
-import com.formdev.flatlaf.ui.MigLayoutVisualPadding;
+import com.formdev.flatlaf.ui.*;
 import fr.poulpogaz.isekai.editor.utils.Math2;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.basic.BasicTextFieldUI;
-import javax.swing.text.Caret;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
 
 import static com.formdev.flatlaf.util.UIScale.scale;
 
-/**
- * @see com.formdev.flatlaf.ui.FlatTextFieldUI
- */
-public class IsekaiTextFieldUI extends BasicTextFieldUI {
+public class IsekaiTextFieldUI extends FlatTextFieldUI {
 
     private static final boolean MINIMUM = false;
     private static final boolean PREFERRED = true;
@@ -32,63 +20,21 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
     private static final int RIGHT_TO_LEFT = 1;
     private static final int DO_NOT_MIND = 2;
 
-    private int focusWidth;
-    private int minimumWidth;
-    private Color placeholderForeground;
-
-    private MouseListener mouseListener;
     private CursorHoverListener trailCursorListener;
     private CursorHoverListener leadCursorListener;
 
     private Component trailingComponent;
     private Component leadingComponent;
 
-    private FocusListener focusListener;
-
-    private Color hoverBackgroundColor;
-    private Color focusBackgroundColor;
-
-    private boolean hasFocus = false;
-
     public static ComponentUI createUI(JComponent c) {
         return new IsekaiTextFieldUI();
-    }
-
-    @Override
-    protected void installDefaults() {
-        super.installDefaults();
-
-        String prefix = getPropertyPrefix();
-        hoverBackgroundColor = UIManager.getColor(prefix + ".hoverBackgroundColor");
-        focusBackgroundColor = UIManager.getColor(prefix + ".focusBackgroundColor");
-
-        focusWidth = UIManager.getInt("Component.focusWidth");
-        minimumWidth = UIManager.getInt("Component.minimumWidth");
-        placeholderForeground = UIManager.getColor( prefix + ".placeholderForeground");
-
-        MigLayoutVisualPadding.install(getComponent());
-    }
-
-    @Override
-    protected void uninstallDefaults() {
-        super.uninstallDefaults();
-
-        placeholderForeground = null;
-
-        MigLayoutVisualPadding.uninstall(getComponent());
     }
 
     @Override
     protected void installListeners() {
         super.installListeners();
 
-        JTextComponent component = getComponent();
-
-        mouseListener = new MouseListener(component);
-        focusListener = new FocusListener(component);
-
-        component.addMouseListener(mouseListener);
-        component.addFocusListener(focusListener);
+        Component component = getComponent();
 
         if (component instanceof JIsekaiTextField) {
             JIsekaiTextField field = (JIsekaiTextField) component;
@@ -102,98 +48,8 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
     protected void uninstallListeners() {
         super.uninstallListeners();
 
-        getComponent().removeMouseListener(mouseListener);
-        getComponent().removeFocusListener(focusListener);
-
         setLeadingComponent(null);
         setTrailingComponent(null);
-    }
-
-    @Override
-    protected Caret createCaret() {
-        return new FlatCaret(UIManager.getString("TextComponent.selectAllOnFocusPolicy"));
-    }
-
-    @Override
-    protected void propertyChange(PropertyChangeEvent e) {
-        super.propertyChange(e);
-
-        Component c = getComponent();
-        switch(e.getPropertyName()) {
-            case FlatClientProperties.PLACEHOLDER_TEXT:
-            case FlatClientProperties.COMPONENT_ROUND_RECT:
-                c.repaint();
-                break;
-
-            case FlatClientProperties.MINIMUM_WIDTH:
-                c.revalidate();
-                break;
-        }
-    }
-
-    @Override
-    protected void paintSafely(Graphics g) {
-        super.paintSafely(g);
-
-        if (getComponent() instanceof JIsekaiTextField) {
-            paintPlaceholder(g, (JIsekaiTextField) getComponent());
-        }
-    }
-
-    @Override
-    protected void paintBackground(Graphics g) {
-        JComponent c = getComponent();
-
-        // do not paint background if:
-        //   - not opaque and
-        //   - border is not a flat border and
-        //   - opaque was explicitly set (to false)
-        // (same behaviour as in AquaTextFieldUI)
-        if( !c.isOpaque() && FlatUIUtils.getOutsideFlatBorder( c ) == null && FlatUIUtils.hasOpaqueBeenExplicitlySet( c ) )
-            return;
-
-        float focusWidth = FlatUIUtils.getBorderFocusWidth( c );
-        float arc = FlatUIUtils.getBorderArc( c );
-
-        // fill background if opaque to avoid garbage if user sets opaque to true
-        if( c.isOpaque() && (focusWidth > 0 || arc > 0) )
-            FlatUIUtils.paintParentBackground( g, c );
-
-        // paint background
-        Graphics2D g2 = (Graphics2D) g.create();
-        try {
-            FlatUIUtils.setRenderingHints( g2 );
-
-            g2.setColor(getBackground(c));
-            FlatUIUtils.paintComponentBackground( g2, 0, 0, c.getWidth(), c.getHeight(), focusWidth, arc );
-        } finally {
-            g2.dispose();
-        }
-    }
-
-    protected void paintPlaceholder(Graphics g, JIsekaiTextField c) {
-        // check whether text component is empty
-        if( c.getDocument().getLength() > 0 )
-            return;
-
-        // check for JComboBox
-        Container parent = c.getParent();
-        JComponent jc = (parent instanceof JComboBox) ? (JComboBox<?>) parent : c;
-
-        // get placeholder text
-        Object placeholder = jc.getClientProperty( FlatClientProperties.PLACEHOLDER_TEXT );
-        if( !(placeholder instanceof String) )
-            return;
-
-        // compute placeholder location
-        Insets insets = c.getInsets();
-        FontMetrics fm = c.getFontMetrics( c.getFont() );
-        int x = insets.left;
-        int y = insets.top + fm.getAscent() + ((c.getHeight() - insets.top - insets.bottom - fm.getHeight()) / 2);
-
-        // paint placeholder
-        g.setColor( placeholderForeground );
-        FlatUIUtils.drawString( c, g, (String) placeholder, x, y );
     }
 
     @Override
@@ -266,28 +122,26 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
             dim.height = height + insets.top + insets.bottom;
         }
 
-        return applyMinimumWidth(dim, c);
+        return applyMinimumWidth(c, dim, minimumWidth);
     }
 
-    private Dimension applyMinimumWidth(Dimension size, JComponent c) {
+    private Dimension applyMinimumWidth( JComponent c, Dimension size, int minimumWidth ) {
         // do not apply minimum width if JTextField.columns is set
-        if(c instanceof JTextField && ((JTextField)c).getColumns() > 0) {
+        if (c instanceof JTextField && ((JTextField)c).getColumns() > 0) {
             return size;
         }
 
+        // do not apply minimum width if used in combobox or spinner
         Container parent = c.getParent();
-        if(parent instanceof JComboBox || parent instanceof JSpinner || (parent != null && parent.getParent() instanceof JSpinner)) {
+        if(parent instanceof JComboBox ||
+                parent instanceof JSpinner ||
+                (parent != null && parent.getParent() instanceof JSpinner)) {
             return size;
         }
 
-        Dimension trailDim = getTrailingDim(DO_NOT_MIND, MINIMUM);
-        Dimension leadDim = getLeadingDim(DO_NOT_MIND, MINIMUM);
-
-        int minimumWidth = FlatUIUtils.minimumWidth(getComponent(), this.minimumWidth) + trailDim.width + leadDim.width;
-        int focusWidth = (c.getBorder() instanceof FlatBorder) ? this.focusWidth : 0;
-
-        size.width = Math.max(size.width, scale(minimumWidth + (focusWidth * 2)));
-
+        minimumWidth = FlatUIUtils.minimumWidth(c, minimumWidth);
+        float focusWidth = FlatUIUtils.getBorderFocusWidth( c );
+        size.width = Math.max( size.width, scale( minimumWidth ) + Math.round( focusWidth * 2 ) );
         return size;
     }
 
@@ -295,16 +149,6 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
         boolean leftToRight = c.getComponentOrientation().isLeftToRight();
 
         return leftToRight ? LEFT_TO_RIGHT : RIGHT_TO_LEFT;
-    }
-
-    private Color getBackground(Component c) {
-        if(hasFocus) {
-            return focusBackgroundColor;
-        } else if(mouseListener.isHover()) {
-            return hoverBackgroundColor;
-        } else {
-            return c.getBackground();
-        }
     }
 
     public void setTrailingComponent(Component trailingComponent) {
@@ -335,32 +179,6 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
         }
     }
 
-    private static class MouseListener extends MouseAdapter {
-
-        private final Component component;
-        private boolean isHover;
-
-        MouseListener(Component component) {
-            this.component = component;
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            isHover = false;
-            component.repaint();
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            isHover = true;
-            component.repaint();
-        }
-
-        public boolean isHover() {
-            return isHover;
-        }
-    }
-
     private class CursorHoverListener extends MouseAdapter {
 
         private final Cursor textCursor = new Cursor(Cursor.TEXT_CURSOR);
@@ -372,33 +190,12 @@ public class IsekaiTextFieldUI extends BasicTextFieldUI {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            component.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            component.setCursor(component.getCursor());
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             component.setCursor((getComponent().isEditable()) ? textCursor : null);
-        }
-    }
-
-    private class FocusListener implements java.awt.event.FocusListener {
-
-        private final Component component;
-
-        FocusListener(Component component) {
-            this.component = component;
-        }
-
-        @Override
-        public void focusGained(FocusEvent e) {
-            hasFocus = true;
-            component.repaint();
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            hasFocus = false;
-            component.repaint();
         }
     }
 }
