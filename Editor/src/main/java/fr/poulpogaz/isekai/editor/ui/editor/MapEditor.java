@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.mvc.PackController;
+import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.tools.ToolHelper;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -42,11 +42,11 @@ public class MapEditor extends JPanel {
         constraint.fillXAxis = true;
 
         // init components
-        tileMapPanel = new TileMapPanel(this);
+        tileMapPanel = new TileMapPanel(this, controller);
         tilesetPanel = new TilesetPanel(this);
         packPropertiesPanel = new PackPropertiesPanel(controller);
         resizePanel = new ResizePanel();
-        levelPanel = new LevelPanel();
+        levelPanel = new LevelPanel(controller);
         playerPosPanel = new PlayerPosPanel(this);
 
         toolBar = new ToolBar(this);
@@ -83,7 +83,6 @@ public class MapEditor extends JPanel {
             tileMapPanel.setShowGrid((boolean) e.getNewValue());
         });
 
-        levelPanel.addLevelListener(tileMapPanel);
         resizePanel.addResizeListener(tileMapPanel);
     }
 

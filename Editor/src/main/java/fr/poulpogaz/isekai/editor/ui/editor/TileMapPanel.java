@@ -1,6 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Player;
@@ -16,11 +18,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class TileMapPanel extends JPanel implements LevelListener, ResizeListener {
+public class TileMapPanel extends JPanel implements ResizeListener, PropertyChangeListener {
 
     private static final int TILE_WIDTH = 32;
     private static final int TILE_HEIGHT = 32;
+
+    private final PackController controller;
 
     private final Pack pack = IsekaiEditor.getInstance().getPack();
     private final ToolHelper toolHelper;
@@ -37,7 +43,11 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
 
     private Rectangle cachedVisibleRect;
 
-    public TileMapPanel(MapEditor editor) {
+    public TileMapPanel(MapEditor editor, PackController controller) {
+        this.controller = controller;
+        controller.addSelectedLevelListener(this);
+        controller.addLevelsOrganisationListener(new LevelRemovedListener());
+
         toolHelper = editor.getToolHelper();
         index = 0;
         level = pack.getLevel(index);
@@ -258,36 +268,6 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
     }
 
     @Override
-    public void levelInserted(Level insertedLevel, int index) {
-        // does nothing because when the LevelPanel class adds a level, it changes the selected level
-    }
-
-    @Override
-    public void levelDeleted(Level deletedLevel, int index) {
-        int size = pack.getLevels().size() - 1;
-
-        level = pack.getLevel(Math.min(index, size));
-
-        setPreferredSize();
-        repaint();
-    }
-
-    @Override
-    public void levelMoved(int from, int to) {
-        // does nothing because when the LevelPanel class moves a level, it changes the selected level
-    }
-
-    @Override
-    public void selectedLevelChanged(Level newLevel, int index) {
-        this.level = newLevel;
-        this.index = index;
-
-        setPreferredSize();
-
-        repaint();
-    }
-
-    @Override
     public void levelResized(Level level, int width, int height) {
         setPreferredSize();
         repaint();
@@ -298,6 +278,40 @@ public class TileMapPanel extends JPanel implements LevelListener, ResizeListene
             this.showGrid = showGrid;
 
             repaint();
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(PackController.SELECTED_LEVEL_PROPERTY)) {
+            index = (int) evt.getNewValue();
+            level = pack.getLevel(index);
+            repaint();
+        }
+    }
+
+    private class LevelRemovedListener implements LevelsOrganisationListener {
+
+        @Override
+        public void levelInserted(int index) {
+
+        }
+
+        @Override
+        public void levelRemoved(int i) {
+            index = Math.max(index - 1, 0);
+            level = pack.getLevel(index);
+            repaint();
+        }
+
+        @Override
+        public void levelChanged(int index) {
+
+        }
+
+        @Override
+        public void levelsSwapped(int index1, int index2) {
+
         }
     }
 }

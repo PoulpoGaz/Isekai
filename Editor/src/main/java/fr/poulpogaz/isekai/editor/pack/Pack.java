@@ -1,13 +1,17 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
+import javax.swing.event.EventListenerList;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class Pack {
 
@@ -22,6 +26,7 @@ public class Pack {
     public static final String VERSION_PROPERTY = "VersionProperty";
 
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+    private final EventListenerList listenerList = new EventListenerList();
 
     private HashMap<String, BufferedImage> images;
 
@@ -71,7 +76,7 @@ public class Pack {
 
             this.author = author;
 
-            changeSupport.firePropertyChange(AUTHOR_PROPERTY, old, author);
+            firePropertyChange(AUTHOR_PROPERTY, old, author);
         }
     }
 
@@ -85,34 +90,75 @@ public class Pack {
 
             this.version = version;
 
-            changeSupport.firePropertyChange(VERSION_PROPERTY, old, version);
+            firePropertyChange(VERSION_PROPERTY, old, version);
         }
     }
 
 
+
+
+    public int getNumberOfLevels() {
+        return levels.size();
+    }
+
     public void addLevel(Level level) {
         levels.add(level);
+
+        fireLevelInserted(getNumberOfLevels() - 1);
     }
 
     public void addLevel(Level level, int index) {
         levels.add(index, level);
+
+        fireLevelInserted(index);
     }
 
     public void setLevel(Level level, int index) {
         levels.set(index, level);
+
+        fireLevelChanged(index);
     }
 
-    public Level removeLevel(int index) {
-        return levels.remove(index);
+    public void removeLevel(int index) {
+        levels.remove(index);
+
+        fireLevelRemoved(index);
     }
 
-    public boolean removeLevel(Level level) {
-        return levels.remove(level);
+    public void removeLevel(Level level) {
+        removeLevel(levels.indexOf(level));
+    }
+
+    public void swapLevels(int index1, int index2) {
+        Level level1 = levels.get(index1);
+        Level level2 = levels.get(index2);
+
+        levels.set(index1, level2);
+        levels.set(index2, level1);
+
+        fireLevelsSwapped(index1, index2);
     }
 
     public Level getLevel(int index) {
         return levels.get(index);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public BufferedImage getImage(String name) {
         return images.get(name);
@@ -174,22 +220,68 @@ public class Pack {
         return images;
     }
 
+
+
+
+
+
+
+
+
     /**
-     *  PROPERTY CHANGE SUPPORT
+     *  LISTENERS
      */
-    public void addPropertyListener(PropertyChangeListener listener) {
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
         changeSupport.addPropertyChangeListener(listener);
     }
 
-    public void addPropertyListener(String property, PropertyChangeListener listener) {
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
         changeSupport.addPropertyChangeListener(property, listener);
     }
 
-    public void removePropertyListener(PropertyChangeListener listener) {
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
         changeSupport.removePropertyChangeListener(listener);
     }
 
-    public void removePropertyListener(String property, PropertyChangeListener listener) {
+    public void removePropertyChangeListener(String property, PropertyChangeListener listener) {
         changeSupport.removePropertyChangeListener(property, listener);
+    }
+
+    private void firePropertyChange(String property, Object oldValue, Object newValue) {
+        changeSupport.firePropertyChange(property, oldValue, newValue);
+    }
+
+
+    public void addLevelsOrganisationListener(LevelsOrganisationListener listener) {
+        listenerList.add(LevelsOrganisationListener.class, listener);
+    }
+
+    public void removeLevelsOrganisationListener(LevelsOrganisationListener listener) {
+        listenerList.remove(LevelsOrganisationListener.class, listener);
+    }
+
+    private void fireLevelInserted(int index) {
+        fireListener(LevelsOrganisationListener.class, (t) -> t.levelInserted(index));
+    }
+
+    private void fireLevelRemoved(int index) {
+        fireListener(LevelsOrganisationListener.class, (t) -> t.levelRemoved(index));
+    }
+
+    private void fireLevelChanged(int index) {
+        fireListener(LevelsOrganisationListener.class, (t) -> t.levelChanged(index));
+    }
+
+    private void fireLevelsSwapped(int index1, int index2) {
+        fireListener(LevelsOrganisationListener.class, (t) -> t.levelsSwapped(index1, index2));
+    }
+
+    private <T extends EventListener> void fireListener(Class<T> type, Consumer<T> action) {
+        T[] listeners = listenerList.getListeners(type);
+
+        for (T listener : listeners) {
+            action.accept(listener);
+        }
     }
 }

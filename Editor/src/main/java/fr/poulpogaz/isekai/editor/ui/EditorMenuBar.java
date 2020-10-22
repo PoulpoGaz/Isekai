@@ -39,7 +39,14 @@ public class EditorMenuBar extends JMenuBar {
 
         JMenuItem newItem = new JMenuItem("New");
         newItem.setIcon(IconLoader.loadSVGIcon("/icons/new.svg"));
-        newItem.addActionListener((e) -> {
+        newItem.addActionListener((e) -> editor.setPack(PackBuilder.emptyPack()));
+
+        JMenuItem open = new JMenuItem("Open");
+        open.setIcon(new FlatTreeOpenIcon());
+        open.addActionListener((e) -> open());
+
+        JMenuItem openTemplate = new JMenuItem("Open template");
+        openTemplate.addActionListener((e) -> {
             Pack pack = PackBuilder.loadDefaultPack();
 
             if (pack == null) {
@@ -48,10 +55,6 @@ public class EditorMenuBar extends JMenuBar {
 
             editor.setPack(pack);
         });
-
-        JMenuItem open = new JMenuItem("Open");
-        open.setIcon(new FlatTreeOpenIcon());
-        open.addActionListener((e) -> open());
 
         JMenuItem save = new JMenuItem("Save");
         save.setIcon(IconLoader.loadSVGIcon("/icons/save.svg"));
@@ -71,6 +74,7 @@ public class EditorMenuBar extends JMenuBar {
 
         file.add(newItem);
         file.add(open);
+        file.add(openTemplate);
         file.add(save);
         file.add(saveAs);
         file.addSeparator();

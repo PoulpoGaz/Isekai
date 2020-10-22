@@ -1,9 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.mvc.PackController;
-import fr.poulpogaz.isekai.editor.mvc.PackView;
+import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -12,9 +10,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
-public class PackPropertiesPanel extends JPanel implements PackView {
+public class PackPropertiesPanel extends JPanel implements PropertyChangeListener {
 
     private final PackController controller;
 
@@ -24,7 +23,7 @@ public class PackPropertiesPanel extends JPanel implements PackView {
 
     public PackPropertiesPanel(PackController controller) {
         this.controller = controller;
-        controller.addView(this);
+        controller.addPropertyChangeListener(this);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Pack properties"));
@@ -73,7 +72,7 @@ public class PackPropertiesPanel extends JPanel implements PackView {
     }
 
     @Override
-    public void modelPropertyChange(PropertyChangeEvent event) {
+    public void propertyChange(PropertyChangeEvent event) {
         switch (event.getPropertyName()) {
             case Pack.NAME_PROPERTY -> setText((String) event.getNewValue(), nameField);
             case Pack.AUTHOR_PROPERTY -> setText((String) event.getNewValue(), authorField);

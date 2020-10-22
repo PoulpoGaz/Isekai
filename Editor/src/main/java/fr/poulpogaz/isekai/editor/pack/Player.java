@@ -15,7 +15,7 @@ public class Player {
     public static final String LEFT_WALK = "down_static";
     public static final String RIGHT_WALK = "down_static";
 
-    public static final String DEFAULT_STATIC = "down_static";
+    public static final String DEFAULT_STATIC = DOWN_STATIC;
 
     private final Level level;
     private Vector2i pos;

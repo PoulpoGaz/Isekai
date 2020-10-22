@@ -1,8 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -11,14 +10,20 @@ import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class LevelPanel extends JPanel {
+public class LevelPanel extends JPanel implements LevelsOrganisationListener, PropertyChangeListener {
 
-    private final Pack pack = IsekaiEditor.getInstance().getPack();
+    private final PackController controller;
 
     private JComboBox<Integer> levelsComboBox;
 
-    public LevelPanel() {
+    public LevelPanel(PackController controller) {
+        this.controller = controller;
+        controller.addLevelsOrganisationListener(this);
+        controller.addSelectedLevelListener(this);
+
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Level order"));
 
@@ -39,10 +44,10 @@ public class LevelPanel extends JPanel {
         levelsComboBox.addItemListener((e) -> {
             int index = levelsComboBox.getSelectedIndex();
 
-            fireSelectedLevelChange(pack.getLevel(index), index);
+            controller.setSelectedLevel(index);
         });
 
-        for (int i = 0; i < pack.getLevels().size(); i++) {
+        for (int i = 0; i < controller.getNumberOfLevels(); i++) {
             levelsComboBox.addItem(i + 1);
         }
 
@@ -71,87 +76,66 @@ public class LevelPanel extends JPanel {
     }
 
     private void insertLevel(ActionEvent e) {
-        Level level = new Level();
-
         int index = levelsComboBox.getSelectedIndex() + 1;
 
-        pack.addLevel(level, index);
-
-        levelsComboBox.addItem(levelsComboBox.getItemCount() + 1);
-        levelsComboBox.setSelectedIndex(index);
-
-        fireLevelInserted(level, index);
+        controller.addLevel(index);
     }
 
-    private void deleteLevel(ActionEvent e) {
-        int size = levelsComboBox.getItemCount();
-
-        if (size > 1) {
+    private void deleteLevel(ActionEvent event) {
+        if (controller.getNumberOfLevels() > 1) {
             int index = levelsComboBox.getSelectedIndex();
 
-            Level removedLevel = pack.removeLevel(index);
-            levelsComboBox.removeItemAt(size - 1);
-
-            fireLevelRemoved(removedLevel, index);
+            controller.removeLevel(index);
         }
     }
 
-    private void moveUp(ActionEvent e) {
-        swap(levelsComboBox.getSelectedIndex(), -1);
-    }
+    private void moveDown(ActionEvent event) {
+        int index = levelsComboBox.getSelectedIndex() + 1;
 
-    private void moveDown(ActionEvent e) {
-        swap(levelsComboBox.getSelectedIndex(), 1);
-    }
-
-    private void swap(int index, int direction) {
-        int to = index + direction;
-
-        if (to < 0 || to > levelsComboBox.getItemCount() - 1) {
-            return;
-        }
-
-        // swap
-        Level current = pack.getLevel(index);
-        Level down = pack.getLevel(to);
-
-        pack.setLevel(down, index);
-        pack.setLevel(current, to);
-
-        levelsComboBox.setSelectedIndex(to);
-
-        fireLevelMoved(index, to);
-    }
-
-    public void addLevelListener(LevelListener listener) {
-        listenerList.add(LevelListener.class, listener);
-    }
-
-    public void removeLevelListener(LevelListener listener) {
-        listenerList.remove(LevelListener.class, listener);
-    }
-
-    private void fireLevelInserted(Level insertedLevel, int index) {
-        for (LevelListener listener : listenerList.getListeners(LevelListener.class)) {
-            listener.levelInserted(insertedLevel, index);
+        if (index < controller.getNumberOfLevels() + 1) {
+            controller.swapLevels(index);
         }
     }
 
-    private void fireLevelRemoved(Level deletedLevel, int index) {
-        for (LevelListener listener : listenerList.getListeners(LevelListener.class)) {
-            listener.levelDeleted(deletedLevel, index);
+    private void moveUp(ActionEvent event) {
+        int index = levelsComboBox.getSelectedIndex() - 1;
+
+        if (index >= 0) {
+            controller.swapLevels(index);
         }
     }
-
-    private void fireLevelMoved(int from, int to) {
-        for (LevelListener listener : listenerList.getListeners(LevelListener.class)) {
-            listener.levelMoved(from, to);
-        }
+    
+    @Override
+    public void levelInserted(int index) {
+        levelsComboBox.addItem(controller.getNumberOfLevels());
+        levelsComboBox.setSelectedIndex(index);
     }
 
-    private void fireSelectedLevelChange(Level newLevel, int index) {
-        for (LevelListener listener : listenerList.getListeners(LevelListener.class)) {
-            listener.selectedLevelChanged(newLevel, index);
+    @Override
+    public void levelRemoved(int index) {
+        levelsComboBox.removeItemAt(controller.getNumberOfLevels());
+
+        if (index >= controller.getNumberOfLevels()) {
+            index--;
+        }
+
+        levelsComboBox.setSelectedIndex(index);
+    }
+
+    @Override
+    public void levelChanged(int index) {
+
+    }
+
+    @Override
+    public void levelsSwapped(int index1, int index2) {
+
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(PackController.SELECTED_LEVEL_PROPERTY)) {
+            levelsComboBox.setSelectedIndex((int) evt.getNewValue());
         }
     }
 }
