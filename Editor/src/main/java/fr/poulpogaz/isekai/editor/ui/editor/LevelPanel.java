@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
+import fr.poulpogaz.isekai.editor.controller.EditorModel;
 import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
@@ -22,7 +23,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener, Pr
     public LevelPanel(PackController controller) {
         this.controller = controller;
         controller.addLevelsOrganisationListener(this);
-        controller.addSelectedLevelListener(this);
+        controller.addEditorPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Level order"));

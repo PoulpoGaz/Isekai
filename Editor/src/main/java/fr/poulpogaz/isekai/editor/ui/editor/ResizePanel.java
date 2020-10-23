@@ -1,6 +1,9 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.controller.LevelController;
+import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.JLabeledComponent;
@@ -10,17 +13,17 @@ import javax.swing.event.ChangeEvent;
 
 import static fr.poulpogaz.isekai.editor.pack.Level.*;
 
-public class ResizePanel extends JPanel implements LevelListener {
+public class ResizePanel extends JPanel implements LevelsOrganisationListener {
 
-    private final Pack pack = IsekaiEditor.getInstance().getPack();
-
-    private Level level;
+    private final PackController controller;
+    private LevelController level;
 
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
 
-    public ResizePanel() {
-        level = pack.getLevel(0);
+    public ResizePanel(PackController controller) {
+        this.controller = controller;
+        level = controller.getLevel(0);
 
         setBorder(BorderFactory.createTitledBorder("Resize"));
         initComponents();
@@ -42,22 +45,6 @@ public class ResizePanel extends JPanel implements LevelListener {
         int height = (int) heightSpinner.getValue();
 
         level.resize(width, height);
-
-        fireResizeListener(level, width, height);
-    }
-
-    private void fireResizeListener(Level level, int width, int height) {
-        for (ResizeListener listener : listenerList.getListeners(ResizeListener.class)) {
-            listener.levelResized(level, width, height);
-        }
-    }
-
-    public void addResizeListener(ResizeListener listener) {
-        listenerList.add(ResizeListener.class, listener);
-    }
-
-    public void removeResizeListener(ResizeListener listener) {
-        listenerList.remove(ResizeListener.class, listener);
     }
 
     @Override
@@ -79,7 +66,26 @@ public class ResizePanel extends JPanel implements LevelListener {
 
     @Override
     public void selectedLevelChanged(Level newLevel, int index) {
-        this.level = newLevel;
+
+    }
+
+    @Override
+    public void levelInserted(int index) {
+
+    }
+
+    @Override
+    public void levelRemoved(int index) {
+
+    }
+
+    @Override
+    public void levelChanged(int index) {
+
+    }
+
+    @Override
+    public void levelsSwapped(int index1, int index2) {
 
     }
 }

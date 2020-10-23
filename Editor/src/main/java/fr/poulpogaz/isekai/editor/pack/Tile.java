@@ -4,11 +4,11 @@ import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
 public enum Tile {
 
-    FLOOR(Pack.FLOOR_SPRITE, false),
-    WALL(Pack.WALL_SPRITE, true),
-    CRATE(Pack.CRATE_SPRITE, true),
-    CRATE_ON_TARGET(Pack.CRATE_ON_TARGET_SPRITE, true),
-    TARGET(Pack.TARGET_SPRITE, false);
+    FLOOR(PackSprites.FLOOR, false),
+    WALL(PackSprites.WALL, true),
+    CRATE(PackSprites.CRATE, true),
+    CRATE_ON_TARGET(PackSprites.CRATE_ON_TARGET, true),
+    TARGET(PackSprites.TARGET, false);
 
     private final String sprite;
     private final boolean solid;

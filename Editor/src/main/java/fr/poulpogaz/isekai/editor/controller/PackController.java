@@ -2,34 +2,35 @@ package fr.poulpogaz.isekai.editor.controller;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.tools.Tool;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observer;
 
 public class PackController {
 
     public static final String SELECTED_LEVEL_PROPERTY = "SelectedLevelProperty";
-    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+    public static final String TOOL_PROPERTY = "ToolProperty";
+    public static final String SELECTED_TILE_PROPERTY = "SelectedTileProperty";
 
-    private Pack pack;
-
-    private ArrayList<LevelController> levels;
-    private int selectedLevel;
+    private final Pack pack;
+    private final EditorModel editorModel;
+    private final ArrayList<LevelController> levels;
 
     public PackController(Pack pack) {
-        super();
-
         this.pack = pack;
+        editorModel = new EditorModel();
 
         levels = new ArrayList<>();
         for (Level level : pack.getLevels()) {
             levels.add(new LevelController(level));
         }
-
-        selectedLevel = 0;
     }
 
     public void addLevelsOrganisationListener(LevelsOrganisationListener listener) {
@@ -57,13 +58,22 @@ public class PackController {
     }
 
 
-    public void addSelectedLevelListener(PropertyChangeListener listener) {
-        changeSupport.addPropertyChangeListener(SELECTED_LEVEL_PROPERTY, listener);
+    public void addEditorPropertyChangeListener(PropertyChangeListener listener) {
+        pack.addPropertyChangeListener(listener);
     }
 
-    public void removeSelectedLevelListener(PropertyChangeListener listener) {
-        changeSupport.removePropertyChangeListener(SELECTED_LEVEL_PROPERTY, listener);
+    public void addEditorPropertyChangeListener(String property, PropertyChangeListener listener) {
+        pack.addPropertyChangeListener(property, listener);
     }
+
+    public void removeEditorPropertyChangeListener(PropertyChangeListener listener) {
+        pack.removePropertyChangeListener(listener);
+    }
+
+    public void removeEditorPropertyChangeListener(String property, PropertyChangeListener listener) {
+        pack.removePropertyChangeListener(property, listener);
+    }
+
 
 
     // simple, just redirect
@@ -91,6 +101,10 @@ public class PackController {
         pack.setVersion(version);
     }
 
+    public AbstractSprite getSprite(String name) {
+        return pack.getSprite(name);
+    }
+
     public LevelController addLevel(int index) {
         Level level = new Level();
         pack.addLevel(level, index);
@@ -105,7 +119,7 @@ public class PackController {
         if (pack.getNumberOfLevels() > 1) {
             levels.remove(index);
             pack.removeLevel(index);
-            setSelectedLevel(Math.max(index - 1, 0));
+            editorModel.setSelectedLevel(Math.max(index - 1, 0));
         }
     }
 
@@ -118,9 +132,9 @@ public class PackController {
     }
 
     public void swapLevels(int index2) {
-        pack.swapLevels(selectedLevel, index2);
+        pack.swapLevels(editorModel.getSelectedLevel(), index2);
 
-        setSelectedLevel(index2);
+        editorModel.setSelectedLevel(index2);
     }
 
     public LevelController getLevel(int index) {
@@ -131,17 +145,35 @@ public class PackController {
         return pack.getNumberOfLevels();
     }
 
-    public void setSelectedLevel(int index) {
-        if (selectedLevel != index) {
-            int old = selectedLevel;
-
-            this.selectedLevel = index;
-
-            changeSupport.firePropertyChange(new PropertyChangeEvent(this, SELECTED_LEVEL_PROPERTY, old, selectedLevel));
-        }
+    public void setSelectedLevel(int level) {
+        editorModel.setSelectedLevel(level);
     }
 
     public int getSelectedLevel() {
-        return selectedLevel;
+        return editorModel.getSelectedLevel();
+    }
+
+    public void setTool(Tool tool) {
+        editorModel.setCurrentTool(tool);
+    }
+
+    public Tool getTool() {
+        return editorModel.getCurrentTool();
+    }
+
+    public void setSelectedTile(Tile tile) {
+        editorModel.setSelectedTile(tile);
+    }
+
+    public Tile getSelectedTile() {
+        return editorModel.getSelectedTile();
+    }
+
+    public void setShowGrid(boolean showGrid) {
+        editorModel.setShowGrid(showGrid);
+    }
+
+    public boolean isShowGrid() {
+        return editorModel.isShowGrid();
     }
 }

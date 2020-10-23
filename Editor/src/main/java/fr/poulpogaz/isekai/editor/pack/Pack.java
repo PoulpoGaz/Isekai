@@ -1,32 +1,19 @@
 package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.controller.Model;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
-import javax.swing.event.EventListenerList;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public class Pack {
-
-    public static final String FLOOR_SPRITE = "floor";
-    public static final String WALL_SPRITE = "wall";
-    public static final String TARGET_SPRITE = "target";
-    public static final String CRATE_SPRITE = "crate";
-    public static final String CRATE_ON_TARGET_SPRITE = "crate_on_target";
+public class Pack extends Model {
 
     public static final String NAME_PROPERTY = "NameProperty";
     public static final String AUTHOR_PROPERTY = "AuthorProperty";
     public static final String VERSION_PROPERTY = "VersionProperty";
-
-    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-    private final EventListenerList listenerList = new EventListenerList();
 
     private HashMap<String, BufferedImage> images;
 
@@ -35,12 +22,6 @@ public class Pack {
     private String name;
     private String author;
     private String version;
-
-    private int tileWidth;
-    private int tileHeight;
-
-    private int gameWidth;
-    private int gameHeight;
 
     private ArrayList<Level> levels;
 
@@ -176,38 +157,6 @@ public class Pack {
         sprites.put(name, sprite);
     }
 
-    public int getTileWidth() {
-        return tileWidth;
-    }
-
-    public void setTileWidth(int tileWidth) {
-        this.tileWidth = tileWidth;
-    }
-
-    public int getTileHeight() {
-        return tileHeight;
-    }
-
-    public void setTileHeight(int tileHeight) {
-        this.tileHeight = tileHeight;
-    }
-
-    public int getGameWidth() {
-        return gameWidth;
-    }
-
-    public void setGameWidth(int gameWidth) {
-        this.gameWidth = gameWidth;
-    }
-
-    public int getGameHeight() {
-        return gameHeight;
-    }
-
-    public void setGameHeight(int gameHeight) {
-        this.gameHeight = gameHeight;
-    }
-
     public ArrayList<Level> getLevels() {
         return levels;
     }
@@ -232,26 +181,6 @@ public class Pack {
      *  LISTENERS
      */
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        changeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
-        changeSupport.addPropertyChangeListener(property, listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        changeSupport.removePropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(String property, PropertyChangeListener listener) {
-        changeSupport.removePropertyChangeListener(property, listener);
-    }
-
-    private void firePropertyChange(String property, Object oldValue, Object newValue) {
-        changeSupport.firePropertyChange(property, oldValue, newValue);
-    }
-
 
     public void addLevelsOrganisationListener(LevelsOrganisationListener listener) {
         listenerList.add(LevelsOrganisationListener.class, listener);
@@ -275,13 +204,5 @@ public class Pack {
 
     private void fireLevelsSwapped(int index1, int index2) {
         fireListener(LevelsOrganisationListener.class, (t) -> t.levelsSwapped(index1, index2));
-    }
-
-    private <T extends EventListener> void fireListener(Class<T> type, Consumer<T> action) {
-        T[] listeners = listenerList.getListeners(type);
-
-        for (T listener : listeners) {
-            action.accept(listener);
-        }
     }
 }

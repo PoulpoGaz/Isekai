@@ -1,9 +1,5 @@
 {
     "name": "Boxxle",
     "author": "Thinking Rabbit",
-    "version": "1.0",
-    "game_width": 320,
-    "game_height": 240,
-    "tile_width": 16,
-    "tile_height": 16
+    "version": "1.0"
 }

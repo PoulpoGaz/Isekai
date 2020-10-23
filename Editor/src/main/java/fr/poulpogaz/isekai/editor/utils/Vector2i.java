@@ -14,6 +14,10 @@ public class Vector2i {
         this.y = y;
     }
 
+    public Vector2i(Vector2i vec) {
+        this(vec.x, vec.y);
+    }
+
     public Vector2i add(Vector2i b) {
         return add(this, b);
     }
@@ -96,5 +100,32 @@ public class Vector2i {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public boolean equals(int x, int y) {
+        return this.x == x && this.y == y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vector2i)) return false;
+
+        Vector2i vector2i = (Vector2i) o;
+
+        if (x != vector2i.x) return false;
+        return y == vector2i.y;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2i[x=" + x +", y=" + y + "]";
     }
 }

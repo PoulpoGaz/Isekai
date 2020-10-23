@@ -2,7 +2,7 @@ package fr.poulpogaz.isekai.editor.tools;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.Player;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
@@ -25,7 +25,7 @@ public class PlayerTool implements Tool {
 
     @Override
     public AbstractSprite getToolSprite(Pack pack, Tile tile) {
-        return pack.getSprite(Player.DOWN_STATIC);
+        return pack.getSprite(PackSprites.DOWN_STATIC);
     }
 
     public static PlayerTool getInstance() {

@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.controller.PackController;
-import fr.poulpogaz.isekai.editor.tools.ToolHelper;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 
@@ -12,23 +11,18 @@ import java.awt.event.AdjustmentListener;
 
 public class MapEditor extends JPanel {
 
-    private PackController controller;
-
-    private final ToolHelper toolHelper;
+    private final PackController controller;
 
     private TileMapPanel tileMapPanel;
     private TilesetPanel tilesetPanel;
     private PackPropertiesPanel packPropertiesPanel;
     private LevelPanel levelPanel;
     private ResizePanel resizePanel;
-    private PlayerPosPanel playerPosPanel;
 
     private ToolBar toolBar;
 
     public MapEditor() {
         controller = new PackController(IsekaiEditor.getInstance().getPack());
-
-        toolHelper = new ToolHelper();
 
         setLayout(new BorderLayout());
         initComponents();
@@ -42,23 +36,19 @@ public class MapEditor extends JPanel {
         constraint.fillXAxis = true;
 
         // init components
-        tileMapPanel = new TileMapPanel(this, controller);
-        tilesetPanel = new TilesetPanel(this);
+        tileMapPanel = new TileMapPanel(controller);
+        tilesetPanel = new TilesetPanel(controller);
         packPropertiesPanel = new PackPropertiesPanel(controller);
-        resizePanel = new ResizePanel();
+        resizePanel = new ResizePanel(controller);
         levelPanel = new LevelPanel(controller);
-        playerPosPanel = new PlayerPosPanel(this);
 
-        toolBar = new ToolBar(this);
-
-        tileMapPanel.setShowGrid(toolBar.isShowingGrid());
+        toolBar = new ToolBar(controller);
 
         // layout
         eastPanel.add(packPropertiesPanel, constraint);
         eastPanel.add(tilesetPanel, constraint);
         eastPanel.add(resizePanel, constraint);
         eastPanel.add(levelPanel, constraint);
-        eastPanel.add(playerPosPanel, constraint);
 
         add(toolBar, BorderLayout.NORTH);
         add(wrap(tileMapPanel), BorderLayout.CENTER);
@@ -79,14 +69,6 @@ public class MapEditor extends JPanel {
     }
 
     private void initListeners() {
-        toolBar.addPropertyChangeListener(ToolBar.SHOW_GRID_PROPERTY, (e) -> {
-            tileMapPanel.setShowGrid((boolean) e.getNewValue());
-        });
-
         resizePanel.addResizeListener(tileMapPanel);
-    }
-
-    public ToolHelper getToolHelper() {
-        return toolHelper;
     }
 }

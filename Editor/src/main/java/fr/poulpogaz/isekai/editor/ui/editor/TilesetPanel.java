@@ -1,37 +1,30 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.controller.EditorModel;
+import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.tools.ToolHelper;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 public class TilesetPanel extends JPanel {
 
-    private static final Dimension PREFERRED_TILESET_DIMENSION = new Dimension(128, 128);
-    private static final int NUMBER_OF_TILE_PER_ROW = 3;
+    private static final int WIDTH = 3;
+    private static final int HEIGHT = 2;
 
-    private final ToolHelper toolHelper;
+    private static final int tileSize = 32;
+    private static final Dimension SIZE = new Dimension(tileSize * WIDTH, tileSize * HEIGHT);
 
-    private BufferedImage tileset;
+    private final PackController controller;
 
-    private int tileWidth;
-    private int tileHeight;
-
-    private int selectedTileX = 0;
-    private int selectedTileY = 0;
-
-    public TilesetPanel(MapEditor editor) {
-        toolHelper = editor.getToolHelper();
-
-        createTileset(IsekaiEditor.getInstance().getPack());
+    public TilesetPanel(PackController controller) {
+        this.controller = controller;
+        controller.addEditorPropertyChangeListener(EditorModel.TOOL_PROPERTY, (e) -> repaint());
+        controller.addEditorPropertyChangeListener(EditorModel.SELECTED_TILE_PROPERTY, (e) -> repaint());
 
         setBorder(BorderFactory.createTitledBorder("Tileset"));
 
@@ -45,13 +38,32 @@ public class TilesetPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        Graphics2D g2d = (Graphics2D) g;
+
         Insets insets = getInsets();
 
-        g.drawImage(tileset, insets.left, insets.top, null);
+        Tile[] tiles = Tile.values();
 
-        if (selectedTileX >= 0 && selectedTileY >= 0) {
-            g.setColor(new Color(0, 217, 255, 64));
-            g.fillRect(selectedTileX * tileWidth + insets.left, selectedTileY  * tileHeight + insets.top, tileWidth, tileHeight);
+        int x = 0;
+        int y = 0;
+        for (Tile tile : tiles) {
+            AbstractSprite sprite = controller.getSprite(tile.getSprite());
+
+            int xDraw = x * tileSize + insets.left;
+            int yDraw = y * tileSize + insets.top;
+
+            sprite.paint(g2d, xDraw, yDraw, tileSize, tileSize);
+
+            if (controller.getSelectedTile() == tile) {
+                g.setColor(new Color(0, 217, 255, 64));
+                g.fillRect(xDraw, yDraw, tileSize, tileSize);
+            }
+
+            x++;
+
+            if (x % WIDTH == 0) {
+                y++;
+            }
         }
     }
 
@@ -65,7 +77,7 @@ public class TilesetPanel extends JPanel {
     }
 
     private void setDimension() {
-        Dimension dim = new Dimension(tileset.getWidth(), tileset.getHeight());
+        Dimension dim = new Dimension(SIZE);
 
         Insets insets = getInsets();
         if (insets != null) {
@@ -92,8 +104,8 @@ public class TilesetPanel extends JPanel {
     }
 
     private boolean isOnImage(Point wPoint) {
-        return wPoint.getX() >= 0 && wPoint.getX() < tileset.getWidth() &&
-                wPoint.getY() >= 0 && wPoint.getY() < tileset.getHeight();
+        return wPoint.getX() >= 0 && wPoint.getX() < SIZE.width &&
+                wPoint.getY() >= 0 && wPoint.getY() < SIZE.height;
     }
 
     private Point toView(Point point) {
@@ -109,64 +121,20 @@ public class TilesetPanel extends JPanel {
         Point point = toView(e.getPoint());
 
         if (isOnImage(point)) {
-            int oldX = selectedTileX;
-            int oldY = selectedTileY;
+            int x = (int) (point.getX()) / tileSize;
+            int y = (int) (point.getY()) / tileSize;
 
-            selectedTileX = (int) (point.getX()) / tileWidth;
-            selectedTileY = (int) (point.getY()) / tileHeight;
+            int i = y * WIDTH + x;
 
-            if (oldX != selectedTileX || oldY != selectedTileY) {
-                int i = selectedTileY * NUMBER_OF_TILE_PER_ROW + selectedTileX;
+            Tile[] tiles = Tile.values();
 
-                Tile[] tiles = Tile.values();
-
-                if (i < 0 || i >= tiles.length) {
-                    return;
-                }
-
-                toolHelper.setSelectedTile(tiles[i]);
-
-                repaint();
+            if (i < 0 || i >= tiles.length) {
+                return;
             }
-        }
-    }
 
-    private void createTileset(Pack pack) {
-        int width;
-        int height;
+            controller.setSelectedTile(tiles[i]);
 
-        if (pack.getTileWidth() > pack.getTileHeight()) {
-            width = PREFERRED_TILESET_DIMENSION.width;
-            height = width * pack.getTileHeight() / pack.getTileWidth();
-        } else {
-            height = PREFERRED_TILESET_DIMENSION.height;
-            width = height * pack.getTileWidth() / pack.getTileHeight();
-        }
-
-        tileWidth = width / NUMBER_OF_TILE_PER_ROW;
-        tileHeight = height / NUMBER_OF_TILE_PER_ROW;
-
-        tileset = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = tileset.createGraphics();
-
-        try {
-            int x = 0;
-            int y = 0;
-
-            for (Tile tile : Tile.values()) {
-                AbstractSprite sprite = tile.getSprite(pack);
-
-                sprite.paint(g, x, y, tileWidth, tileHeight);
-
-                x += tileWidth;
-
-                if (x + tileWidth >= width) {
-                    x = 0;
-                    y += tileHeight;
-                }
-            }
-        } finally {
-            g.dispose();
+            repaint();
         }
     }
 }

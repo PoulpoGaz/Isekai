@@ -78,10 +78,6 @@ public class PackIO {
         pack.setName(reader.assertKeyEquals("name").nextString());
         pack.setAuthor(reader.assertKeyEquals("author").nextString());
         pack.setVersion(reader.assertKeyEquals("version").nextString());
-        pack.setGameWidth(reader.assertKeyEquals("game_width").nextInt());
-        pack.setGameHeight(reader.assertKeyEquals("game_height").nextInt());
-        pack.setTileWidth(reader.assertKeyEquals("tile_width").nextInt());
-        pack.setTileHeight(reader.assertKeyEquals("tile_height").nextInt());
 
         reader.endObject();
         reader.close();
@@ -149,10 +145,12 @@ public class PackIO {
                 String image = reader.assertKeyEquals("image").nextString();
                 loadIfNeeded(image, pack, system);
 
-                int x = reader.assertKeyEquals("x").nextInt() * pack.getTileWidth();
-                int y = reader.assertKeyEquals("y").nextInt() * pack.getTileHeight();
+                int x = reader.assertKeyEquals("x").nextInt();
+                int y = reader.assertKeyEquals("y").nextInt();
+                int w = reader.assertKeyEquals("w").nextInt();
+                int h = reader.assertKeyEquals("h").nextInt();
 
-                return new SubSprite(pack, image, x, y, pack.getTileWidth(), pack.getTileWidth());
+                return new SubSprite(pack, image, x, y, w, h);
             }
             case "animated_sprite" -> {
                 if (acceptAnimatedSprite) {
@@ -258,10 +256,6 @@ public class PackIO {
         writer.field("name", pack.getName());
         writer.field("author", pack.getAuthor());
         writer.field("version", pack.getVersion());
-        writer.field("game_width", pack.getGameWidth());
-        writer.field("game_height", pack.getGameHeight());
-        writer.field("tile_width", pack.getTileWidth());
-        writer.field("tile_height", pack.getTileHeight());
 
         writer.endObject();
         writer.close();
@@ -316,8 +310,10 @@ public class PackIO {
             writer.field("image", sprite.getTexture());
 
             SubSprite subSprite = (SubSprite) sprite;
-            writer.field("x", subSprite.getX() / pack.getTileWidth());
-            writer.field("y", subSprite.getY() / pack.getTileHeight());
+            writer.field("x", subSprite.getX());
+            writer.field("y", subSprite.getY());
+            writer.field("w", subSprite.getWidth());
+            writer.field("h", subSprite.getHeight());
         } else if (sprite instanceof AnimatedSprite) {
             AnimatedSprite animatedSprite = (AnimatedSprite) sprite;
 

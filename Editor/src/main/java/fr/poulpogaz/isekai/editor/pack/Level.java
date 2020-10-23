@@ -1,10 +1,11 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.controller.Model;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Level {
+public class Level extends Model {
 
     private static final Logger LOGGER = LogManager.getLogger(Level.class);
 
@@ -22,7 +23,7 @@ public class Level {
     private int width;
     private int height;
 
-    private Player player;
+    private Vector2i playerPos;
 
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
@@ -40,7 +41,7 @@ public class Level {
             }
         }
 
-        player = new Player(this);
+        playerPos = new Vector2i(0, 0);
     }
 
     public void resize(int newWidth, int newHeight) {
@@ -65,12 +66,8 @@ public class Level {
     public void setTile(int x, int y, Tile tile) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
 
-            if (tile.isSolid()) {
-                Vector2i pos = player.getPos();
-
-                if (pos.x == x && pos.y == y) {
-                    return;
-                }
+            if (tile.isSolid() && playerPos.equals(x, y)) {
+                return;
             }
 
             tiles[y][x] = tile;
@@ -107,15 +104,17 @@ public class Level {
         resize(width, height);
     }
 
-    public void setPlayerPos(Vector2i v) {
-        player.setPos(v);
-    }
-
     public Vector2i getPlayerPos() {
-        return player.getPos();
+        return playerPos;
     }
 
-    public Player getPlayer() {
-        return player;
+    public void setPlayerPos(Vector2i pos) {
+        if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height) {
+            Tile tile = tiles[pos.y][pos.x];
+
+            if (!tile.isSolid()) {
+                this.playerPos = playerPos;
+            }
+        }
     }
 }
