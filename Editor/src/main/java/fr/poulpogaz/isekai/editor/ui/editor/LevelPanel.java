@@ -1,8 +1,9 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.controller.EditorModel;
-import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
-import fr.poulpogaz.isekai.editor.controller.PackController;
+import fr.poulpogaz.isekai.editor.model.EditorModel;
+import fr.poulpogaz.isekai.editor.model.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -12,18 +13,21 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
-public class LevelPanel extends JPanel implements LevelsOrganisationListener, PropertyChangeListener {
+public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
-    private final PackController controller;
+    private final Pack pack;
+    private final EditorModel editor;
 
     private JComboBox<Integer> levelsComboBox;
 
-    public LevelPanel(PackController controller) {
-        this.controller = controller;
-        controller.addLevelsOrganisationListener(this);
-        controller.addEditorPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this);
+    public LevelPanel(Pack pack, EditorModel editor) {
+        this.pack = Objects.requireNonNull(pack);
+        pack.addLevelsOrganisationListener(this);
+
+        this.editor = Objects.requireNonNull(editor);
+        editor.addPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this::switchLevel);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Level order"));
@@ -45,10 +49,10 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener, Pr
         levelsComboBox.addItemListener((e) -> {
             int index = levelsComboBox.getSelectedIndex();
 
-            controller.setSelectedLevel(index);
+            editor.setSelectedLevel(pack, index);
         });
 
-        for (int i = 0; i < controller.getNumberOfLevels(); i++) {
+        for (int i = 0; i < pack.getNumberOfLevels(); i++) {
             levelsComboBox.addItem(i + 1);
         }
 
@@ -79,48 +83,49 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener, Pr
     private void insertLevel(ActionEvent e) {
         int index = levelsComboBox.getSelectedIndex() + 1;
 
-        controller.addLevel(index);
+        Level level = new Level();
+
+        pack.addLevel(level, index);
+        editor.setSelectedLevel(level);
     }
 
     private void deleteLevel(ActionEvent event) {
-        if (controller.getNumberOfLevels() > 1) {
+        if (pack.getNumberOfLevels() > 1) {
             int index = levelsComboBox.getSelectedIndex();
 
-            controller.removeLevel(index);
+            pack.removeLevel(index);
+            editor.setSelectedLevel(pack, Math.max(index - 1, 0));
         }
     }
 
     private void moveDown(ActionEvent event) {
-        int index = levelsComboBox.getSelectedIndex() + 1;
+        int curr = editor.getSelectedLevelIndex();
+        int index = curr + 1;
 
-        if (index < controller.getNumberOfLevels() + 1) {
-            controller.swapLevels(index);
+        if (index < pack.getNumberOfLevels() + 1) {
+            pack.swapLevels(curr, index);
+            editor.setSelectedLevel(pack, index);
         }
     }
 
     private void moveUp(ActionEvent event) {
-        int index = levelsComboBox.getSelectedIndex() - 1;
+        int curr = editor.getSelectedLevelIndex();
+        int index = curr - 1;
 
         if (index >= 0) {
-            controller.swapLevels(index);
+            pack.swapLevels(curr, index);
+            editor.setSelectedLevel(pack, index);
         }
     }
     
     @Override
     public void levelInserted(int index) {
-        levelsComboBox.addItem(controller.getNumberOfLevels());
-        levelsComboBox.setSelectedIndex(index);
+        levelsComboBox.addItem(pack.getNumberOfLevels());
     }
 
     @Override
     public void levelRemoved(int index) {
-        levelsComboBox.removeItemAt(controller.getNumberOfLevels());
-
-        if (index >= controller.getNumberOfLevels()) {
-            index--;
-        }
-
-        levelsComboBox.setSelectedIndex(index);
+        levelsComboBox.removeItemAt(pack.getNumberOfLevels());
     }
 
     @Override
@@ -133,10 +138,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener, Pr
 
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(PackController.SELECTED_LEVEL_PROPERTY)) {
-            levelsComboBox.setSelectedIndex((int) evt.getNewValue());
-        }
+    private void switchLevel(PropertyChangeEvent evt) {
+        levelsComboBox.setSelectedIndex(editor.getSelectedLevelIndex());
     }
 }

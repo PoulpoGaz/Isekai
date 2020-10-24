@@ -1,29 +1,34 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.controller.LevelController;
-import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
-import fr.poulpogaz.isekai.editor.controller.PackController;
+import fr.poulpogaz.isekai.editor.model.EditorModel;
+import fr.poulpogaz.isekai.editor.model.LevelSizeListener;
 import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.JLabeledComponent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import java.beans.PropertyChangeEvent;
 
 import static fr.poulpogaz.isekai.editor.pack.Level.*;
 
-public class ResizePanel extends JPanel implements LevelsOrganisationListener {
+public class ResizePanel extends JPanel {
 
-    private final PackController controller;
-    private LevelController level;
+    private final EditorModel editor;
+    private Level level;
+
+    private final LevelSizeListener levelSizeListener;
 
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
 
-    public ResizePanel(PackController controller) {
-        this.controller = controller;
-        level = controller.getLevel(0);
+    public ResizePanel(EditorModel editor) {
+        this.editor = editor;
+
+        levelSizeListener = this::levelResized;
+        level = editor.getSelectedLevel();
+
+        editor.addPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this::switchLevel);
+        level.addLevelSizeListener(levelSizeListener);
 
         setBorder(BorderFactory.createTitledBorder("Resize"));
         initComponents();
@@ -47,45 +52,19 @@ public class ResizePanel extends JPanel implements LevelsOrganisationListener {
         level.resize(width, height);
     }
 
-    @Override
-    public void levelInserted(Level insertedLevel, int index) {
-        // does nothing because when the LevelPanel class adds a level, it changes the selected level
+    private void switchLevel(PropertyChangeEvent evt) {
+        level.removeLevelSizeListener(levelSizeListener);
+
+        this.level = editor.getSelectedLevel();
+
+        level.addLevelSizeListener(levelSizeListener);
+
+        widthSpinner.setValue(level.getWidth());
+        heightSpinner.setValue(level.getHeight());
     }
 
-    @Override
-    public void levelDeleted(Level deletedLevel, int index) {
-        int size = pack.getLevels().size() - 1;
-
-        level = pack.getLevel(Math.min(index, size));
-    }
-
-    @Override
-    public void levelMoved(int from, int to) {
-        // does nothing because when the LevelPanel class moves a level, it changes the selected level
-    }
-
-    @Override
-    public void selectedLevelChanged(Level newLevel, int index) {
-
-    }
-
-    @Override
-    public void levelInserted(int index) {
-
-    }
-
-    @Override
-    public void levelRemoved(int index) {
-
-    }
-
-    @Override
-    public void levelChanged(int index) {
-
-    }
-
-    @Override
-    public void levelsSwapped(int index1, int index2) {
-
+    private void levelResized(Level level, int w, int h) {
+        widthSpinner.setValue(w);
+        heightSpinner.setValue(h);
     }
 }

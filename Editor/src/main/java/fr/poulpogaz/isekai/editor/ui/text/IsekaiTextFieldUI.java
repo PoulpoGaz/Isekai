@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.text;
 
-import com.formdev.flatlaf.ui.*;
+import com.formdev.flatlaf.ui.FlatTextFieldUI;
+import com.formdev.flatlaf.ui.FlatUIUtils;
 import fr.poulpogaz.isekai.editor.utils.Math2;
 
 import javax.swing.*;

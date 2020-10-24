@@ -1,7 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import fr.poulpogaz.isekai.editor.controller.PackController;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -10,20 +9,20 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.Objects;
 import java.util.function.Consumer;
 
-public class PackPropertiesPanel extends JPanel implements PropertyChangeListener {
+public class PackPropertiesPanel extends JPanel {
 
-    private final PackController controller;
+    private final Pack pack;
 
     private JTextField nameField;
     private JTextField authorField;
     private JTextField versionField;
 
-    public PackPropertiesPanel(PackController controller) {
-        this.controller = controller;
-        controller.addPropertyChangeListener(this);
+    public PackPropertiesPanel(Pack pack) {
+        this.pack = Objects.requireNonNull(pack);
+        pack.addPropertyChangeListener(this::propertyChange);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Pack properties"));
@@ -32,17 +31,17 @@ public class PackPropertiesPanel extends JPanel implements PropertyChangeListene
     }
 
     private void initComponents() {
-        nameField = new JTextField(controller.getName());
+        nameField = new JTextField(pack.getName());
         nameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pack name");
-        addDocumentListener(nameField, controller::setName);
+        addDocumentListener(nameField, pack::setName);
 
-        authorField = new JTextField(controller.getAuthor());
+        authorField = new JTextField(pack.getAuthor());
         authorField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
-        addDocumentListener(authorField, controller::setAuthor);
+        addDocumentListener(authorField, pack::setAuthor);
 
-        versionField = new JTextField(controller.getVersion());
+        versionField = new JTextField(pack.getVersion());
         versionField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Version");
-        addDocumentListener(versionField, controller::setVersion);
+        addDocumentListener(versionField, pack::setVersion);
 
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
@@ -71,12 +70,11 @@ public class PackPropertiesPanel extends JPanel implements PropertyChangeListene
         });
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
+    private void propertyChange(PropertyChangeEvent event) {
         switch (event.getPropertyName()) {
-            case Pack.NAME_PROPERTY -> setText((String) event.getNewValue(), nameField);
-            case Pack.AUTHOR_PROPERTY -> setText((String) event.getNewValue(), authorField);
-            case Pack.VERSION_PROPERTY -> setText((String) event.getNewValue(), versionField);
+            case Pack.NAME_PROPERTY -> setText(pack.getName(), nameField);
+            case Pack.AUTHOR_PROPERTY -> setText(pack.getAuthor(), authorField);
+            case Pack.VERSION_PROPERTY -> setText(pack.getVersion(), versionField);
         }
     }
 

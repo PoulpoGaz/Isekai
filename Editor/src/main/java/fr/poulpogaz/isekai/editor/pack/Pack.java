@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
-import fr.poulpogaz.isekai.editor.controller.Model;
+import fr.poulpogaz.isekai.editor.model.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.model.Model;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
 import java.awt.image.BufferedImage;
@@ -75,33 +75,43 @@ public class Pack extends Model {
         }
     }
 
-
-
-
     public int getNumberOfLevels() {
         return levels.size();
     }
 
     public void addLevel(Level level) {
+        level.index = levels.size();
         levels.add(level);
 
         fireLevelInserted(getNumberOfLevels() - 1);
     }
 
     public void addLevel(Level level, int index) {
+        level.index = index;
         levels.add(index, level);
+
+        for (int i = index + 1; i < levels.size(); i++) {
+            levels.get(i).index = i;
+        }
 
         fireLevelInserted(index);
     }
 
     public void setLevel(Level level, int index) {
-        levels.set(index, level);
+        level.index = index;
+        Level old = levels.set(index, level);
+        old.index = -1;
 
         fireLevelChanged(index);
     }
 
     public void removeLevel(int index) {
-        levels.remove(index);
+        Level old = levels.remove(index);
+        old.index = 0;
+
+        for (int i = index; i < levels.size(); i++) {
+            levels.get(i).index = i;
+        }
 
         fireLevelRemoved(index);
     }
@@ -112,7 +122,10 @@ public class Pack extends Model {
 
     public void swapLevels(int index1, int index2) {
         Level level1 = levels.get(index1);
+        level1.index = index2;
+
         Level level2 = levels.get(index2);
+        level2.index = index1;
 
         levels.set(index1, level2);
         levels.set(index2, level1);

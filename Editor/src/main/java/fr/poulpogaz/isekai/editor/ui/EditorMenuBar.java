@@ -3,7 +3,7 @@ package fr.poulpogaz.isekai.editor.ui;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.*;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.io.PackBuilder;
 import fr.poulpogaz.isekai.editor.pack.io.PackIO;
 import fr.poulpogaz.isekai.editor.pack.io.TIPackIO;

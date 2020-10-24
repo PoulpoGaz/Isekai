@@ -3,10 +3,7 @@ package fr.poulpogaz.isekai.editor.pack.image;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class SubSprite extends AbstractSprite {
 

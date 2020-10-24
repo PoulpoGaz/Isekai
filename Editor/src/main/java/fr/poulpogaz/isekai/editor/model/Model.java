@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.controller;
+package fr.poulpogaz.isekai.editor.model;
 
 import javax.swing.event.EventListenerList;
 import java.beans.PropertyChangeListener;
@@ -10,7 +10,6 @@ public class Model {
 
     protected final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     protected final EventListenerList listenerList = new EventListenerList();
-
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         changeSupport.addPropertyChangeListener(listener);

@@ -3,7 +3,6 @@ package fr.poulpogaz.isekai.editor.ui.text;
 import javax.swing.*;
 import javax.swing.text.Document;
 import java.awt.*;
-import java.util.Objects;
 
 public class JIsekaiTextField extends JTextField {
 

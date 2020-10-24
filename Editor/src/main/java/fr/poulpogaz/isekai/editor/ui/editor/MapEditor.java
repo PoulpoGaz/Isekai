@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.controller.PackController;
+import fr.poulpogaz.isekai.editor.model.EditorModel;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 
@@ -11,7 +11,8 @@ import java.awt.event.AdjustmentListener;
 
 public class MapEditor extends JPanel {
 
-    private final PackController controller;
+    private final Pack pack;
+    private final EditorModel editor;
 
     private TileMapPanel tileMapPanel;
     private TilesetPanel tilesetPanel;
@@ -21,12 +22,13 @@ public class MapEditor extends JPanel {
 
     private ToolBar toolBar;
 
-    public MapEditor() {
-        controller = new PackController(IsekaiEditor.getInstance().getPack());
+    public MapEditor(Pack pack) {
+        this.pack = pack;
+        editor = new EditorModel();
+        editor.setSelectedLevel(pack.getLevel(0));
 
         setLayout(new BorderLayout());
         initComponents();
-        initListeners();
     }
 
     private void initComponents() {
@@ -36,13 +38,13 @@ public class MapEditor extends JPanel {
         constraint.fillXAxis = true;
 
         // init components
-        tileMapPanel = new TileMapPanel(controller);
-        tilesetPanel = new TilesetPanel(controller);
-        packPropertiesPanel = new PackPropertiesPanel(controller);
-        resizePanel = new ResizePanel(controller);
-        levelPanel = new LevelPanel(controller);
+        tileMapPanel = new TileMapPanel(pack, editor);
+        tilesetPanel = new TilesetPanel(pack, editor);
+        packPropertiesPanel = new PackPropertiesPanel(pack);
+        resizePanel = new ResizePanel(editor);
+        levelPanel = new LevelPanel(pack, editor);
 
-        toolBar = new ToolBar(controller);
+        toolBar = new ToolBar(pack, editor);
 
         // layout
         eastPanel.add(packPropertiesPanel, constraint);
@@ -66,9 +68,5 @@ public class MapEditor extends JPanel {
         scrollPane.getHorizontalScrollBar().addAdjustmentListener(repaint);
 
         return scrollPane;
-    }
-
-    private void initListeners() {
-        resizePanel.addResizeListener(tileMapPanel);
     }
 }

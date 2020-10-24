@@ -1,10 +1,12 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.controller.EditorModel;
-import fr.poulpogaz.isekai.editor.controller.LevelController;
-import fr.poulpogaz.isekai.editor.controller.LevelsOrganisationListener;
-import fr.poulpogaz.isekai.editor.controller.PackController;
-import fr.poulpogaz.isekai.editor.pack.*;
+import fr.poulpogaz.isekai.editor.model.EditorModel;
+import fr.poulpogaz.isekai.editor.model.LevelSizeListener;
+import fr.poulpogaz.isekai.editor.model.LevelsOrganisationListener;
+import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
+import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Utils;
@@ -18,29 +20,36 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class TileMapPanel extends JPanel implements ResizeListener, PropertyChangeListener {
+public class TileMapPanel extends JPanel implements PropertyChangeListener {
 
-    private static final int TILE_WIDTH = 32;
-    private static final int TILE_HEIGHT = 32;
+    private static final int TILE_SIZE = 32;
 
-    private final PackController controller;
-    private LevelController level;
+    private final Pack pack;
+    private Level level;
+    private EditorModel editor;
 
+
+    private LevelSizeListener levelSizeListener;
+    
+    
     private int hoverX;
     private int hoverY;
 
     private boolean hideTileCursor = true;
 
-    private boolean showGrid = Default.SHOW_GRID;
-
     private Rectangle cachedVisibleRect;
 
-    public TileMapPanel(PackController controller) {
-        this.controller = controller;
-        controller.addEditorPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this);
-        controller.addLevelsOrganisationListener(new LevelRemovedListener());
+    public TileMapPanel(Pack pack, EditorModel editor) {
+        this.pack = pack;
+        this.editor = editor;
+        editor.addPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this);
+        editor.addPropertyChangeListener(EditorModel.SHOW_GRID_PROPERTY, (e) -> repaint());
 
-        level = controller.getLevel(0);
+        levelSizeListener = this::levelResized;
+
+        level = editor.getSelectedLevel();
+        level.addLevelSizeListener(levelSizeListener);
+
         initComponent();
     }
 
@@ -53,7 +62,7 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
     }
 
     private void setPreferredSize() {
-        setPreferredSize(new Dimension(level.getWidth() * TILE_WIDTH, level.getHeight() * TILE_HEIGHT));
+        setPreferredSize(new Dimension(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE));
 
         revalidate();
         repaint();
@@ -75,13 +84,13 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
                for (int x = bounds.getMinX(); x < bounds.getMaxX(); x++) {
                     Tile t = level.getTile(x, y);
 
-                    int drawX = offset.x + x * TILE_WIDTH;
-                    int drawY = offset.y + y * TILE_WIDTH;
+                    int drawX = offset.x + x * TILE_SIZE;
+                    int drawY = offset.y + y * TILE_SIZE;
 
                     drawTile(g2d, drawX, drawY, t);
 
                     if (player.equals(x, y)) {
-                        drawSprite(g2d, drawX, drawY, controller.getSprite(PackSprites.DEFAULT_STATIC));
+                        drawSprite(g2d, drawX, drawY, pack.getSprite(PackSprites.DEFAULT_STATIC));
                     }
                 }
             }
@@ -90,15 +99,15 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
                 Composite old = g2d.getComposite();
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.75f));
 
-                int x = offset.x + hoverX * TILE_WIDTH;
-                int y = offset.y + hoverY * TILE_HEIGHT;
+                int x = offset.x + hoverX * TILE_SIZE;
+                int y = offset.y + hoverY * TILE_SIZE;
 
-                // drawSprite(g2d, x, y, toolHelper.getToolSprite(pack));
+                drawSprite(g2d, x, y, editor.getToolSprite(pack));
 
                 g2d.setComposite(old);
             }
 
-            if (showGrid) {
+            if (editor.isShowGrid()) {
                 drawGrid(g2d, offset, bounds);
             }
 
@@ -117,20 +126,20 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
         // minimum and maximum value in screen coordinate
         int boundsMinX = offset.x;
         int boundsMinY = offset.y;
-        int boundsMaxX = offset.x + bounds.getMaxX() * TILE_WIDTH;
-        int boundsMaxY = offset.y + bounds.getMaxY() * TILE_HEIGHT;
+        int boundsMaxX = offset.x + bounds.getMaxX() * TILE_SIZE;
+        int boundsMaxY = offset.y + bounds.getMaxY() * TILE_SIZE;
 
         int maxX = visible.x + visible.width;
         int maxY = visible.y + visible.height;
 
         for (int x = bounds.getMinX(); x <= bounds.getMaxX(); x++) { // Vertical lines
-            int x_ = offset.x + x * TILE_WIDTH;
+            int x_ = offset.x + x * TILE_SIZE;
 
             g2d.drawLine(x_, Math.max(visible.y, boundsMinY), x_, Math.min(maxY, boundsMaxY));
         }
 
         for (int y = bounds.getMinY(); y <= bounds.getMaxY(); y++) { // Horizontal lines
-            int y_ = offset.y + y * TILE_HEIGHT;
+            int y_ = offset.y + y * TILE_SIZE;
 
             g2d.drawLine(Math.max(visible.x, boundsMinX), y_, Math.min(maxX, boundsMaxX), y_);
         }
@@ -139,10 +148,10 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
     private Bounds getTileBounds() {
         Rectangle visible = getVisibleRect();
 
-        int x = visible.x / TILE_WIDTH;
-        int y = visible.y / TILE_HEIGHT;
-        int w = (int) Math.ceil((float) visible.width / TILE_WIDTH) + 1;
-        int h = (int) Math.ceil((float) visible.height / TILE_HEIGHT) + 1;
+        int x = visible.x / TILE_SIZE;
+        int y = visible.y / TILE_SIZE;
+        int w = (int) Math.ceil((float) visible.width / TILE_SIZE) + 1;
+        int h = (int) Math.ceil((float) visible.height / TILE_SIZE) + 1;
 
         return new Bounds(Utils.clamp(x, 0, level.getWidth()),
                 Utils.clamp(y, 0, level.getHeight()),
@@ -151,13 +160,13 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
     }
 
     private void drawTile(Graphics2D g2d, int x, int y, Tile t) {
-        AbstractSprite sprite = controller.getSprite(t.getSprite());
+        AbstractSprite sprite = pack.getSprite(t.getSprite());
 
         drawSprite(g2d, x, y, sprite);
     }
 
     private void drawSprite(Graphics2D g2d, int x, int y, AbstractSprite sprite) {
-        sprite.paint(g2d, x, y, TILE_WIDTH, TILE_HEIGHT);
+        sprite.paint(g2d, x, y, TILE_SIZE, TILE_SIZE);
     }
 
     private MouseAdapter getMouseAdapter() {
@@ -168,7 +177,7 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
 
                 if (isCursorInsideMap()) {
                     AppExecutor.getExecutor().submit(() -> {
-                        //toolHelper.apply(level, hoverX, hoverY);
+                        editor.applyTool(hoverX, hoverY);
 
                         repaint();
                     });
@@ -181,7 +190,7 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
 
                 if (isCursorInsideMap()) {
                     AppExecutor.getExecutor().submit(() -> {
-                        //toolHelper.apply(level, hoverX, hoverY);
+                        editor.applyTool(hoverX, hoverY);
 
                         repaint();
                     });
@@ -215,8 +224,8 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
     private void move(MouseEvent e) {
         Point offset = getOffset();
 
-        hoverX = (e.getX() - offset.x) / TILE_WIDTH;
-        hoverY = (e.getY() - offset.y) / TILE_HEIGHT;
+        hoverX = (e.getX() - offset.x) / TILE_SIZE;
+        hoverY = (e.getY() - offset.y) / TILE_SIZE;
 
         repaint();
     }
@@ -238,10 +247,10 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
         // Apply offset only if the dimension of the component match the visible rect
         // because when they are equals, we try to center the tile map
         if (visible.width == dim.width) {
-            offset.x = (in.width - lvlWidth * TILE_WIDTH) / 2;
+            offset.x = (in.width - lvlWidth * TILE_SIZE) / 2;
         }
         if (visible.height == dim.height) {
-            offset.y = (in.height - lvlHeight * TILE_HEIGHT) / 2;
+            offset.y = (in.height - lvlHeight * TILE_SIZE) / 2;
         }
 
         return offset;
@@ -256,51 +265,20 @@ public class TileMapPanel extends JPanel implements ResizeListener, PropertyChan
         return cachedVisibleRect;
     }
 
-    @Override
-    public void levelResized(Level level, int width, int height) {
+    private void levelResized(Level level, int width, int height) {
         setPreferredSize();
         repaint();
     }
 
-    public void setShowGrid(boolean showGrid) {
-        if (this.showGrid != showGrid) {
-            this.showGrid = showGrid;
-
-            repaint();
-        }
-    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(PackController.SELECTED_LEVEL_PROPERTY)) {
-            int index = (int) evt.getNewValue();
-            level = controller.getLevel(index);
+        if (evt.getPropertyName().equals(EditorModel.SELECTED_LEVEL_PROPERTY)) {
+            level.removeLevelSizeListener(levelSizeListener);
+
+            level = editor.getSelectedLevel();
+            level.addLevelSizeListener(levelSizeListener);
+
             repaint();
-        }
-    }
-
-    private class LevelRemovedListener implements LevelsOrganisationListener {
-
-        @Override
-        public void levelInserted(int index) {
-
-        }
-
-        @Override
-        public void levelRemoved(int index) {
-            index = Math.max(index - 1, 0);
-            level = controller.getLevel(index);
-            repaint();
-        }
-
-        @Override
-        public void levelChanged(int index) {
-
-        }
-
-        @Override
-        public void levelsSwapped(int index1, int index2) {
-
         }
     }
 }

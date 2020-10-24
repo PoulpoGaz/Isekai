@@ -4,7 +4,9 @@
             "type": "sub_sprite",
             "image": "player",
             "x": 0,
-            "y": 0
+            "y": 0,
+            "w": 16,
+            "h": 16
         },
         "walk": {
             "type": "animated_sprite",
@@ -13,26 +15,34 @@
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 1,
-                    "y": 0
+                    "x": 16,
+                    "y": 0,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 2,
-                    "y": 0
+                    "x": 482,
+                    "y": 0,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 3,
-                    "y": 0
+                    "x": 48,
+                    "y": 0,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
                     "x": 4,
-                    "y": 0
+                    "y": 0,
+                    "w": 16,
+                    "h": 16
                 }
             ]
         }
@@ -42,7 +52,9 @@
             "type": "sub_sprite",
             "image": "player",
             "x": 0,
-            "y": 1
+            "y": 16,
+            "w": 16,
+            "h": 16
         },
         "walk": {
             "type": "animated_sprite",
@@ -51,26 +63,34 @@
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 1,
-                    "y": 1
+                    "x": 16,
+                    "y": 16,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 2,
-                    "y": 1
+                    "x": 482,
+                    "y": 16,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 3,
-                    "y": 1
+                    "x": 48,
+                    "y": 16,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
                     "x": 4,
-                    "y": 1
+                    "y": 16,
+                    "w": 16,
+                    "h": 16
                 }
             ]
         }
@@ -80,7 +100,9 @@
             "type": "sub_sprite",
             "image": "player",
             "x": 0,
-            "y": 3
+            "y": 48,
+            "w": 16,
+            "h": 16
         },
         "walk": {
             "type": "animated_sprite",
@@ -89,26 +111,34 @@
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 1,
-                    "y": 3
+                    "x": 16,
+                    "y": 48,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 2,
-                    "y": 3
+                    "x": 482,
+                    "y": 48,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 3,
-                    "y": 3
+                    "x": 48,
+                    "y": 48,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
                     "x": 4,
-                    "y": 3
+                    "y": 48,
+                    "w": 16,
+                    "h": 16
                 }
             ]
         }
@@ -118,7 +148,9 @@
             "type": "sub_sprite",
             "image": "player",
             "x": 0,
-            "y": 2
+            "y": 32,
+            "w": 16,
+            "h": 16
         },
         "walk": {
             "type": "animated_sprite",
@@ -127,26 +159,34 @@
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 1,
-                    "y": 2
+                    "x": 16,
+                    "y": 32,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 2,
-                    "y": 2
+                    "x": 482,
+                    "y": 32,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
-                    "x": 3,
-                    "y": 2
+                    "x": 48,
+                    "y": 32,
+                    "w": 16,
+                    "h": 16
                 },
                 {
                     "type": "sub_sprite",
                     "image": "player",
                     "x": 4,
-                    "y": 2
+                    "y": 32,
+                    "w": 16,
+                    "h": 16
                 }
             ]
         }

@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.controller.EditorModel;
-import fr.poulpogaz.isekai.editor.controller.PackController;
+import fr.poulpogaz.isekai.editor.model.EditorModel;
+import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 
@@ -16,15 +16,17 @@ public class TilesetPanel extends JPanel {
     private static final int WIDTH = 3;
     private static final int HEIGHT = 2;
 
-    private static final int tileSize = 32;
+    private static final int tileSize = 48;
     private static final Dimension SIZE = new Dimension(tileSize * WIDTH, tileSize * HEIGHT);
 
-    private final PackController controller;
+    private final Pack pack;
+    private final EditorModel editor;
 
-    public TilesetPanel(PackController controller) {
-        this.controller = controller;
-        controller.addEditorPropertyChangeListener(EditorModel.TOOL_PROPERTY, (e) -> repaint());
-        controller.addEditorPropertyChangeListener(EditorModel.SELECTED_TILE_PROPERTY, (e) -> repaint());
+    public TilesetPanel(Pack pack, EditorModel editor) {
+        this.pack = pack;
+        this.editor = editor;
+        editor.addPropertyChangeListener(EditorModel.TOOL_PROPERTY, (e) -> repaint());
+        editor.addPropertyChangeListener(EditorModel.SELECTED_TILE_PROPERTY, (e) -> repaint());
 
         setBorder(BorderFactory.createTitledBorder("Tileset"));
 
@@ -47,14 +49,14 @@ public class TilesetPanel extends JPanel {
         int x = 0;
         int y = 0;
         for (Tile tile : tiles) {
-            AbstractSprite sprite = controller.getSprite(tile.getSprite());
+            AbstractSprite sprite = pack.getSprite(tile.getSprite());
 
             int xDraw = x * tileSize + insets.left;
             int yDraw = y * tileSize + insets.top;
 
             sprite.paint(g2d, xDraw, yDraw, tileSize, tileSize);
 
-            if (controller.getSelectedTile() == tile) {
+            if (editor.getSelectedTile() == tile) {
                 g.setColor(new Color(0, 217, 255, 64));
                 g.fillRect(xDraw, yDraw, tileSize, tileSize);
             }
@@ -62,6 +64,7 @@ public class TilesetPanel extends JPanel {
             x++;
 
             if (x % WIDTH == 0) {
+                x = 0;
                 y++;
             }
         }
@@ -132,7 +135,7 @@ public class TilesetPanel extends JPanel {
                 return;
             }
 
-            controller.setSelectedTile(tiles[i]);
+            editor.setSelectedTile(tiles[i]);
 
             repaint();
         }

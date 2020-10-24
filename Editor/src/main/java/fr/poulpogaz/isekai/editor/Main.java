@@ -28,7 +28,7 @@ public class Main {
         Settings.read();
 
         EventQueue.invokeLater(() -> {
-            IsekaiEditor editor = IsekaiEditor.getInstance();
+            IsekaiEditor editor = new IsekaiEditor();
             editor.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
