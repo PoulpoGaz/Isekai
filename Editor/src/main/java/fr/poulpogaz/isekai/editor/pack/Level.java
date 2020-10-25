@@ -148,6 +148,7 @@ public class Level extends Model {
 
         Level level = (Level) o;
 
+        if (index != level.index) return false;
         if (width != level.width) return false;
         if (height != level.height) return false;
         if (!Arrays.deepEquals(tiles, level.tiles)) return false;
@@ -156,7 +157,8 @@ public class Level extends Model {
 
     @Override
     public int hashCode() {
-        int result = Arrays.deepHashCode(tiles);
+        int result = index;
+        result = 31 * result + Arrays.deepHashCode(tiles);
         result = 31 * result + width;
         result = 31 * result + height;
         result = 31 * result + playerPos.hashCode();

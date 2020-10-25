@@ -64,7 +64,7 @@ public class ToolBar extends JToolBar {
     }
 
     private SpriteIcon createPlayerIcon() {
-        AbstractSprite sprite = pack.getSprite(PackSprites.DEFAULT_STATIC);
+        AbstractSprite sprite = pack.getSprite(PackSprites.PLAYER_DEFAULT_STATIC);
 
         return new SpriteIcon(sprite);
     }

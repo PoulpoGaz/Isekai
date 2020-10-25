@@ -20,6 +20,7 @@ public class ResizePanel extends JPanel {
 
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
+    private boolean canResize = true;
 
     public ResizePanel(EditorModel editor) {
         this.editor = editor;
@@ -46,10 +47,12 @@ public class ResizePanel extends JPanel {
     }
 
     private void resize(ChangeEvent e) {
-        int width = (int) widthSpinner.getValue();
-        int height = (int) heightSpinner.getValue();
+        if (canResize) {
+            int width = (int) widthSpinner.getValue();
+            int height = (int) heightSpinner.getValue();
 
-        level.resize(width, height);
+            level.resize(width, height);
+        }
     }
 
     private void switchLevel(PropertyChangeEvent evt) {
@@ -59,8 +62,10 @@ public class ResizePanel extends JPanel {
 
         level.addLevelSizeListener(levelSizeListener);
 
+        canResize = false;
         widthSpinner.setValue(level.getWidth());
         heightSpinner.setValue(level.getHeight());
+        canResize = true;
     }
 
     private void levelResized(Level level, int w, int h) {

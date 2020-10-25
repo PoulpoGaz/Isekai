@@ -104,7 +104,6 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
         if (index < pack.getNumberOfLevels() + 1) {
             pack.swapLevels(curr, index);
-            editor.setSelectedLevel(pack, index);
         }
     }
 
@@ -114,7 +113,6 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
         if (index >= 0) {
             pack.swapLevels(curr, index);
-            editor.setSelectedLevel(pack, index);
         }
     }
     
@@ -135,7 +133,26 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
     @Override
     public void levelsSwapped(int index1, int index2) {
+        levelsComboBox.setSelectedIndex(editor.getSelectedLevelIndex());
+    }
 
+    @Override
+    public void newLevels() {
+        int packSize = pack.getNumberOfLevels();
+        int comboSize = levelsComboBox.getItemCount();
+
+        if (packSize > comboSize) {
+            for (int i = comboSize; i < packSize; i++) {
+                levelsComboBox.addItem(i);
+            }
+
+        } else {
+            for (int i = comboSize - 1; i >= pack.getNumberOfLevels(); i--) {
+                levelsComboBox.removeItemAt(i);
+            }
+        }
+
+        levelsComboBox.setSelectedIndex(0);
     }
 
     private void switchLevel(PropertyChangeEvent evt) {

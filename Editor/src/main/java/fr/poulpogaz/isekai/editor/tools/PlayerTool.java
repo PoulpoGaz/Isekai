@@ -25,7 +25,7 @@ public class PlayerTool implements Tool {
 
     @Override
     public AbstractSprite getToolSprite(Pack pack, Tile tile) {
-        return pack.getSprite(PackSprites.DOWN_STATIC);
+        return pack.getSprite(PackSprites.PLAYER_DOWN_STATIC);
     }
 
     public static PlayerTool getInstance() {

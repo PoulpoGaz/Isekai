@@ -11,4 +11,6 @@ public interface LevelsOrganisationListener extends EventListener {
     void levelChanged(int index);
 
     void levelsSwapped(int index1, int index2);
+
+    void newLevels();
 }

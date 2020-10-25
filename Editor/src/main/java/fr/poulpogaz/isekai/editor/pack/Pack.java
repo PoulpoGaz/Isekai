@@ -30,7 +30,7 @@ public class Pack extends Model {
         images = new HashMap<>();
         sprites = new HashMap<>();
 
-        levels.add(new Level());
+        addLevel(new Level());
     }
 
     public String getName() {
@@ -175,7 +175,18 @@ public class Pack extends Model {
     }
 
     public void setLevels(ArrayList<Level> levels) {
-        this.levels = levels;
+        if (levels.size() > 0) {
+            ArrayList<Level> old = this.levels;
+            old.forEach((level) -> level.index = -1);
+
+            this.levels = levels;
+
+            for (int i = 0; i < levels.size(); i++) {
+                levels.get(i).index = i;
+            }
+
+            fireNewLevels();
+        }
     }
 
     public HashMap<String, BufferedImage> getImages() {
@@ -217,5 +228,9 @@ public class Pack extends Model {
 
     private void fireLevelsSwapped(int index1, int index2) {
         fireListener(LevelsOrganisationListener.class, (t) -> t.levelsSwapped(index1, index2));
+    }
+
+    private void fireNewLevels() {
+        fireListener(LevelsOrganisationListener.class, LevelsOrganisationListener::newLevels);
     }
 }

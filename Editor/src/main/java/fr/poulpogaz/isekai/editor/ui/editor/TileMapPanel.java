@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.model.EditorModel;
 import fr.poulpogaz.isekai.editor.model.LevelSizeListener;
-import fr.poulpogaz.isekai.editor.model.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
@@ -90,7 +89,7 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
                     drawTile(g2d, drawX, drawY, t);
 
                     if (player.equals(x, y)) {
-                        drawSprite(g2d, drawX, drawY, pack.getSprite(PackSprites.DEFAULT_STATIC));
+                        drawSprite(g2d, drawX, drawY, pack.getSprite(PackSprites.PLAYER_DEFAULT_STATIC));
                     }
                 }
             }

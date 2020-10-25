@@ -80,18 +80,18 @@ public class PackBuilder {
 
         AbstractSprite left = new SubSprite(pack, "tileset", 0, 16, 16, 16);
         AbstractSprite right = new SubSprite(pack, "tileset", 16, 16, 16, 16);
-        AbstractSprite up = new SubSprite(pack, "tileset", 32, 16, 16, 16);
-        AbstractSprite down = new SubSprite(pack, "tileset", 48, 16, 16, 16);
+        AbstractSprite up = new SubSprite(pack, "tileset", 48, 16, 16, 16);
+        AbstractSprite down = new SubSprite(pack, "tileset", 32, 16, 16, 16);
 
         pack.putSprite(PackSprites.LEFT_STATIC, left);
-        pack.putSprite(PackSprites.RIGHT_STATIC, right);
-        pack.putSprite(PackSprites.DOWN_STATIC, down);
-        pack.putSprite(PackSprites.UP_STATIC, up);
+        pack.putSprite(PackSprites.PLAYER_RIGHT_STATIC, right);
+        pack.putSprite(PackSprites.PLAYER_DOWN_STATIC, down);
+        pack.putSprite(PackSprites.PLAYER_UP_STATIC, up);
 
-        pack.putSprite(PackSprites.LEFT_WALK, left);
-        pack.putSprite(PackSprites.RIGHT_WALK, right);
-        pack.putSprite(PackSprites.DOWN_WALK, down);
-        pack.putSprite(PackSprites.UP_WALK, up);
+        pack.putSprite(PackSprites.PLAYER_LEFT_WALK, left);
+        pack.putSprite(PackSprites.PLAYER_RIGHT_WALK, right);
+        pack.putSprite(PackSprites.PLAYER_DOWN_WALK, down);
+        pack.putSprite(PackSprites.PLAYER_UP_WALK, up);
 
         return pack;
     }
