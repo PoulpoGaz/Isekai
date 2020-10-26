@@ -3,7 +3,7 @@ package fr.poulpogaz.isekai.editor.ui.colorpicker;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-public class HueSlider extends JPanelSlider {
+public class HueSlider extends Slider {
 
     private static final Color[] COLORS = new Color[] {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA, Color.RED};
     private static final float[] FRACTIONS;

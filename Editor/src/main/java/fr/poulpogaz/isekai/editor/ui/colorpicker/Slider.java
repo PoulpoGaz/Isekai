@@ -7,9 +7,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class JPanelSlider extends JComponent {
+public class Slider extends JComponent {
 
-    private static final int CURSOR_OFFSET = 3;
+    private static final int BORDER_SIZE = 3;
 
     public static final String ORIENTATION_PROPERTY = "OrientationProperty";
     public static final String VALUE_PROPERTY = "ValueProperty";
@@ -19,22 +19,22 @@ public class JPanelSlider extends JComponent {
     private boolean vertical;
     private boolean invert;
 
-    public JPanelSlider() {
+    public Slider() {
         this(0, true, false);
     }
 
-    public JPanelSlider(float value) {
+    public Slider(float value) {
         this(value, true, false);
     }
 
-    public JPanelSlider(float value, boolean vertical) {
+    public Slider(float value, boolean vertical) {
         this(value, vertical, false);
     }
 
-    public JPanelSlider(float value, boolean vertical, boolean invert) {
-        this.value = value;
-        this.vertical = vertical;
-        this.invert = invert;
+    public Slider(float value, boolean vertical, boolean invert) {
+        setValue(value);
+        setVertical(vertical);
+        setInvert(invert);
 
         if (vertical) {
             setPreferredSize(new Dimension(25, 100));
@@ -133,10 +133,10 @@ public class JPanelSlider extends JComponent {
         Rectangle rectangle = getBounds();
         Insets insets = getInsets();
 
-        rectangle.x = insets.left + CURSOR_OFFSET;
-        rectangle.y = insets.top + CURSOR_OFFSET;
-        rectangle.width = rectangle.width - insets.left - insets.right - 2 * CURSOR_OFFSET;
-        rectangle.height = rectangle.height - insets.top - insets.bottom - 2 * CURSOR_OFFSET;
+        rectangle.x = insets.left + BORDER_SIZE;
+        rectangle.y = insets.top + BORDER_SIZE;
+        rectangle.width = rectangle.width - insets.left - insets.right - 2 * BORDER_SIZE;
+        rectangle.height = rectangle.height - insets.top - insets.bottom - 2 * BORDER_SIZE;
 
         return rectangle;
     }
