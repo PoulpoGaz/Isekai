@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.colorpicker;
 
+import fr.poulpogaz.isekai.editor.ui.sliders.BiSlider;
+
 import java.awt.*;
 import java.awt.image.MemoryImageSource;
 
@@ -45,6 +47,8 @@ public class SaturationBrightnessChooser extends BiSlider {
     }
 
     private void draw(int[] pixels, int width, int height) {
+        float hue = this.hue / 360f;
+
         for (int y = 0; y < height; y++) {
             float brightness = (float) y / height;
 
@@ -64,11 +68,12 @@ public class SaturationBrightnessChooser extends BiSlider {
         }
     }
 
-    public void setHue(float hue) {
+    public void setHue(int hue) {
         if (this.hue != hue) {
             this.hue = hue;
 
             updateImage();
+            repaint();
         }
     }
 

@@ -1,23 +1,14 @@
 package fr.poulpogaz.isekai.editor.ui.colorpicker;
 
+import fr.poulpogaz.isekai.editor.ui.sliders.Slider;
+
+import javax.swing.*;
 import java.awt.*;
 
 public class AlphaSlider extends Slider {
 
-    public AlphaSlider() {
-
-    }
-
-    public AlphaSlider(float value) {
-        super(value);
-    }
-
-    public AlphaSlider(float value, boolean vertical) {
-        super(value, vertical);
-    }
-
-    public AlphaSlider(float value, boolean vertical, boolean invert) {
-        super(value, vertical, invert);
+    public AlphaSlider(int alpha) {
+        setModel(new DefaultBoundedRangeModel(alpha, 0, 0, 255));
     }
 
     @Override

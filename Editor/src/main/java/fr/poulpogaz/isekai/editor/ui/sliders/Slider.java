@@ -1,38 +1,47 @@
-package fr.poulpogaz.isekai.editor.ui.colorpicker;
+package fr.poulpogaz.isekai.editor.ui.sliders;
 
 import fr.poulpogaz.isekai.editor.utils.Math2;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 public class Slider extends JComponent {
 
     private static final int BORDER_SIZE = 3;
 
     public static final String ORIENTATION_PROPERTY = "OrientationProperty";
-    public static final String VALUE_PROPERTY = "ValueProperty";
+    public static final String MODEL_PROPERTY = "ModelProperty";
     public static final String INVERT_PROPERTY = "InvertProperty";
 
-    private float value;
+    private BoundedRangeModel model;
+    private final ChangeListener listener = this::stateChanged;
+
     private boolean vertical;
     private boolean invert;
 
     public Slider() {
-        this(0, true, false);
+        this(new DefaultBoundedRangeModel(), true, false);
     }
 
-    public Slider(float value) {
-        this(value, true, false);
+    public Slider(BoundedRangeModel model) {
+        this(model, true, false);
     }
 
-    public Slider(float value, boolean vertical) {
-        this(value, vertical, false);
+    public Slider(BoundedRangeModel model, boolean vertical) {
+        this(model, vertical, false);
     }
 
-    public Slider(float value, boolean vertical, boolean invert) {
-        setValue(value);
+    public Slider(boolean vertical, boolean invert) {
+        this(new DefaultBoundedRangeModel(), vertical, invert);
+    }
+
+    public Slider(BoundedRangeModel model, boolean vertical, boolean invert) {
+        setModel(model);
         setVertical(vertical);
         setInvert(invert);
 
@@ -52,34 +61,39 @@ public class Slider extends JComponent {
         addMouseMotionListener(listener);
     }
 
-    private float cursorToValue(int cursor) {
+    private int cursorToValue(int cursor) {
         Rectangle bounds = getValidBounds();
 
-        float value;
+        int length = model.getMaximum() - model.getMinimum();
+
+        int value;
         if (vertical) {
-            value = (float) (cursor - bounds.y) / bounds.height;
+            value = (cursor - bounds.y) * length / bounds.height;
         } else {
-            value = (float) (cursor - bounds.x) / bounds.width;
+            value = (cursor - bounds.x) * length / bounds.width;
         }
 
         if (invert) {
-            value = 1 - value;
+            value = length - value;
         }
 
-        return value;
+        return value + model.getMinimum();
     }
 
-    private int valueToCursor(float value) {
+    private int valueToCursor() {
         Rectangle bounds = getValidBounds();
 
+        int length = model.getMaximum() - model.getMinimum();
+        int value = model.getValue() - model.getMinimum(); // range 0; val; max - min
+
         if (invert) {
-            value = 1 - value;
+            value = length - value;
         }
 
-        if (vertical) {
-            return (int) (value * bounds.height + bounds.y);
+        if (isVertical()) {
+            return value * bounds.height / length + bounds.y;
         } else {
-            return (int) (value * bounds.width + bounds.x);
+            return value * bounds.width / length + bounds.x;
         }
     }
 
@@ -87,7 +101,7 @@ public class Slider extends JComponent {
     protected void paintComponent(Graphics g) {
         Rectangle bounds = getValidBounds();
 
-        int cursor = valueToCursor(value);
+        int cursor = valueToCursor();
 
         Graphics2D g2d = (Graphics2D) g;
         if(vertical) {
@@ -141,19 +155,58 @@ public class Slider extends JComponent {
         return rectangle;
     }
 
-    public float getValue() {
-        return value;
+    private void stateChanged(ChangeEvent evt) {
+        ChangeListener[] listeners = listenerList.getListeners(ChangeListener.class);
+
+        for (ChangeListener listener : listeners) {
+            listener.stateChanged(evt);
+        }
+
+        repaint();
     }
 
-    public void setValue(float value) {
-        if (value >= 0 && value <= 1 && this.value != value) {
-            float old = this.value;
+    public BoundedRangeModel getModel() {
+        return this.model;
+    }
 
-            this.value = value;
+    public void setModel(BoundedRangeModel model) {
+        if (model != null && !Objects.equals(model, this.model)) {
+            BoundedRangeModel old = this.model;
 
-            firePropertyChange(VALUE_PROPERTY, old, value);
+            if (this.model != null) {
+                model.removeChangeListener(listener);
+            }
+
+            this.model = model;
+            model.addChangeListener(listener);
+
+            firePropertyChange(MODEL_PROPERTY, old, model);
             repaint();
         }
+    }
+
+    public void setValue(int value) {
+        model.setValue(value);
+    }
+
+    public int getValue() {
+        return model.getValue();
+    }
+
+    public void setMinimum(int minimum) {
+        model.setMinimum(minimum);
+    }
+
+    public int getMinimum() {
+        return model.getMinimum();
+    }
+
+    public void setMaximum(int maximum) {
+        model.setMaximum(maximum);
+    }
+
+    public int getMaximum() {
+        return model.getMaximum();
     }
 
     public boolean isVertical() {
@@ -186,6 +239,14 @@ public class Slider extends JComponent {
         }
     }
 
+    public void addChangeListener(ChangeListener listener) {
+        listenerList.add(ChangeListener.class, listener);
+    }
+
+    public void removeChangeListener(ChangeListener listener) {
+        listenerList.remove(ChangeListener.class, listener);
+    }
+
     private class MouseListener extends MouseAdapter {
 
         @Override
@@ -209,7 +270,7 @@ public class Slider extends JComponent {
                 cursorPos = Math2.clamp(point.x, bounds.x, bounds.width + bounds.x);
             }
 
-            setValue(cursorToValue(cursorPos));
+            model.setValue(cursorToValue(cursorPos));
         }
     }
 }

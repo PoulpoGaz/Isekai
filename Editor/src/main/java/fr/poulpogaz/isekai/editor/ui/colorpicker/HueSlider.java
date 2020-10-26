@@ -1,5 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.colorpicker;
 
+import fr.poulpogaz.isekai.editor.ui.sliders.Slider;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
@@ -8,19 +11,8 @@ public class HueSlider extends Slider {
     private static final Color[] COLORS = new Color[] {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA, Color.RED};
     private static final float[] FRACTIONS;
 
-    public HueSlider() {
-    }
-
-    public HueSlider(float value) {
-        super(value);
-    }
-
-    public HueSlider(float value, boolean vertical) {
-        super(value, vertical);
-    }
-
-    public HueSlider(float value, boolean vertical, boolean invert) {
-        super(value, vertical, invert);
+    public HueSlider(int hue) {
+        setModel(new DefaultBoundedRangeModel(hue, 0, 0, 360));
     }
 
     @Override
