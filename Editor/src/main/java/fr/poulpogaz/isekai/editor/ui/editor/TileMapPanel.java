@@ -10,9 +10,9 @@ import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
-import fr.poulpogaz.isekai.editor.utils.concurrent.AppExecutor;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,9 +27,8 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
     private Level level;
     private EditorModel editor;
 
-
     private LevelSizeListener levelSizeListener;
-    
+    private ChangeListener mapChanged;
     
     private int hoverX;
     private int hoverY;
@@ -45,9 +44,11 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
         editor.addPropertyChangeListener(EditorModel.SHOW_GRID_PROPERTY, (e) -> repaint());
 
         levelSizeListener = this::levelResized;
+        mapChanged = (e) -> repaint();
 
         level = editor.getSelectedLevel();
         level.addLevelSizeListener(levelSizeListener);
+        level.addChangeListener(mapChanged);
 
         initComponent();
     }
@@ -175,11 +176,9 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
                 move(e);
 
                 if (isCursorInsideMap()) {
-                    AppExecutor.getExecutor().submit(() -> {
-                        editor.applyTool(hoverX, hoverY);
-
-                        repaint();
-                    });
+                    level.setModifyingMap(true);
+                    editor.applyTool(hoverX, hoverY);
+                    level.setModifyingMap(false);
                 }
             }
 
@@ -188,11 +187,9 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
                 move(e);
 
                 if (isCursorInsideMap()) {
-                    AppExecutor.getExecutor().submit(() -> {
-                        editor.applyTool(hoverX, hoverY);
-
-                        repaint();
-                    });
+                    level.setModifyingMap(true);
+                    editor.applyTool(hoverX, hoverY);
+                    level.setModifyingMap(false);
                 }
             }
 
@@ -273,9 +270,11 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(EditorModel.SELECTED_LEVEL_PROPERTY)) {
             level.removeLevelSizeListener(levelSizeListener);
+            level.removeChangeListener(mapChanged);
 
             level = editor.getSelectedLevel();
             level.addLevelSizeListener(levelSizeListener);
+            level.addChangeListener(mapChanged);
 
             repaint();
         }

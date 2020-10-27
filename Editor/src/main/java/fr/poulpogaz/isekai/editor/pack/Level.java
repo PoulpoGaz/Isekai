@@ -6,6 +6,8 @@ import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.util.Arrays;
 
 public class Level extends Model {
@@ -15,11 +17,11 @@ public class Level extends Model {
     public static final int MINIMUM_MAP_WIDTH = 5;
     public static final int MINIMUM_MAP_HEIGHT = 5;
 
-    public static final int MAXIMUM_MAP_WIDTH = 256;
-    public static final int MAXIMUM_MAP_HEIGHT = 256;
+    public static final int MAXIMUM_MAP_WIDTH = 64;
+    public static final int MAXIMUM_MAP_HEIGHT = 64;
 
-    public static final int DEFAULT_MAP_WIDTH = 16;
-    public static final int DEFAULT_MAP_HEIGHT = 16;
+    public static final int DEFAULT_MAP_WIDTH = 9;
+    public static final int DEFAULT_MAP_HEIGHT = 9;
 
     int index = -1;
     
@@ -29,6 +31,8 @@ public class Level extends Model {
     private int height;
 
     private Vector2i playerPos;
+
+    private boolean modifyingMap = false;
 
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
@@ -74,6 +78,14 @@ public class Level extends Model {
         }
     }
 
+    protected void fireChangeListener() {
+        if (!modifyingMap) {
+            ChangeEvent event = new ChangeEvent(this);
+
+            fireListener(ChangeListener.class, (l) -> l.stateChanged(event));
+        }
+    }
+
     public void setTile(int x, int y, Tile tile) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
 
@@ -82,6 +94,8 @@ public class Level extends Model {
             }
 
             tiles[y][x] = tile;
+
+            fireChangeListener();
         }
     }
 
@@ -126,7 +140,23 @@ public class Level extends Model {
             if (!tile.isSolid()) {
                 this.playerPos = pos;
             }
+
+            fireChangeListener();
         }
+    }
+
+    public void setModifyingMap(boolean modifyingMap) {
+        if (this.modifyingMap != modifyingMap) {
+            boolean old = this.modifyingMap;
+
+            this.modifyingMap = modifyingMap;
+
+            fireChangeListener();
+        }
+    }
+
+    public boolean isModifyingMap() {
+        return modifyingMap;
     }
 
     public void addLevelSizeListener(LevelSizeListener listener) {
@@ -135,6 +165,14 @@ public class Level extends Model {
 
     public void removeLevelSizeListener(LevelSizeListener listener) {
         listenerList.remove(LevelSizeListener.class, listener);
+    }
+
+    public void addChangeListener(ChangeListener listener) {
+        listenerList.add(ChangeListener.class, listener);
+    }
+
+    public void removeChangeListener(ChangeListener listener) {
+        listenerList.remove(ChangeListener.class, listener);
     }
 
     public int getIndex() {

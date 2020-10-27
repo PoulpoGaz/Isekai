@@ -174,15 +174,6 @@ public class ColorPicker extends JComponent {
         }
     }
 
-    private void setText(JTextField field, int value) {
-        String fieldText = field.getText();
-        String text = String.valueOf(value);
-
-        if (fieldText.isEmpty() || Integer.parseInt(fieldText) != Integer.parseInt(text)) {
-            field.setText(text);
-        }
-    }
-
     private JSpinner createSpinner(int max, int value, Consumer<Integer> listener) {
         JSpinner spinner = new JSpinner();
         spinner.setModel(new SpinnerNumberModel(value, 0, max, 1));
