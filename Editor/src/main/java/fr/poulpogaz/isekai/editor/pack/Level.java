@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.tools.Map;
 import fr.poulpogaz.isekai.editor.ui.Model;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.Arrays;
 
-public class Level extends Model {
+public class Level extends Model implements Map<Tile> {
 
     private static final Logger LOGGER = LogManager.getLogger(Level.class);
 
@@ -85,7 +86,8 @@ public class Level extends Model {
         }
     }
 
-    public void setTile(int x, int y, Tile tile) {
+    @Override
+    public void set(Tile tile, int x, int y) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
 
             if (tile.isSolid() && playerPos.equals(x, y)) {
@@ -98,7 +100,8 @@ public class Level extends Model {
         }
     }
 
-    public Tile getTile(int x, int y) {
+    @Override
+    public Tile get(int x, int y) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
             return tiles[y][x];
         } else {
@@ -112,6 +115,7 @@ public class Level extends Model {
         return tiles;
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
@@ -120,6 +124,7 @@ public class Level extends Model {
         resize(width, height);
     }
 
+    @Override
     public int getHeight() {
         return height;
     }

@@ -28,7 +28,7 @@ public class LevelIO {
 
         for (int y = 0; y < level.getHeight(); y++) {
             for (int x = 0; x < level.getWidth(); x++) {
-                writer.value(level.getTile(x, y).ordinal());
+                writer.value(level.get(x, y).ordinal());
             }
         }
 
@@ -61,7 +61,7 @@ public class LevelIO {
                     throw new IOException("Incorrect tile value: " + tile + " at x: " + x + ", y: " + y);
                 }
 
-                level.setTile(x, y, values[tile]);
+                level.set(values[tile], x, y);
             }
         }
 

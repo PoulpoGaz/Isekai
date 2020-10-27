@@ -25,9 +25,9 @@ public class ResizePanel extends JPanel {
         this.editor = editor;
 
         levelSizeListener = this::levelResized;
-        level = editor.getSelectedLevel();
+        level = editor.getSelectedMap();
 
-        editor.addPropertyChangeListener(MapEditorModel.SELECTED_LEVEL_PROPERTY, this::switchLevel);
+        editor.addPropertyChangeListener(MapEditorModel.SELECTED_MAP_PROPERTY, this::switchLevel);
         level.addLevelSizeListener(levelSizeListener);
 
         setBorder(BorderFactory.createTitledBorder("Resize"));
@@ -57,7 +57,7 @@ public class ResizePanel extends JPanel {
     private void switchLevel(PropertyChangeEvent evt) {
         level.removeLevelSizeListener(levelSizeListener);
 
-        this.level = editor.getSelectedLevel();
+        this.level = editor.getSelectedMap();
 
         level.addLevelSizeListener(levelSizeListener);
 

@@ -35,13 +35,13 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
     public TileMapPanel(Pack pack, MapEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
-        editor.addPropertyChangeListener(MapEditorModel.SELECTED_LEVEL_PROPERTY, this);
+        editor.addPropertyChangeListener(MapEditorModel.SELECTED_MAP_PROPERTY, this);
         editor.addPropertyChangeListener(MapEditorModel.SHOW_GRID_PROPERTY, (e) -> repaint());
 
         levelSizeListener = this::levelResized;
         mapChanged = (e) -> repaint();
 
-        level = editor.getSelectedLevel();
+        level = editor.getSelectedMap();
         level.addLevelSizeListener(levelSizeListener);
         level.addChangeListener(mapChanged);
 
@@ -77,7 +77,7 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
 
             for (int y = bounds.getMinY(); y < bounds.getMaxY(); y++) {
                for (int x = bounds.getMinX(); x < bounds.getMaxX(); x++) {
-                    Tile t = level.getTile(x, y);
+                    Tile t = level.get(x, y);
 
                     int drawX = offset.x + x * TILE_SIZE;
                     int drawY = offset.y + y * TILE_SIZE;
@@ -263,15 +263,13 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(MapEditorModel.SELECTED_LEVEL_PROPERTY)) {
-            level.removeLevelSizeListener(levelSizeListener);
-            level.removeChangeListener(mapChanged);
+        level.removeLevelSizeListener(levelSizeListener);
+        level.removeChangeListener(mapChanged);
 
-            level = editor.getSelectedLevel();
-            level.addLevelSizeListener(levelSizeListener);
-            level.addChangeListener(mapChanged);
+        level = editor.getSelectedMap();
+        level.addLevelSizeListener(levelSizeListener);
+        level.addChangeListener(mapChanged);
 
-            repaint();
-        }
+        repaint();
     }
 }

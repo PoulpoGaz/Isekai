@@ -4,10 +4,10 @@ import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.SpriteIcon;
-import fr.poulpogaz.isekai.editor.ui.editor.tools.FillTool;
-import fr.poulpogaz.isekai.editor.ui.editor.tools.PaintTool;
-import fr.poulpogaz.isekai.editor.ui.editor.tools.PlayerTool;
-import fr.poulpogaz.isekai.editor.ui.editor.tools.Tool;
+import fr.poulpogaz.isekai.editor.tools.FillTool;
+import fr.poulpogaz.isekai.editor.tools.PaintTool;
+import fr.poulpogaz.isekai.editor.tools.PlayerTool;
+import fr.poulpogaz.isekai.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;

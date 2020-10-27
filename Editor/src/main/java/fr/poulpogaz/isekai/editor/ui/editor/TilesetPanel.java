@@ -25,7 +25,7 @@ public class TilesetPanel extends JPanel {
         this.pack = pack;
         this.editor = editor;
         editor.addPropertyChangeListener(MapEditorModel.TOOL_PROPERTY, (e) -> repaint());
-        editor.addPropertyChangeListener(MapEditorModel.SELECTED_TILE_PROPERTY, (e) -> repaint());
+        editor.addPropertyChangeListener(MapEditorModel.SELECTED_ELEMENT_PROPERTY, (e) -> repaint());
 
         setBorder(BorderFactory.createTitledBorder("Tileset"));
 
@@ -55,7 +55,7 @@ public class TilesetPanel extends JPanel {
 
             sprite.paint(g2d, xDraw, yDraw, tileSize, tileSize);
 
-            if (editor.getSelectedTile() == tile) {
+            if (editor.getSelectedElement() == tile) {
                 g.setColor(new Color(0, 217, 255, 64));
                 g.fillRect(xDraw, yDraw, tileSize, tileSize);
             }
@@ -134,7 +134,7 @@ public class TilesetPanel extends JPanel {
                 return;
             }
 
-            editor.setSelectedTile(tiles[i]);
+            editor.setSelectedElement(tiles[i]);
 
             repaint();
         }

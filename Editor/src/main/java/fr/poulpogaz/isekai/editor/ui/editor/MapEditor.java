@@ -23,8 +23,7 @@ public class MapEditor extends JPanel {
 
     public MapEditor(Pack pack) {
         this.pack = pack;
-        editor = new MapEditorModel();
-        editor.setSelectedLevel(pack.getLevel(0));
+        editor = new MapEditorModel(pack.getLevel(0));
 
         setLayout(new BorderLayout());
         initComponents();

@@ -52,6 +52,9 @@ public class IsekaiEditor extends JFrame {
                 setLocationRelativeTo(null);
             }
         }
+
+        revalidate();
+        repaint();
     }
 
     private Dimension getScreenDimension() {

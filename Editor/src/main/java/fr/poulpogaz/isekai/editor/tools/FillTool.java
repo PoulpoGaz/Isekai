@@ -1,9 +1,7 @@
-package fr.poulpogaz.isekai.editor.ui.editor.tools;
+package fr.poulpogaz.isekai.editor.tools;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
 import java.awt.*;
@@ -24,16 +22,20 @@ public class FillTool implements Tool {
     }
 
     @Override
-    public void apply(Level level, Tile tile, int tileX, int tileY) {
-        Tile toBeReplaced = level.getTile(tileX, tileY);
+    public <M extends Map<E>, E> void apply(M map, E element, int x, int y) {
+        E toBeReplaced = map.get(x, y);
 
-        if (tile == toBeReplaced) {
+        if (element == toBeReplaced) {
             return;
         }
 
         Stack<Point> points = new Stack<>();
-        points.push(new Point(tileX, tileY));
-        level.setTile(tileX, tileY, tile);
+        points.push(new Point(x, y));
+        map.set(element, x, y);
+
+        boolean isLevel = map instanceof Level;
+        Level level = isLevel ? (Level) map : null;
+        Tile tile = isLevel ? (Tile) element : null;
 
         while (!points.isEmpty()) {
             Point point = points.pop();
@@ -41,18 +43,20 @@ public class FillTool implements Tool {
             for (Point direction : directions) {
                 Point p2 = new Point(point.x + direction.x, point.y + direction.y);
 
-                if (p2.x < 0 || p2.y < 0 || p2.x >= level.getWidth() || p2.y >= level.getHeight()) {
+                if (p2.x < 0 || p2.y < 0 || p2.x >= map.getWidth() || p2.y >= map.getHeight()) {
                     continue;
                 }
 
-                if (level.getTile(p2.x, p2.y) == toBeReplaced) {
-                    Vector2i pos = level.getPlayerPos();
+                if (map.get(p2.x, p2.y) == toBeReplaced) {
+                    if (isLevel) {
+                        Vector2i pos = level.getPlayerPos();
 
-                    if (pos.x == p2.x && pos.y == p2.y && toBeReplaced.isSolid()) {
-                        continue;
+                        if (pos.x == p2.x && pos.y == p2.y && tile.isSolid()) {
+                            continue;
+                        }
                     }
 
-                    level.setTile(p2.x, p2.y, tile);
+                    map.set(element, p2.x, p2.y);
 
                     points.push(p2);
                 }
@@ -60,10 +64,10 @@ public class FillTool implements Tool {
         }
     }
 
-    @Override
+    /*@Override
     public AbstractSprite getToolSprite(Pack pack, Tile tile) {
         return tile.getSprite(pack);
-    }
+    }*/
 
     public static FillTool getInstance() {
         return INSTANCE;
