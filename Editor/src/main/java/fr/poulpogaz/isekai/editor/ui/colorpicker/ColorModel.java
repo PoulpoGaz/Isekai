@@ -11,6 +11,7 @@ public class ColorModel extends Model {
 
     private Color color;
     private final int[] hsb = new int[3];
+    private String hex;
 
     public ColorModel() {
         this(Color.WHITE);
@@ -35,6 +36,8 @@ public class ColorModel extends Model {
             hsb[1] = (int) (floats[1] * 100);
             hsb[2] = (int) (floats[2] * 100);
 
+            hex = computeHex();
+
             firePropertyChange(COLOR_PROPERTY, old, color);
         }
     }
@@ -55,11 +58,13 @@ public class ColorModel extends Model {
             this.hsb[1] = saturation;
             this.hsb[2] = brightness;
 
+            hex = computeHex();
+
             firePropertyChange(COLOR_PROPERTY, old, color);
         }
     }
 
-    private boolean checkHSBRange(int hue, int saturation, int brightness) {
+    protected boolean checkHSBRange(int hue, int saturation, int brightness) {
         if (hue < 0 || hue > 360) {
             return false;
         }
@@ -69,6 +74,66 @@ public class ColorModel extends Model {
         }
 
         return brightness >= 0 && brightness <= 100;
+    }
+
+    public String getHex() {
+        return hex;
+    }
+
+    public void setHex(String hex) {
+        Color color = fromHex(hex);
+
+        if (!this.hex.equals(hex) && color != null && color != this.color ) {
+            Color old = this.color;
+
+            this.color = color;
+
+            float[] floats = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+            hsb[0] = (int) (floats[0] * 360);
+            hsb[1] = (int) (floats[1] * 100);
+            hsb[2] = (int) (floats[2] * 100);
+
+            this.hex = hex;
+
+            firePropertyChange(COLOR_PROPERTY, old, color);
+        }
+    }
+
+    protected Color fromHex(String hex) {
+        return switch (hex.length()) {
+            case 3 -> {
+                int red = Integer.parseInt(hex.substring(0, 1), 16) * 16;
+                int green = Integer.parseInt(hex.substring(1, 2), 16) * 16;
+                int blue = Integer.parseInt(hex.substring(2, 3), 16) * 16;
+
+                yield new Color(red, green, blue);
+            }
+            case 6 -> {
+                int red = Integer.parseInt(hex.substring(0, 2), 16);
+                int green = Integer.parseInt(hex.substring(2, 4), 16);
+                int blue = Integer.parseInt(hex.substring(4, 6), 16);
+
+                yield new Color(red, green, blue);
+            }
+            case 8 -> {
+                int alpha = Integer.parseInt(hex.substring(0, 2), 16);
+                int red = Integer.parseInt(hex.substring(2, 4), 16);
+                int green = Integer.parseInt(hex.substring(4, 6), 16);
+                int blue = Integer.parseInt(hex.substring(6, 8), 16);
+
+                yield new Color(red, green, blue, alpha);
+            }
+            default -> null;
+        };
+    }
+
+    protected String computeHex() {
+        String alpha = Integer.toHexString(color.getAlpha());
+        String red = Integer.toHexString(color.getRed());
+        String green = Integer.toHexString(color.getGreen());
+        String blue = Integer.toHexString(color.getBlue());
+
+        return alpha + red + green + blue;
     }
 
     public int getRed() {

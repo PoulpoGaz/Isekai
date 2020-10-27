@@ -12,8 +12,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -24,7 +22,7 @@ import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
 import static fr.poulpogaz.isekai.editor.ui.colorpicker.ColorModel.COLOR_PROPERTY;
-import static fr.poulpogaz.isekai.editor.ui.colorpicker.ColorNumberDocument.Type.*;
+import static fr.poulpogaz.isekai.editor.ui.colorpicker.ColorNumberDocument.Type.HEX;
 
 public class ColorPicker extends JComponent {
 
@@ -39,15 +37,17 @@ public class ColorPicker extends JComponent {
     private HueSlider hueSlider;
     private PreviewComponent previewComponent;
 
-    private JTextField red;
-    private JTextField green;
-    private JTextField blue;
+    private JSpinner red;
+    private JSpinner green;
+    private JSpinner blue;
 
-    private JTextField hue;
-    private JTextField saturation;
-    private JTextField brightness;
+    private JSpinner hue;
+    private JSpinner saturation;
+    private JSpinner brightness;
 
-    private JTextField alpha;
+    private JSpinner alpha;
+
+    private JTextField hex;
 
     private JButton pipetteButton;
     private Pipette pipette;
@@ -65,15 +65,17 @@ public class ColorPicker extends JComponent {
         setLayout(new MigLayout());
 
         // text field
-        red = createField(RGBA, model.getRed(), model::setRed);
-        green = createField(RGBA, model.getGreen(), model::setGreen);
-        blue = createField(RGBA, model.getBlue(), model::setBlue);
+        red = createSpinner(255, model.getRed(), model::setRed);
+        green = createSpinner(255, model.getGreen(), model::setGreen);
+        blue = createSpinner(255, model.getBlue(), model::setBlue);
 
-        hue = createField(HUE, model.getHue(), model::setHue);
-        saturation = createField(SAT_BRI, model.getSaturation(), model::setSaturation);
-        brightness = createField(SAT_BRI, model.getBrightness(), model::setBrightness);
+        hue = createSpinner(360, model.getHue(), model::setHue);
+        saturation = createSpinner(100, model.getSaturation(), model::setSaturation);
+        brightness = createSpinner(100, model.getBrightness(), model::setBrightness);
 
-        alpha = createField(RGBA, model.getAlpha(), model::setAlpha);
+        alpha = createSpinner(255, model.getAlpha(), model::setAlpha);
+
+        hex = createHexField();
 
         // sliders and chooser
         chooser = new SaturationBrightnessChooser();
@@ -97,23 +99,25 @@ public class ColorPicker extends JComponent {
         add(chooser, "span 1 4");
         add(hueSlider, "span 2 4");
 
-        add(new JLabel("R:"));
+        add(new JLabel("R:"), "align right");
         add(red);
-        add(new JLabel("H:"));
+        add(new JLabel("H:"), "align right");
         add(hue, "wrap");
 
-        add(new JLabel("G:"));
+        add(new JLabel("G:"), "align right");
         add(green);
-        add(new JLabel("S:"));
+        add(new JLabel("S:"), "align right");
         add(saturation, "wrap");
 
-        add(new JLabel("B:"));
+        add(new JLabel("B:"), "align right");
         add(blue);
-        add(new JLabel("V:"));
+        add(new JLabel("V:"), "align right");
         add(brightness, "wrap");
 
-        add(new JLabel("A:"));
-        add(alpha, "wrap");
+        add(new JLabel("A:"), "align right");
+        add(alpha);
+        add(new JLabel("Hex:"), "align right");
+        add(hex, "wrap");
 
         add(alphaSlider);
         add(previewComponent);
@@ -156,13 +160,18 @@ public class ColorPicker extends JComponent {
 
         previewComponent.repaint();
 
-        setText(red, model.getRed());
-        setText(green, model.getGreen());
-        setText(blue, model.getBlue());
-        setText(alpha, model.getAlpha());
-        setText(hue, model.getHue());
-        setText(saturation, model.getSaturation());
-        setText(brightness, model.getBrightness());
+        red.setValue(model.getRed());
+        green.setValue(model.getGreen());
+        blue.setValue(model.getBlue());
+        alpha.setValue(model.getAlpha());
+        hue.setValue(model.getHue());
+        saturation.setValue(model.getSaturation());
+        brightness.setValue(model.getBrightness());
+
+        String hexText = hex.getText();
+        if (hexText.isEmpty() || !hexText.equals(model.getHex())) {
+            hex.setText(model.getHex());
+        }
     }
 
     private void setText(JTextField field, int value) {
@@ -174,37 +183,33 @@ public class ColorPicker extends JComponent {
         }
     }
 
-    private JTextField createField(ColorNumberDocument.Type type, int value, Consumer<Integer> listener) {
+    private JSpinner createSpinner(int max, int value, Consumer<Integer> listener) {
+        JSpinner spinner = new JSpinner();
+        spinner.setModel(new SpinnerNumberModel(value, 0, max, 1));
+        spinner.addChangeListener((l) -> listener.accept((Integer) spinner.getValue()));
+
+        return spinner;
+    }
+
+    private JTextField createHexField() {
         JTextField field = new JTextField();
-        field.setDocument(new ColorNumberDocument(type));
-        field.setText(String.valueOf(value));
+        field.setDocument(new ColorNumberDocument(HEX));
+        field.setText(model.getHex());
 
         field.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                runListener(e.getDocument());
+                model.setHex(field.getText());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                runListener(e.getDocument());
+                model.setHex(field.getText());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                runListener(e.getDocument());
-            }
-
-            private void runListener(Document doc) {
-                try {
-                    String text = doc.getText(0, doc.getLength());
-
-                    if (!text.isEmpty()) {
-                        listener.accept(Integer.parseInt(text));
-                    }
-                } catch (BadLocationException e) {
-                    e.printStackTrace();
-                }
+                model.setHex(field.getText());
             }
         });
 
@@ -230,7 +235,7 @@ public class ColorPicker extends JComponent {
 
             @Override
             public String getName() {
-                return "red";
+                return "brighter";
             }
         }}));
 
