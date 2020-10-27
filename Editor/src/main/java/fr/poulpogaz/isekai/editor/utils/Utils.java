@@ -3,11 +3,15 @@ package fr.poulpogaz.isekai.editor.utils;
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 public class Utils {
+
+    private static final Object LOCK = new Object();
+    private static Cursor BLANK_CURSOR;
 
     public static Dimension sub(Dimension dim, Insets insets) {
         Dimension out = new Dimension();
@@ -84,6 +88,19 @@ public class Utils {
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static Cursor getBlankCursor() {
+        synchronized (LOCK) {
+            if (BLANK_CURSOR == null) {
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                BufferedImage cursor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+                BLANK_CURSOR = toolkit.createCustomCursor(cursor, new Point(0, 0), "blank cursor");
+            }
+
+            return BLANK_CURSOR;
         }
     }
 }

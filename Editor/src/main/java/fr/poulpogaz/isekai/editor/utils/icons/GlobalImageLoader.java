@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class GlobalImageLoader {
@@ -55,7 +54,9 @@ public class GlobalImageLoader {
     }
 
     public static BufferedImage loadSVG(String resource, int width, int height, ImagePostProcess... processes) throws IOException {
-        String key = String.format("%s%d%d%s", resource, width, height, Arrays.hashCode(processes));
+        int hash = hash(processes);
+
+        String key = String.format("%s%d%d%s", resource, width, height, hash);
 
         if (IMAGES.containsKey(key)) {
             return IMAGES.get(key);
@@ -69,7 +70,7 @@ public class GlobalImageLoader {
 
         BufferedImage svg = svgLoader.load(newInputStream(resource));
 
-        IMAGES.put(String.format("%s%d%d%s", resource, width, height, Arrays.hashCode(processes)), svg);
+        IMAGES.put(key, svg);
 
         return svg;
     }
@@ -108,7 +109,9 @@ public class GlobalImageLoader {
     }
 
     public static BufferedImage loadImage(String resource, int width, int height, ImagePostProcess... processes) throws IOException {
-        String key = String.format("%s%d%d%s", resource, width, height, Arrays.hashCode(processes));
+        int hash = hash(processes);
+
+        String key = String.format("%s%d%d%s", resource, width, height, hash);
 
         if (IMAGES.containsKey(key)) {
             return IMAGES.get(key);
@@ -122,7 +125,7 @@ public class GlobalImageLoader {
 
         BufferedImage image = imageLoader.load(newInputStream(resource));
 
-        IMAGES.put(String.format("%s%d%d%s", resource, width, height, Arrays.hashCode(processes)), image);
+        IMAGES.put(key, image);
 
         return image;
     }
@@ -148,5 +151,19 @@ public class GlobalImageLoader {
         g.drawLine(0, 16, 16, 0);
 
         return image;
+    }
+
+    private static int hash(ImagePostProcess[] processes) {
+        if (processes == null) {
+            return 0;
+        }
+
+        int result = 1;
+
+        for (ImagePostProcess process : processes) {
+            result = 31 * result + (process == null ? 0 : process.getName().hashCode());
+        }
+
+        return result;
     }
 }

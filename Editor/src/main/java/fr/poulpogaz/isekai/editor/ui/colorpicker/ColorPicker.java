@@ -1,8 +1,12 @@
 package fr.poulpogaz.isekai.editor.ui.colorpicker;
 
+import fr.poulpogaz.isekai.editor.ui.ButtonFactory;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
+import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
+import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
+import fr.poulpogaz.isekai.editor.utils.icons.ImagePostProcess;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,6 +18,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
@@ -43,6 +48,9 @@ public class ColorPicker extends JComponent {
     private JTextField brightness;
 
     private JTextField alpha;
+
+    private JButton pipetteButton;
+    private Pipette pipette;
 
     private int returnValue;
 
@@ -84,6 +92,8 @@ public class ColorPicker extends JComponent {
         previewComponent = new PreviewComponent();
         previewComponent.setPreferredSize(new Dimension(25, 25));
 
+        pipetteButton = createPipetteButton();
+
         add(chooser, "span 1 4");
         add(hueSlider, "span 2 4");
 
@@ -107,6 +117,7 @@ public class ColorPicker extends JComponent {
 
         add(alphaSlider);
         add(previewComponent);
+        add(pipetteButton);
     }
 
     private void initListeners() {
@@ -122,6 +133,15 @@ public class ColorPicker extends JComponent {
 
         hueSlider.addChangeListener((e) -> {
             model.setHue(hueSlider.getValue());
+        });
+
+        pipetteButton.addActionListener((l) -> {
+            if (pipette == null) {
+                pipette = new Pipette();
+                pipette.addPropertyChangeListener(Pipette.SELECTED_COLOR_PROPERTY, (e) -> model.setColor(pipette.getSelectedColor()));
+            }
+
+            pipette.show();
         });
 
         model.addPropertyChangeListener(COLOR_PROPERTY, this::syncComponents);
@@ -189,6 +209,32 @@ public class ColorPicker extends JComponent {
         });
 
         return field;
+    }
+
+    private JButton createPipetteButton() {
+        JButton pipetteButton = ButtonFactory.createTransparentButton();
+        pipetteButton.setIcon(IconLoader.loadSVGIcon("/icons/pick.svg"));
+        pipetteButton.setRolloverIcon(IconLoader.loadSVGIcon("/icons/pick.svg", 16, new ImagePostProcess[]{new ImagePostProcess() {
+            @Override
+            public void process(BufferedImage input) {
+                Graphics2D g2d = input.createGraphics();
+
+                try {
+                    g2d.setComposite(AlphaComposite.SrcIn);
+                    g2d.setColor(GraphicsUtils.brighter(UIManager.getColor("Icon.color"), 0.1));
+                    g2d.fillRect(0, 0, input.getWidth(), input.getHeight());
+                } finally {
+                    g2d.dispose();
+                }
+            }
+
+            @Override
+            public String getName() {
+                return "red";
+            }
+        }}));
+
+        return pipetteButton;
     }
 
     protected JDialog createDialog(Component parent, String title) {
