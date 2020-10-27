@@ -1,14 +1,15 @@
-package fr.poulpogaz.isekai.editor.model;
+package fr.poulpogaz.isekai.editor.ui.editor;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.tools.PaintTool;
-import fr.poulpogaz.isekai.editor.tools.PlayerTool;
-import fr.poulpogaz.isekai.editor.tools.Tool;
+import fr.poulpogaz.isekai.editor.ui.Model;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.PaintTool;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.PlayerTool;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.Tool;
 
-public class EditorModel extends Model {
+public class MapEditorModel extends Model {
 
     public static final String SELECTED_LEVEL_PROPERTY = "SelectedLevelProperty";
     public static final String TOOL_PROPERTY = "ToolProperty";
@@ -22,7 +23,7 @@ public class EditorModel extends Model {
 
     private boolean showGrid = true;
 
-    public EditorModel() {
+    public MapEditorModel() {
 
     }
 

@@ -1,14 +1,13 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.model.EditorModel;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.SpriteIcon;
-import fr.poulpogaz.isekai.editor.tools.FillTool;
-import fr.poulpogaz.isekai.editor.tools.PaintTool;
-import fr.poulpogaz.isekai.editor.tools.PlayerTool;
-import fr.poulpogaz.isekai.editor.tools.Tool;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.FillTool;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.PaintTool;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.PlayerTool;
+import fr.poulpogaz.isekai.editor.ui.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
@@ -16,17 +15,17 @@ import java.beans.PropertyChangeEvent;
 
 public class ToolBar extends JToolBar {
 
-    private final EditorModel editor;
+    private final MapEditorModel editor;
     private final Pack pack;
 
     private JToggleButton edit;
     private JToggleButton fill;
     private JToggleButton playerPos;
 
-    public ToolBar(Pack pack, EditorModel editor) {
+    public ToolBar(Pack pack, MapEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
-        editor.addPropertyChangeListener(EditorModel.TOOL_PROPERTY, this::switchTool);
+        editor.addPropertyChangeListener(MapEditorModel.TOOL_PROPERTY, this::switchTool);
 
         initComponents();
     }

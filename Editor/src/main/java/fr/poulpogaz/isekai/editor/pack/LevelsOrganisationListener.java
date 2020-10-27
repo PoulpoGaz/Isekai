@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.model;
+package fr.poulpogaz.isekai.editor.pack;
 
 import java.util.EventListener;
 

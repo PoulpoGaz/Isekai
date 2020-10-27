@@ -1,7 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.model.LevelSizeListener;
-import fr.poulpogaz.isekai.editor.model.Model;
+import fr.poulpogaz.isekai.editor.ui.Model;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

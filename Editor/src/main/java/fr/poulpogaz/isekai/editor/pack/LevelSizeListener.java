@@ -1,6 +1,4 @@
-package fr.poulpogaz.isekai.editor.model;
-
-import fr.poulpogaz.isekai.editor.pack.Level;
+package fr.poulpogaz.isekai.editor.pack;
 
 import java.util.EventListener;
 

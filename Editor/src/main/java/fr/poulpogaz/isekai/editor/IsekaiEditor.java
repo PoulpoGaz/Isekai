@@ -1,11 +1,10 @@
 package fr.poulpogaz.isekai.editor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
 import fr.poulpogaz.isekai.editor.ui.editor.MapEditor;
-import fr.poulpogaz.isekai.editor.ui.sprite_editor.SpriteEditor;
+import fr.poulpogaz.isekai.editor.ui.spriteeditor.SpriteEditor;
 
 import javax.swing.*;
 import java.awt.*;

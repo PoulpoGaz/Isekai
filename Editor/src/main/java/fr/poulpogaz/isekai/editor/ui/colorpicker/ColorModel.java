@@ -1,6 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.colorpicker;
 
-import fr.poulpogaz.isekai.editor.model.Model;
+import fr.poulpogaz.isekai.editor.ui.Model;
 
 import java.awt.*;
 import java.util.Objects;

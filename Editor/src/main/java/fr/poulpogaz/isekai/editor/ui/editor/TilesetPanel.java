@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.model.EditorModel;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
@@ -20,13 +19,13 @@ public class TilesetPanel extends JPanel {
     private static final Dimension SIZE = new Dimension(tileSize * WIDTH, tileSize * HEIGHT);
 
     private final Pack pack;
-    private final EditorModel editor;
+    private final MapEditorModel editor;
 
-    public TilesetPanel(Pack pack, EditorModel editor) {
+    public TilesetPanel(Pack pack, MapEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
-        editor.addPropertyChangeListener(EditorModel.TOOL_PROPERTY, (e) -> repaint());
-        editor.addPropertyChangeListener(EditorModel.SELECTED_TILE_PROPERTY, (e) -> repaint());
+        editor.addPropertyChangeListener(MapEditorModel.TOOL_PROPERTY, (e) -> repaint());
+        editor.addPropertyChangeListener(MapEditorModel.SELECTED_TILE_PROPERTY, (e) -> repaint());
 
         setBorder(BorderFactory.createTitledBorder("Tileset"));
 

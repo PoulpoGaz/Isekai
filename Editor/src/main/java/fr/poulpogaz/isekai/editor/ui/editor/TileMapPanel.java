@@ -1,11 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.model.EditorModel;
-import fr.poulpogaz.isekai.editor.model.LevelSizeListener;
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Utils;
@@ -25,7 +20,7 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
 
     private final Pack pack;
     private Level level;
-    private EditorModel editor;
+    private MapEditorModel editor;
 
     private LevelSizeListener levelSizeListener;
     private ChangeListener mapChanged;
@@ -37,11 +32,11 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
 
     private Rectangle cachedVisibleRect;
 
-    public TileMapPanel(Pack pack, EditorModel editor) {
+    public TileMapPanel(Pack pack, MapEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
-        editor.addPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this);
-        editor.addPropertyChangeListener(EditorModel.SHOW_GRID_PROPERTY, (e) -> repaint());
+        editor.addPropertyChangeListener(MapEditorModel.SELECTED_LEVEL_PROPERTY, this);
+        editor.addPropertyChangeListener(MapEditorModel.SHOW_GRID_PROPERTY, (e) -> repaint());
 
         levelSizeListener = this::levelResized;
         mapChanged = (e) -> repaint();
@@ -268,7 +263,7 @@ public class TileMapPanel extends JPanel implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(EditorModel.SELECTED_LEVEL_PROPERTY)) {
+        if (evt.getPropertyName().equals(MapEditorModel.SELECTED_LEVEL_PROPERTY)) {
             level.removeLevelSizeListener(levelSizeListener);
             level.removeChangeListener(mapChanged);
 

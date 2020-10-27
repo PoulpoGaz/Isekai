@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.model;
+package fr.poulpogaz.isekai.editor.ui;
 
 import javax.swing.event.EventListenerList;
 import java.beans.PropertyChangeListener;

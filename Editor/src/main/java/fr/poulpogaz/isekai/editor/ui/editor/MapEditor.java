@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.model.EditorModel;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -12,7 +11,7 @@ import java.awt.event.AdjustmentListener;
 public class MapEditor extends JPanel {
 
     private final Pack pack;
-    private final EditorModel editor;
+    private final MapEditorModel editor;
 
     private TileMapPanel tileMapPanel;
     private TilesetPanel tilesetPanel;
@@ -24,7 +23,7 @@ public class MapEditor extends JPanel {
 
     public MapEditor(Pack pack) {
         this.pack = pack;
-        editor = new EditorModel();
+        editor = new MapEditorModel();
         editor.setSelectedLevel(pack.getLevel(0));
 
         setLayout(new BorderLayout());

@@ -1,8 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.model.LevelsOrganisationListener;
-import fr.poulpogaz.isekai.editor.model.Model;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.ui.Model;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

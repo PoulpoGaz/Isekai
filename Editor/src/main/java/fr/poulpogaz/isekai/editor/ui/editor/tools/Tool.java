@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.tools;
+package fr.poulpogaz.isekai.editor.ui.editor.tools;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;

@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.ui.sprite_editor;
+package fr.poulpogaz.isekai.editor.ui.spriteeditor;
 
 import fr.poulpogaz.isekai.editor.ui.colorpicker.ColorPicker;
 

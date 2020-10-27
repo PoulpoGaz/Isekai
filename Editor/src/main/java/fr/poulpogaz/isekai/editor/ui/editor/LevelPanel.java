@@ -1,8 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.editor;
 
-import fr.poulpogaz.isekai.editor.model.EditorModel;
-import fr.poulpogaz.isekai.editor.model.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
@@ -18,16 +17,16 @@ import java.util.Objects;
 public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
     private final Pack pack;
-    private final EditorModel editor;
+    private final MapEditorModel editor;
 
     private JComboBox<Integer> levelsComboBox;
 
-    public LevelPanel(Pack pack, EditorModel editor) {
+    public LevelPanel(Pack pack, MapEditorModel editor) {
         this.pack = Objects.requireNonNull(pack);
         pack.addLevelsOrganisationListener(this);
 
         this.editor = Objects.requireNonNull(editor);
-        editor.addPropertyChangeListener(EditorModel.SELECTED_LEVEL_PROPERTY, this::switchLevel);
+        editor.addPropertyChangeListener(MapEditorModel.SELECTED_LEVEL_PROPERTY, this::switchLevel);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Level order"));
