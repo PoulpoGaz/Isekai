@@ -73,6 +73,9 @@ public class BiSlider extends JComponent {
     }
 
     protected void paintCursor(Graphics2D g2d, Point cursor) {
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(cursor.x - 2, cursor.y - 2, 4, 4);
+
         g2d.setColor(Color.WHITE);
         g2d.drawRect(cursor.x - 1, cursor.y - 1, 2, 2);
     }

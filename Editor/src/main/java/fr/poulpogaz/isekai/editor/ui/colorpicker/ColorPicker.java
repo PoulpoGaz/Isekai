@@ -1,5 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.colorpicker;
 
+import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
+import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
+import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -8,13 +11,21 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
+import static fr.poulpogaz.isekai.editor.ui.colorpicker.ColorModel.COLOR_PROPERTY;
 import static fr.poulpogaz.isekai.editor.ui.colorpicker.ColorNumberDocument.Type.*;
 
-public class ColorPicker extends JPanel {
+public class ColorPicker extends JComponent {
+
+    public static final int CANCEL_OPTION = 0;
+    public static final int CHOOSE_OPTION = 1;
+    public static final int ERROR_OPTION = -1;
 
     private final ColorModel model;
 
@@ -32,6 +43,8 @@ public class ColorPicker extends JPanel {
     private JTextField brightness;
 
     private JTextField alpha;
+
+    private int returnValue;
 
     public ColorPicker() {
         model = new ColorModel();
@@ -111,7 +124,7 @@ public class ColorPicker extends JPanel {
             model.setHue(hueSlider.getValue());
         });
 
-        model.addPropertyChangeListener(ColorModel.COLOR_PROPERTY, this::syncComponents);
+        model.addPropertyChangeListener(COLOR_PROPERTY, this::syncComponents);
     }
 
     private void syncComponents(PropertyChangeEvent evt) {
@@ -178,6 +191,98 @@ public class ColorPicker extends JPanel {
         return field;
     }
 
+    protected JDialog createDialog(Component parent, String title) {
+        JDialog dialog;
+
+        if (parent == null) {
+            dialog = new JDialog((Frame) null, title, true);
+        } else {
+            Window window = SwingUtilities.getWindowAncestor(parent);
+            if (window instanceof Frame) {
+                dialog = new JDialog((Frame) window, title, true);
+            } else {
+                dialog = new JDialog((Dialog) window, title, true);
+            }
+        }
+
+        JPanel content = new JPanel();
+        content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        content.setLayout(new BorderLayout());
+
+        content.add(this, BorderLayout.CENTER);
+
+        JPanel bottom = new JPanel();
+        bottom.setLayout(new HorizontalLayout());
+
+        HorizontalConstraint constraint = new HorizontalConstraint();
+        constraint.orientation = HCOrientation.RIGHT;
+        constraint.leftGap = 5;
+
+        JButton choose = new JButton("Choose");
+        choose.addActionListener((l) -> {
+            dialog.dispose();
+            returnValue = CHOOSE_OPTION;
+        });
+
+        JButton cancel = new JButton("Cancel");
+        cancel.addActionListener((l) -> {
+            dialog.dispose();
+            returnValue = CANCEL_OPTION;
+        });
+
+        bottom.add(choose, constraint);
+        bottom.add(cancel, constraint);
+
+        content.add(bottom, BorderLayout.SOUTH);
+        dialog.setContentPane(content);
+
+        if (JDialog.isDefaultLookAndFeelDecorated()) {
+            boolean supportsWindowDecorations = UIManager.getLookAndFeel().getSupportsWindowDecorations();
+
+            if (supportsWindowDecorations) {
+                dialog.getRootPane().setWindowDecorationStyle(JRootPane.COLOR_CHOOSER_DIALOG);
+            }
+        }
+
+        dialog.setResizable(false);
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+
+        return dialog;
+    }
+
+    public int showDialog(Component parent, String title) {
+        JDialog dialog = createDialog(parent, title);
+
+        returnValue = ERROR_OPTION;
+
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                returnValue = CANCEL_OPTION;
+            }
+        });
+        dialog.setVisible(true);
+
+        return returnValue;
+    }
+
+    public Color getColor() {
+        return model.getColor();
+    }
+
+    public void setColor(Color color) {
+        model.setColor(color);
+    }
+
+    public void addColorListener(PropertyChangeListener listener) {
+        model.addPropertyChangeListener(COLOR_PROPERTY, listener);
+    }
+
+    public void removeColorListener(PropertyChangeListener listener) {
+        model.removePropertyChangeListener(COLOR_PROPERTY, listener);
+    }
+
     private class PreviewComponent extends JComponent {
 
         @Override
@@ -186,17 +291,28 @@ public class ColorPicker extends JPanel {
             Insets insets = getInsets();
 
             RoundRectangle2D.Float rectangle = new RoundRectangle2D.Float();
-            rectangle.x = insets.left;
-            rectangle.y = insets.top;
-            rectangle.width = bounds.width - insets.left - insets.right;
-            rectangle.height = bounds.height - insets.top - insets.bottom;
-            rectangle.archeight = 2;
-            rectangle.arcwidth = 2;
+            rectangle.x = insets.left + 2;
+            rectangle.y = insets.top + 2;
+            rectangle.width = bounds.width - insets.left - insets.right - 4;
+            rectangle.height = bounds.height - insets.top - insets.bottom - 4;
+            rectangle.archeight = 3;
+            rectangle.arcwidth = 3;
 
             Graphics2D g2d = (Graphics2D) g;
+
+            Object originalAntialias = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            Stroke originalStroke = g2d.getStroke();
+
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setColor(model.getColor());
             g2d.fill(rectangle);
+
+            g2d.setStroke(new BasicStroke(2f));
+            g2d.setColor(new Color(25, 25, 25));
+            g2d.draw(rectangle);
+
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, originalAntialias);
+            g2d.setStroke(originalStroke);
         }
     }
 }
