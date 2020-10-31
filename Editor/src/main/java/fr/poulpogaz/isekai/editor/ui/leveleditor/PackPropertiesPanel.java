@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.ui.editor;
+package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import fr.poulpogaz.isekai.editor.pack.Pack;

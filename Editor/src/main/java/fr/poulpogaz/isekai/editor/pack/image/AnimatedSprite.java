@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.pack.image;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class AnimatedSprite extends AbstractSprite {
@@ -17,7 +16,7 @@ public class AnimatedSprite extends AbstractSprite {
     }
 
     @Override
-    public BufferedImage getSprite() {
+    public PackImage getSprite() {
         return frames.get(0).getSprite();
     }
 

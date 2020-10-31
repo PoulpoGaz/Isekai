@@ -3,7 +3,6 @@ package fr.poulpogaz.isekai.editor.pack.image;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public abstract class AbstractSprite {
 
@@ -20,14 +19,14 @@ public abstract class AbstractSprite {
     }
 
     public void paint(Graphics2D g2d, int x, int y) {
-        g2d.drawImage(getSprite(), x, y, null);
+        getSprite().draw(g2d, x, y);
     }
 
     public void paint(Graphics2D g2d, int x, int y, int width, int height) {
-        g2d.drawImage(getSprite(), x, y, width, height, null);
+        getSprite().draw(g2d, x, y, width, height);
     }
 
-    public abstract BufferedImage getSprite();
+    public abstract PackImage getSprite();
 
     public abstract int getWidth();
 

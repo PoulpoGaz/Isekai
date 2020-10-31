@@ -3,7 +3,7 @@ package fr.poulpogaz.isekai.editor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
-import fr.poulpogaz.isekai.editor.ui.editor.MapEditor;
+import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
 import fr.poulpogaz.isekai.editor.ui.spriteeditor.SpriteEditor;
 
 import javax.swing.*;
@@ -35,8 +35,8 @@ public class IsekaiEditor extends JFrame {
         this.pack = Objects.requireNonNull(pack);
 
         JTabbedPane pane = new JTabbedPane();
-        pane.addTab("Map editor", new MapEditor(pack));
-        pane.addTab("Sprite editor", new SpriteEditor());
+        pane.addTab("Map editor", new LevelEditor(pack));
+        pane.addTab("Sprite editor", new SpriteEditor(pack));
 
         setContentPane(pane);
 

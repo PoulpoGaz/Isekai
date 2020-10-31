@@ -1,15 +1,14 @@
 package fr.poulpogaz.isekai.editor.tools;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.utils.Vector2i;
+import fr.poulpogaz.isekai.editor.Map;
+import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Stack;
 
-public class FillTool implements Tool {
+public abstract class FillTool implements Tool {
 
-    private static final FillTool INSTANCE = new FillTool();
     private static final Point[] directions = new Point[] {
         new Point(-1, 0), // LEFT
         new Point(1, 0), // RIGHT
@@ -17,25 +16,23 @@ public class FillTool implements Tool {
         new Point(0, 1) // UP
     };
 
-    private FillTool() {
+    public FillTool() {
 
     }
 
     @Override
-    public <M extends Map<E>, E> void apply(M map, E element, int x, int y) {
+    public <M extends Map<M, E>, E> void apply(M map, E element, int x, int y) {
         E toBeReplaced = map.get(x, y);
 
-        if (element == toBeReplaced) {
+        Point initialPoint = new Point(x, y);
+
+        if (equals(map, element, initialPoint, toBeReplaced)) {
             return;
         }
 
         Stack<Point> points = new Stack<>();
-        points.push(new Point(x, y));
+        points.push(initialPoint);
         map.set(element, x, y);
-
-        boolean isLevel = map instanceof Level;
-        Level level = isLevel ? (Level) map : null;
-        Tile tile = isLevel ? (Tile) element : null;
 
         while (!points.isEmpty()) {
             Point point = points.pop();
@@ -47,15 +44,7 @@ public class FillTool implements Tool {
                     continue;
                 }
 
-                if (map.get(p2.x, p2.y) == toBeReplaced) {
-                    if (isLevel) {
-                        Vector2i pos = level.getPlayerPos();
-
-                        if (pos.x == p2.x && pos.y == p2.y && tile.isSolid()) {
-                            continue;
-                        }
-                    }
-
+                if (equals(map, map.get(p2.x, p2.y), p2, toBeReplaced)) {
                     map.set(element, p2.x, p2.y);
 
                     points.push(p2);
@@ -64,12 +53,10 @@ public class FillTool implements Tool {
         }
     }
 
-    /*@Override
-    public AbstractSprite getToolSprite(Pack pack, Tile tile) {
-        return tile.getSprite(pack);
-    }*/
+    protected abstract <M extends Map<M, E>, E> boolean equals(M map, E currentElement, Point currentElementPos, E elementToBeReplaced);
 
-    public static FillTool getInstance() {
-        return INSTANCE;
+    @Override
+    public Icon getIcon() {
+        return IconLoader.loadSVGIcon("/icons/fill.svg");
     }
 }

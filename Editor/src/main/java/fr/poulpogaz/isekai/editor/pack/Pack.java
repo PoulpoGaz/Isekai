@@ -1,9 +1,9 @@
 package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.pack.image.PackImage;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -14,8 +14,7 @@ public class Pack extends Model {
     public static final String AUTHOR_PROPERTY = "AuthorProperty";
     public static final String VERSION_PROPERTY = "VersionProperty";
 
-    private HashMap<String, BufferedImage> images;
-
+    private HashMap<String, PackImage> images;
     private HashMap<String, AbstractSprite> sprites;
 
     private String name;
@@ -153,11 +152,11 @@ public class Pack extends Model {
 
 
 
-    public BufferedImage getImage(String name) {
+    public PackImage getImage(String name) {
         return images.get(name);
     }
 
-    public void putImage(String name, BufferedImage image) {
+    public void putImage(String name, PackImage image) {
         images.put(name, image);
     }
 
@@ -188,7 +187,7 @@ public class Pack extends Model {
         }
     }
 
-    public HashMap<String, BufferedImage> getImages() {
+    public HashMap<String, PackImage> getImages() {
         return images;
     }
 

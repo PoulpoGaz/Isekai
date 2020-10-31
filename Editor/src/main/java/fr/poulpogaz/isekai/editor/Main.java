@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLaf;
 import fr.poulpogaz.isekai.editor.settings.Settings;
 import fr.poulpogaz.isekai.editor.utils.Cache;
+import fr.poulpogaz.isekai.editor.utils.Compressor;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;

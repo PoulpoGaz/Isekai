@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.ui.editor;
+package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
@@ -7,11 +7,11 @@ import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
-import fr.poulpogaz.isekai.editor.ui.EditorModel;
+import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModelBase;
 
-public class MapEditorModel extends EditorModel<Level, Tile> {
+public class LevelEditorModel extends EditorModelBase<Level, Tile> {
 
-    public MapEditorModel(Level level) {
+    public LevelEditorModel(Level level) {
         super(level, Tile.FLOOR);
     }
 

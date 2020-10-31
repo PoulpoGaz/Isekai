@@ -1,15 +1,29 @@
 package fr.poulpogaz.isekai.editor.tools;
 
+import fr.poulpogaz.isekai.editor.Map;
 import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.pack.image.SpriteIcon;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
+
+import javax.swing.*;
+import java.util.HashMap;
 
 public class PlayerTool implements Tool {
 
-    private static final PlayerTool INSTANCE = new PlayerTool();
+    private static final HashMap<Pack, PlayerTool> INSTANCES = new HashMap<>();
+
+    private final Pack pack;
+
+    private PlayerTool(Pack pack) {
+        this.pack = pack;
+    }
 
     @Override
-    public <M extends Map<E>, E> void apply(M map, E element, int x, int y) {
+    public <M extends Map<M, E>, E> void apply(M map, E element, int x, int y) {
         if (map instanceof Level) {
             Level level = (Level) map;
 
@@ -25,12 +39,26 @@ public class PlayerTool implements Tool {
         }
     }
 
-    /*@Override
-    public AbstractSprite getToolSprite(Pack pack, Tile tile) {
-        return pack.getSprite(PackSprites.PLAYER_DOWN_STATIC);
-    }*/
+    @Override
+    public Icon getIcon() {
+        AbstractSprite sprite = pack.getSprite(PackSprites.PLAYER_DEFAULT_STATIC);
 
-    public static PlayerTool getInstance() {
-        return INSTANCE;
+        return new SpriteIcon(sprite);
+    }
+
+    public static PlayerTool getInstance(Pack pack) {
+        PlayerTool tool = INSTANCES.get(pack);
+
+        if (tool == null) {
+            tool = new PlayerTool(pack);
+
+            INSTANCES.put(pack, tool);
+        }
+
+        return tool;
+    }
+
+    public static void removeInstance(Pack pack) {
+        INSTANCES.remove(pack);
     }
 }

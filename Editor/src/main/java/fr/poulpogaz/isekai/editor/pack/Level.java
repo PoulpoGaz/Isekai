@@ -1,16 +1,14 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.tools.Map;
-import fr.poulpogaz.isekai.editor.ui.Model;
+import fr.poulpogaz.isekai.editor.Map;
+import fr.poulpogaz.isekai.editor.MapSizeListener;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.util.Arrays;
 
-public class Level extends Model implements Map<Tile> {
+public class Level extends Map<Level, Tile> {
 
     private static final Logger LOGGER = LogManager.getLogger(Level.class);
 
@@ -31,8 +29,6 @@ public class Level extends Model implements Map<Tile> {
     private int height;
 
     private Vector2i playerPos;
-
-    private boolean modifyingMap = false;
 
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
@@ -74,15 +70,13 @@ public class Level extends Model implements Map<Tile> {
             this.width = newWidth;
             this.height = newHeight;
 
-            fireListener(LevelSizeListener.class, (e) -> e.levelResized(this, width, height));
+            fireSizeListener(width, height);
         }
     }
 
-    protected void fireChangeListener() {
-        if (!modifyingMap) {
-            ChangeEvent event = new ChangeEvent(this);
-
-            fireListener(ChangeListener.class, (l) -> l.stateChanged(event));
+    protected void fireSizeListener(int width, int height) {
+        for (MapSizeListener<Level> listener : sizeListeners) {
+            listener.mapResized(this, width, height);
         }
     }
 
@@ -147,36 +141,6 @@ public class Level extends Model implements Map<Tile> {
 
             fireChangeListener();
         }
-    }
-
-    public void setModifyingMap(boolean modifyingMap) {
-        if (this.modifyingMap != modifyingMap) {
-            boolean old = this.modifyingMap;
-
-            this.modifyingMap = modifyingMap;
-
-            fireChangeListener();
-        }
-    }
-
-    public boolean isModifyingMap() {
-        return modifyingMap;
-    }
-
-    public void addLevelSizeListener(LevelSizeListener listener) {
-        listenerList.add(LevelSizeListener.class, listener);
-    }
-
-    public void removeLevelSizeListener(LevelSizeListener listener) {
-        listenerList.remove(LevelSizeListener.class, listener);
-    }
-
-    public void addChangeListener(ChangeListener listener) {
-        listenerList.add(ChangeListener.class, listener);
-    }
-
-    public void removeChangeListener(ChangeListener listener) {
-        listenerList.remove(ChangeListener.class, listener);
     }
 
     public int getIndex() {

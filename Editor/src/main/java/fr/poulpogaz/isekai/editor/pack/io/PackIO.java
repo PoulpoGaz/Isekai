@@ -3,17 +3,13 @@ package fr.poulpogaz.isekai.editor.pack.io;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.pack.image.AnimatedSprite;
-import fr.poulpogaz.isekai.editor.pack.image.Sprite;
-import fr.poulpogaz.isekai.editor.pack.image.SubSprite;
+import fr.poulpogaz.isekai.editor.pack.image.*;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.json.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
@@ -180,12 +176,12 @@ public class PackIO {
     }
 
     private static void loadIfNeeded(String image, Pack pack, FileSystem system) throws IOException {
-        BufferedImage img = pack.getImage(image);
+        PackImage img = pack.getImage(image);
 
         if (img == null) {
             Path path = system.getPath(String.format("sprites/%s.png", image));
 
-            img = ImageIO.read(Files.newInputStream(path));
+            img = new PackImage(ImageIO.read(Files.newInputStream(path)));
             pack.putImage(image, img);
         }
     }
@@ -334,11 +330,11 @@ public class PackIO {
     private static void writeImages(Pack pack, FileSystem system) throws IOException {
         createDirectory("sprites", system);
 
-        for (Map.Entry<String, BufferedImage> images : pack.getImages().entrySet()) {
+        for (Map.Entry<String, PackImage> images : pack.getImages().entrySet()) {
             Path out = system.getPath("sprites/" + images.getKey() + ".png");
 
             try (OutputStream stream = Files.newOutputStream(out)) {
-                ImageIO.write(images.getValue(), "png", stream);
+                images.getValue().write("png", stream);
             }
         }
     }

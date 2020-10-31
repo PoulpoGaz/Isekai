@@ -1,7 +1,7 @@
-package fr.poulpogaz.isekai.editor.ui.editor;
+package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
+import fr.poulpogaz.isekai.editor.MapSizeListener;
 import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.LevelSizeListener;
 import fr.poulpogaz.isekai.editor.ui.JLabeledComponent;
 
 import javax.swing.*;
@@ -12,23 +12,23 @@ import static fr.poulpogaz.isekai.editor.pack.Level.*;
 
 public class ResizePanel extends JPanel {
 
-    private final MapEditorModel editor;
+    private final LevelEditorModel editor;
     private Level level;
 
-    private final LevelSizeListener levelSizeListener;
+    private final MapSizeListener<Level> levelSizeListener;
 
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
     private boolean canResize = true;
 
-    public ResizePanel(MapEditorModel editor) {
+    public ResizePanel(LevelEditorModel editor) {
         this.editor = editor;
 
         levelSizeListener = this::levelResized;
         level = editor.getSelectedMap();
 
-        editor.addPropertyChangeListener(MapEditorModel.SELECTED_MAP_PROPERTY, this::switchLevel);
-        level.addLevelSizeListener(levelSizeListener);
+        editor.addPropertyChangeListener(LevelEditorModel.SELECTED_MAP_PROPERTY, this::switchLevel);
+        level.addSizeListener(levelSizeListener);
 
         setBorder(BorderFactory.createTitledBorder("Resize"));
         initComponents();
@@ -55,11 +55,11 @@ public class ResizePanel extends JPanel {
     }
 
     private void switchLevel(PropertyChangeEvent evt) {
-        level.removeLevelSizeListener(levelSizeListener);
+        level.removeSizeListener(levelSizeListener);
 
         this.level = editor.getSelectedMap();
 
-        level.addLevelSizeListener(levelSizeListener);
+        level.addSizeListener(levelSizeListener);
 
         canResize = false;
         widthSpinner.setValue(level.getWidth());

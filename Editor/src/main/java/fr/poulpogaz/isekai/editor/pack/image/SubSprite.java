@@ -3,18 +3,16 @@ package fr.poulpogaz.isekai.editor.pack.image;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
-import java.awt.image.BufferedImage;
-
 public class SubSprite extends AbstractSprite {
 
-    private BufferedImage parent;
+    private PackImage parent;
 
     private int x;
     private int y;
     private int width;
     private int height;
 
-    private BufferedImage subSprite;
+    private PackImage subSprite;
 
     public SubSprite(Pack pack, String texture) {
         this(pack, texture, 0, 0, 0, 0);
@@ -29,7 +27,7 @@ public class SubSprite extends AbstractSprite {
     }
 
     @Override
-    public BufferedImage getSprite() {
+    public PackImage getSprite() {
         if (subSprite == null) {
             subSprite = parent.getSubimage(x, y, width, height);
         }
@@ -39,7 +37,7 @@ public class SubSprite extends AbstractSprite {
 
     @Override
     public void setTexture(String texture) {
-        BufferedImage image = pack.getImage(texture);
+        PackImage image = pack.getImage(texture);
 
         if (image == null) {
             return;

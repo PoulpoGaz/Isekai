@@ -31,7 +31,7 @@ public class Animator {
             }
         }
 
-        g2d.drawImage(sprite.getFrames().get(currentFrame).getSprite(), x, y, width, height, null);
+        sprite.getFrames().get(currentFrame).getSprite().draw(g2d, x, y, width, height);
     }
 
     public void start() {

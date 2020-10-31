@@ -4,13 +4,13 @@ import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.pack.image.PackImage;
 import fr.poulpogaz.isekai.editor.pack.image.SubSprite;
 import fr.poulpogaz.isekai.editor.utils.Cache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -83,7 +83,7 @@ public class PackBuilder {
         AbstractSprite up = new SubSprite(pack, "tileset", 48, 16, 16, 16);
         AbstractSprite down = new SubSprite(pack, "tileset", 32, 16, 16, 16);
 
-        pack.putSprite(PackSprites.LEFT_STATIC, left);
+        pack.putSprite(PackSprites.PLAYER_LEFT_STATIC, left);
         pack.putSprite(PackSprites.PLAYER_RIGHT_STATIC, right);
         pack.putSprite(PackSprites.PLAYER_DOWN_STATIC, down);
         pack.putSprite(PackSprites.PLAYER_UP_STATIC, up);
@@ -96,11 +96,11 @@ public class PackBuilder {
         return pack;
     }
 
-    private static BufferedImage get(String path) {
+    private static PackImage get(String path) {
         InputStream stream = PackBuilder.class.getResourceAsStream(path);
 
         try {
-            return ImageIO.read(stream);
+            return new PackImage(ImageIO.read(stream));
         } catch (IOException e) {
             LOGGER.error("Failed to read resource", e);
             return null;

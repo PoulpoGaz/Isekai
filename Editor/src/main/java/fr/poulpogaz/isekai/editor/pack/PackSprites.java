@@ -12,7 +12,7 @@ public final class PackSprites {
     // PLAYER
     public static final String PLAYER_DOWN_STATIC = "down_static";
     public static final String PLAYER_UP_STATIC = "up_static";
-    public static final String LEFT_STATIC = "left_static";
+    public static final String PLAYER_LEFT_STATIC = "left_static";
     public static final String PLAYER_RIGHT_STATIC = "right_static";
 
     public static final String PLAYER_DOWN_WALK = "down_walk";
@@ -21,4 +21,10 @@ public final class PackSprites {
     public static final String PLAYER_RIGHT_WALK = "right_walk";
 
     public static final String PLAYER_DEFAULT_STATIC = PLAYER_DOWN_STATIC;
+
+    public static final String[] SPRITES = new String[] {
+            FLOOR, WALL, TARGET, CRATE, CRATE_ON_TARGET,
+            PLAYER_DOWN_STATIC, PLAYER_UP_STATIC, PLAYER_LEFT_STATIC, PLAYER_RIGHT_STATIC,
+            PLAYER_DOWN_WALK, PLAYER_UP_WALK, PLAYER_LEFT_WALK, PLAYER_RIGHT_WALK
+    };
 }
