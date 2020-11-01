@@ -15,23 +15,29 @@ public class Animator {
     }
 
     public void paint(Graphics2D g2d, int x, int y) {
-        paint(g2d, x, y, sprite.getWidth(), sprite.getHeight());
+        update();
+
+        sprite.paint(g2d, currentFrame, x, y);
     }
 
     public void paint(Graphics2D g2d, int x, int y, int width, int height) {
+        update();
+
+        sprite.paint(g2d, currentFrame, x, y, width, height);
+    }
+
+    protected void update() {
         if (running) {
             if (System.currentTimeMillis() + sprite.getDelay() > time) {
                 time = System.currentTimeMillis();
 
                 currentFrame++;
 
-                if (currentFrame >= sprite.getFrames().size()) {
+                if (currentFrame >= sprite.size()) {
                     currentFrame = 0;
                 }
             }
         }
-
-        sprite.getFrames().get(currentFrame).getSprite().draw(g2d, x, y, width, height);
     }
 
     public void start() {

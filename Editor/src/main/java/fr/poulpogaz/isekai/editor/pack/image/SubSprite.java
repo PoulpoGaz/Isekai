@@ -1,25 +1,37 @@
 package fr.poulpogaz.isekai.editor.pack.image;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
-public class SubSprite extends AbstractSprite {
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+public class SubSprite extends AbstractSprite implements IImageSprite {
 
     private PackImage parent;
 
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private int x = 0;
+    private int y = 0;
+    private int width = 0;
+    private int height = 0;
 
-    private PackImage subSprite;
+    private BufferedImage subImage;
 
-    public SubSprite(Pack pack, String texture) {
-        this(pack, texture, 0, 0, 0, 0);
+    public SubSprite(String name) {
+        super(name);
     }
 
-    public SubSprite(Pack pack, String texture, int x, int y, int width, int height) {
-        super(pack, texture);
+    public SubSprite(String name, PackImage parent) {
+        super(name);
+        this.parent = parent;
+
+        width = parent.getWidth();
+        height = parent.getHeight();
+    }
+
+    public SubSprite(String name, PackImage parent, int x, int y, int width, int height) {
+        super(name);
+        this.parent = parent;
+
         setX(x);
         setY(y);
         setWidth(width);
@@ -27,35 +39,48 @@ public class SubSprite extends AbstractSprite {
     }
 
     @Override
-    public PackImage getSprite() {
-        if (subSprite == null) {
-            subSprite = parent.getSubimage(x, y, width, height);
-        }
+    public void paint(Graphics2D g2d, int x, int y) {
+        BufferedImage sub = getSubImage();
 
-        return subSprite;
+        g2d.drawImage(sub, x, y, null);
     }
 
     @Override
-    public void setTexture(String texture) {
-        PackImage image = pack.getImage(texture);
+    public void paint(Graphics2D g2d, int x, int y, int width, int height) {
+        BufferedImage sub = getSubImage();
 
-        if (image == null) {
-            return;
+        g2d.drawImage(sub, x, y, width, height, null);
+    }
+
+    protected BufferedImage getSubImage() {
+        if (subImage == null) {
+            subImage = parent.getSubImage(x, y, width, height);
         }
 
-        this.texture = texture;
+        return subImage;
+    }
 
-        parent = image;
+    @Override
+    public PackImage getImage() {
+        return parent;
+    }
 
-        if (x + width >= parent.getWidth()) {
+    public void setImage(PackImage parent) {
+        this.parent = parent;
+
+        if (x + width >= parent.getWidth()) { // reset
             x = 0;
             width = parent.getWidth();
         }
 
-        if (y + height >= parent.getHeight()) {
+        if (y + height >= parent.getHeight()) { // reset
             y = 0;
             height = parent.getHeight();
         }
+
+        subImage = null;
+
+        fireChangeListener();
     }
 
     public int getX() {
@@ -64,9 +89,15 @@ public class SubSprite extends AbstractSprite {
 
     public void setX(int x) {
         if (this.x != x) {
-            this.x = Utils.clamp(x, 0, parent.getWidth());
+            x = Utils.clamp(x, 0, parent.getWidth() - width);
 
-            subSprite = null;
+            if (this.x != x) {
+                this.x = x;
+
+                fireChangeListener();
+
+                subImage = null;
+            }
         }
     }
 
@@ -76,9 +107,15 @@ public class SubSprite extends AbstractSprite {
 
     public void setY(int y) {
         if (this.y != y) {
-            this.y = Utils.clamp(y, 0, parent.getHeight());
+            y = Utils.clamp(y, 0, parent.getHeight() - height);
 
-            subSprite = null;
+            if (this.y != y) {
+                this.y = y;
+
+                fireChangeListener();
+
+                subImage = null;
+            }
         }
     }
 
@@ -89,9 +126,15 @@ public class SubSprite extends AbstractSprite {
 
     public void setWidth(int width) {
         if (this.width != width) {
-            this.width = Utils.clamp(width, 0, parent.getWidth());
+            width = Utils.clamp(width, 0, parent.getWidth() - x);
 
-            subSprite = null;
+            if (this.width != width) {
+                this.width = width;
+
+                fireChangeListener();
+
+                subImage = null;
+            }
         }
     }
 
@@ -102,9 +145,41 @@ public class SubSprite extends AbstractSprite {
 
     public void setHeight(int height) {
         if (this.height != height) {
-            this.height = Utils.clamp(height, 0, parent.getHeight());
+            height = Utils.clamp(height, 0, parent.getHeight() - y);
 
-            subSprite = null;
+            if (this.height != height) {
+                this.height = height;
+
+                fireChangeListener();
+
+                subImage = null;
+            }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SubSprite)) return false;
+        if (!super.equals(o)) return false;
+
+        SubSprite subSprite = (SubSprite) o;
+
+        if (x != subSprite.x) return false;
+        if (y != subSprite.y) return false;
+        if (width != subSprite.width) return false;
+        if (height != subSprite.height) return false;
+        return parent.equals(subSprite.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + parent.hashCode();
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + width;
+        result = 31 * result + height;
+        return result;
     }
 }

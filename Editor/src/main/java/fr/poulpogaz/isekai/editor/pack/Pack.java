@@ -1,11 +1,12 @@
 package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
+import fr.poulpogaz.isekai.editor.pack.image.IImageSprite;
 import fr.poulpogaz.isekai.editor.pack.image.PackImage;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class Pack extends Model {
@@ -14,8 +15,8 @@ public class Pack extends Model {
     public static final String AUTHOR_PROPERTY = "AuthorProperty";
     public static final String VERSION_PROPERTY = "VersionProperty";
 
-    private HashMap<String, PackImage> images;
-    private HashMap<String, AbstractSprite> sprites;
+    private HashSet<PackImage> images;
+    private HashSet<AbstractSprite> sprites;
 
     private String name;
     private String author;
@@ -25,8 +26,8 @@ public class Pack extends Model {
 
     public Pack() {
         this.levels = new ArrayList<>();
-        images = new HashMap<>();
-        sprites = new HashMap<>();
+        images = new HashSet<>();
+        sprites = new HashSet<>();
 
         addLevel(new Level());
     }
@@ -135,39 +136,6 @@ public class Pack extends Model {
         return levels.get(index);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public PackImage getImage(String name) {
-        return images.get(name);
-    }
-
-    public void putImage(String name, PackImage image) {
-        images.put(name, image);
-    }
-
-    public AbstractSprite getSprite(String name) {
-        return sprites.get(name);
-    }
-
-    public void putSprite(String name, AbstractSprite sprite) {
-        sprites.put(name, sprite);
-    }
-
     public ArrayList<Level> getLevels() {
         return levels;
     }
@@ -187,23 +155,50 @@ public class Pack extends Model {
         }
     }
 
-    public HashMap<String, PackImage> getImages() {
-        return images;
+    public void addImage(PackImage image) {
+        images.add(image);
     }
 
+    public PackImage getImage(String name) {
+        for (PackImage image : images) {
+            if (image.getName().equals(name)) {
+                return image;
+            }
+        }
 
+        return null;
+    }
 
+    public AbstractSprite getSprite(String name) {
+        for (AbstractSprite sprite : sprites) {
+            if (sprite.getName().equals(name)) {
+                return sprite;
+            }
+        }
 
+        return null;
+    }
 
+    public void addSprite(AbstractSprite sprite) {
+        if (!sprites.contains(sprite)) {
+            sprites.add(sprite);
 
+            if (sprite instanceof IImageSprite) {
+                PackImage image = ((IImageSprite) sprite).getImage();
 
+                images.add(image);
+            }
+        }
+    }
+
+    public HashSet<PackImage> getImages() {
+        return images;
+    }
 
 
     /**
      *  LISTENERS
      */
-
-
     public void addLevelsOrganisationListener(LevelsOrganisationListener listener) {
         listenerList.add(LevelsOrganisationListener.class, listener);
     }

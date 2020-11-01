@@ -1,42 +1,58 @@
 package fr.poulpogaz.isekai.editor.pack.image;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.ui.Model;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.util.Objects;
 
-public abstract class AbstractSprite {
+public abstract class AbstractSprite extends Model {
 
-    protected final Pack pack;
-    protected String texture;
+    protected final String name;
 
-    public AbstractSprite(Pack pack) {
-        this.pack = pack;
+    public AbstractSprite(String name) {
+        this.name = Objects.requireNonNull(name);
     }
 
-    public AbstractSprite(Pack pack, String texture) {
-        this.pack = pack;
-        setTexture(texture);
-    }
+    public abstract void paint(Graphics2D g2d, int x, int y);
 
-    public void paint(Graphics2D g2d, int x, int y) {
-        getSprite().draw(g2d, x, y);
-    }
-
-    public void paint(Graphics2D g2d, int x, int y, int width, int height) {
-        getSprite().draw(g2d, x, y, width, height);
-    }
-
-    public abstract PackImage getSprite();
+    public abstract void paint(Graphics2D g2d, int x, int y, int width, int height);
 
     public abstract int getWidth();
 
     public abstract int getHeight();
 
-    public String getTexture() {
-        return texture;
+    public String getName() {
+        return name;
     }
 
-    public void setTexture(String texture) {
-        this.texture = texture;
+    public void addChangeListener(ChangeListener listener) {
+        listenerList.add(ChangeListener.class, listener);
+    }
+
+    public void removeChangeListener(ChangeListener listener) {
+        listenerList.remove(ChangeListener.class, listener);
+    }
+
+    protected void fireChangeListener() {
+        ChangeEvent evt = new ChangeEvent(this);
+
+        fireListener(ChangeListener.class, (l) -> l.stateChanged(evt));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractSprite)) return false;
+
+        AbstractSprite sprite = (AbstractSprite) o;
+
+        return name.equals(sprite.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

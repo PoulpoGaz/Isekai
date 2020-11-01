@@ -3,7 +3,6 @@ package fr.poulpogaz.isekai.editor.pack.io;
 import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.pack.image.PackImage;
 import fr.poulpogaz.isekai.editor.pack.image.SubSprite;
 import fr.poulpogaz.isekai.editor.utils.Cache;
@@ -70,37 +69,32 @@ public class PackBuilder {
     public static Pack emptyPack() {
         Pack pack = new Pack();
 
-        pack.putImage("tileset", get("/pack/tileset.png"));
+        PackImage tileset = get("/pack/", "tileset.png");
 
-        pack.putSprite(PackSprites.FLOOR, new SubSprite(pack, "tileset", 0, 0, 16, 16));
-        pack.putSprite(PackSprites.WALL, new SubSprite(pack, "tileset", 16, 0, 16, 16));
-        pack.putSprite(PackSprites.CRATE, new SubSprite(pack, "tileset", 32, 0, 16, 16));
-        pack.putSprite(PackSprites.CRATE_ON_TARGET, new SubSprite(pack, "tileset", 48, 0, 16, 16));
-        pack.putSprite(PackSprites.TARGET, new SubSprite(pack, "tileset", 64, 0, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.FLOOR, tileset, 0, 0, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.WALL, tileset, 16, 0, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.CRATE, tileset, 32, 0, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.CRATE_ON_TARGET, tileset, 48, 0, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.TARGET, tileset, 64, 0, 16, 16));
 
-        AbstractSprite left = new SubSprite(pack, "tileset", 0, 16, 16, 16);
-        AbstractSprite right = new SubSprite(pack, "tileset", 16, 16, 16, 16);
-        AbstractSprite up = new SubSprite(pack, "tileset", 48, 16, 16, 16);
-        AbstractSprite down = new SubSprite(pack, "tileset", 32, 16, 16, 16);
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_LEFT_STATIC, tileset, 0, 16, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_RIGHT_STATIC, tileset, 16, 16, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_DOWN_STATIC, tileset, 32, 16, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_UP_STATIC, tileset, 48, 16, 16, 16));
 
-        pack.putSprite(PackSprites.PLAYER_LEFT_STATIC, left);
-        pack.putSprite(PackSprites.PLAYER_RIGHT_STATIC, right);
-        pack.putSprite(PackSprites.PLAYER_DOWN_STATIC, down);
-        pack.putSprite(PackSprites.PLAYER_UP_STATIC, up);
-
-        pack.putSprite(PackSprites.PLAYER_LEFT_WALK, left);
-        pack.putSprite(PackSprites.PLAYER_RIGHT_WALK, right);
-        pack.putSprite(PackSprites.PLAYER_DOWN_WALK, down);
-        pack.putSprite(PackSprites.PLAYER_UP_WALK, up);
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_LEFT_WALK, tileset, 0, 16, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_RIGHT_WALK, tileset, 16, 16, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_DOWN_WALK, tileset, 32, 16, 16, 16));
+        pack.addSprite(new SubSprite(PackSprites.PLAYER_UP_WALK, tileset, 48, 16, 16, 16));
 
         return pack;
     }
 
-    private static PackImage get(String path) {
-        InputStream stream = PackBuilder.class.getResourceAsStream(path);
+    private static PackImage get(String path, String name) {
+        InputStream stream = PackBuilder.class.getResourceAsStream(path + name);
 
         try {
-            return new PackImage(ImageIO.read(stream));
+            return new PackImage(name, ImageIO.read(stream));
         } catch (IOException e) {
             LOGGER.error("Failed to read resource", e);
             return null;

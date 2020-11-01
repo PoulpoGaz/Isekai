@@ -5,7 +5,9 @@ import fr.poulpogaz.isekai.editor.pack.image.*;
 import fr.poulpogaz.isekai.editor.ui.editorbase.MapPanelBase;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 
+import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
 
 public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, Color> {
 
@@ -13,17 +15,30 @@ public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, C
     private static final int SUB_SPRITE = 1;
     private static final int ANIMATED_SPRITE = 2;
 
+    private final ChangeListener spriteChanged;
+
     private AbstractSprite sprite;
     private int type;
 
     public ImageViewPanel(Pack pack, SpriteEditorModel editor) {
         super(pack, editor);
-        this.sprite = editor.getSelectedSprite();
+
+        spriteChanged = (e) -> repaint();
+
+        sprite = editor.getSelectedSprite();
+        sprite.addChangeListener(spriteChanged);
         setSpriteType();
     }
 
+    @Override
+    protected void addSelectedMapListener() {
+        super.addSelectedMapListener();
+
+        editor.addPropertyChangeListener(SpriteEditorModel.SELECTED_SPRITE_PROPERTY, this::switchSprite);
+    }
+
     private void setSpriteType() {
-        if (sprite instanceof Sprite) {
+        if (sprite instanceof BasicSprite) {
             type = SPRITE;
         } else if (sprite instanceof SubSprite) {
             type = SUB_SPRITE;
@@ -36,7 +51,7 @@ public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, C
     protected void paintMap(Graphics2D g2d, Point offset, Rectangle visibleRect, Bounds mapBounds) {
         drawCheckerboard(g2d, offset, visibleRect, mapBounds);
 
-        map.draw(g2d, offset.x, offset.y, map.getWidth() * pixelSize, map.getHeight() * pixelSize);
+        map.paint(g2d, offset.x, offset.y, map.getWidth() * pixelSize, map.getHeight() * pixelSize);
 
         if (type == SUB_SPRITE) {
             SubSprite sprite = (SubSprite) this.sprite;
@@ -96,5 +111,14 @@ public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, C
 
             yPair = !yPair;
         }
+    }
+
+    private void switchSprite(PropertyChangeEvent evt) {
+        sprite.removeChangeListener(spriteChanged);
+        sprite = editor.getSelectedSprite();
+        sprite.addChangeListener(spriteChanged);
+
+        setSpriteType();
+        repaint();
     }
 }

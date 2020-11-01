@@ -1,98 +1,155 @@
 package fr.poulpogaz.isekai.editor.pack.image;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
-
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class AnimatedSprite extends AbstractSprite {
+public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
 
-    private final ArrayList<AbstractSprite> frames;
+    private final ArrayList<AbstractSprite> sprites;
     private int delay;
 
-    public AnimatedSprite(Pack pack, int delay) {
-        super(pack);
-        this.frames = new ArrayList<>();
+    public AnimatedSprite(String name) {
+        this(name, 250);
+    }
+
+    public AnimatedSprite(String name, int delay) {
+        super(name);
         this.delay = delay;
+
+        sprites = new ArrayList<>();
     }
 
     @Override
-    public PackImage getSprite() {
-        return frames.get(0).getSprite();
+    public void paint(Graphics2D g2d, int x, int y) {
+        paint(g2d, 0, x, y);
     }
 
-    public boolean addFrame(AbstractSprite frame) {
-        if (frame instanceof AnimatedSprite) {
-            return false;
-        }
-
-        if (isValid(frame)) {
-            frames.add(frame);
-
-            return true;
-        }
-
-        return false;
+    @Override
+    public void paint(Graphics2D g2d, int x, int y, int width, int height) {
+        paint(g2d, 0, x, y, width, height);
     }
 
-    public AbstractSprite removeFrame(int index) {
-        return frames.remove(index);
-    }
-
-    public boolean insertFrame(AbstractSprite frame, int index) {
-        if (frame instanceof AnimatedSprite) {
-            return false;
+    @Override
+    public void paint(Graphics2D g2d, int index, int x, int y) {
+        if (index < 0 || index >= sprites.size()) {
+            return;
         }
 
-        if (isValid(frame)) {
-            frames.add(index, frame);
-
-            return true;
-        }
-
-        return false;
+        AbstractSprite sprite = sprites.get(index);
+        sprite.paint(g2d, x, y);
     }
 
-    private boolean isValid(AbstractSprite sprite) {
-        return frames.size() == 0 || (sprite.getWidth() == getWidth() && sprite.getHeight() == getHeight());
+    @Override
+    public void paint(Graphics2D g2d, int index, int x, int y, int width, int height) {
+        if (index < 0 || index >= sprites.size()) {
+            return;
+        }
+
+        AbstractSprite sprite = sprites.get(index);
+        sprite.paint(g2d, x, y, width, height);
     }
 
     @Override
     public int getWidth() {
-        if (frames.size() == 0) {
-            return 0;
-        }
-
-        return getSprite().getHeight();
+        return sprites.get(0).getWidth(); // all sprites have the same dimension
     }
 
     @Override
     public int getHeight() {
-        if (frames.size() == 0) {
-            return 0;
+        return sprites.get(0).getHeight(); // all sprites have the same dimension
+    }
+
+    @Override
+    public void addFrame(AbstractSprite sprite) {
+        if (isValid(sprite)) {
+            sprites.add(sprite);
+
+            fireChangeListener();
+        }
+    }
+
+    @Override
+    public void removeFrame(AbstractSprite sprite) {
+        if (sprites.remove(sprite)) {
+            fireChangeListener();
+        }
+    }
+
+    @Override
+    public void insertFrame(AbstractSprite sprite, int index) {
+        if (isValid(sprite)) {
+            sprites.add(index, sprite);
+
+            fireChangeListener();
+        }
+    }
+
+    @Override
+    public void removeFrame(int index) {
+        if (sprites.remove(index) != null) {
+            fireChangeListener();
+        }
+    }
+
+    @Override
+    public int size() {
+        return sprites.size();
+    }
+
+    @Override
+    public AbstractSprite getFrame(int index) {
+        return sprites.get(index);
+    }
+
+    @Override
+    public List<AbstractSprite> getFrames() {
+        return sprites;
+    }
+
+    protected boolean isValid(AbstractSprite sprite) {
+        if (sprite instanceof IAnimatedSprite) {
+            return false;
         }
 
-        return getSprite().getWidth();
+        if (sprites.size() == 0) {
+            return true;
+        }
+
+        return getWidth() == sprite.getWidth() && sprite.getHeight() == 0;
     }
 
     @Override
-    public void setTexture(String texture) {
-        throw new IllegalStateException();
+    public void setDelay(int delay) {
+        if (delay > 0 && this.delay != delay) {
+            this.delay = delay;
+
+            fireChangeListener();
+        }
     }
 
     @Override
-    public String getTexture() {
-        throw new IllegalStateException();
-    }
-
     public int getDelay() {
         return delay;
     }
 
-    public void setDelay(int delay) {
-        this.delay = delay;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnimatedSprite)) return false;
+        if (!super.equals(o)) return false;
+
+        AnimatedSprite that = (AnimatedSprite) o;
+
+        if (delay != that.delay) return false;
+        return sprites.equals(that.sprites);
     }
 
-    public ArrayList<AbstractSprite> getFrames() {
-        return frames;
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + sprites.hashCode();
+        result = 31 * result + delay;
+        return result;
     }
 }

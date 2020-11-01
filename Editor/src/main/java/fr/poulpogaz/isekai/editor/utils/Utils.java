@@ -1,7 +1,9 @@
 package fr.poulpogaz.isekai.editor.utils;
 
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
+import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -24,6 +26,16 @@ public class Utils {
 
     public static Dimension from(Insets insets) {
         return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+    }
+
+    public static JPanel split(JComponent left, JComponent right) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new SplitLayout(1, 0.5f));
+
+        panel.add(left);
+        panel.add(right);
+
+        return panel;
     }
 
     public static String getExtension(File file) {

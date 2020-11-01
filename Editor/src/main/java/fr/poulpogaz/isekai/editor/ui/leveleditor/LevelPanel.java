@@ -4,9 +4,9 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModelBase;
-import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
+import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
@@ -56,8 +56,8 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
             levelsComboBox.addItem(i + 1);
         }
 
-        add(split(insertLevel, deleteLevel), constraint);
-        add(split(moveUp, moveDown), constraint);
+        add(Utils.split(insertLevel, deleteLevel), constraint);
+        add(Utils.split(moveUp, moveDown), constraint);
         add(levelsComboBox, constraint);
     }
 
@@ -68,16 +68,6 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         button.setIcon(IconLoader.loadSVGIcon(resource));
 
         return button;
-    }
-
-    private JPanel split(JButton left, JButton right) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new SplitLayout(1, 0.5f));
-
-        panel.add(left);
-        panel.add(right);
-
-        return panel;
     }
 
     private void insertLevel(ActionEvent e) {

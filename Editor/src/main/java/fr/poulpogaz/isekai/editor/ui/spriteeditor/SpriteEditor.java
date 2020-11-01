@@ -11,11 +11,16 @@ import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class SpriteEditor extends EditorPanelBase<SpriteEditorModel> {
 
     private ImageViewPanel imageViewPanel;
+
     private ColorPicker colorPicker;
+    private SpritePanel spritePanel;
+    private SubSpriteEditionPanel subSpriteEditionPanel;
+    private AnimatedSpriteEditionPanel animatedSpriteEditionPanel;
 
     public SpriteEditor(Pack pack) {
         super(pack, new SpriteEditorModel(pack));
@@ -51,7 +56,19 @@ public class SpriteEditor extends EditorPanelBase<SpriteEditorModel> {
         colorPicker = new ColorPicker();
         colorPicker.setBorder(BorderFactory.createTitledBorder("Color"));
 
+        spritePanel = new SpritePanel(pack, editor);
+        spritePanel.setBorder(BorderFactory.createTitledBorder("Sprites"));
+
+        Border border = BorderFactory.createTitledBorder("Edit sprite");
+        subSpriteEditionPanel = new SubSpriteEditionPanel(editor);
+        subSpriteEditionPanel.setBorder(border);
+        animatedSpriteEditionPanel = new AnimatedSpriteEditionPanel(editor);
+        animatedSpriteEditionPanel.setBorder(border);
+
         eastPanel.add(colorPicker, constraint);
+        eastPanel.add(spritePanel, constraint);
+        eastPanel.add(subSpriteEditionPanel, constraint);
+        eastPanel.add(animatedSpriteEditionPanel, constraint);
 
         return eastPanel;
     }

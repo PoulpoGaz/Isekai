@@ -6,11 +6,14 @@ import fr.poulpogaz.isekai.editor.pack.image.SubSprite;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.beans.PropertyChangeEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class SubSpriteEditionPanel extends JPanel {
 
     private final SpriteEditorModel model;
+
+    private ChangeListener listener;
 
     private SubSprite sprite;
 
@@ -19,40 +22,106 @@ public class SubSpriteEditionPanel extends JPanel {
     private JSpinner width;
     private JSpinner height;
 
+    private SpinnerNumberModel xModel;
+    private SpinnerNumberModel yModel;
+    private SpinnerNumberModel widthModel;
+    private SpinnerNumberModel heightModel;
+
+    private boolean fire = true;
+
     public SubSpriteEditionPanel(SpriteEditorModel model) {
         this.model = model;
-        model.addPropertyChangeListener(SpriteEditorModel.SELECTED_SPRITE_PROPERTY, this::selectedSpriteChanged);
+        model.addPropertyChangeListener(SpriteEditorModel.SELECTED_SPRITE_PROPERTY, (e) -> revalidateComponents());
 
-        setLayout(new MigLayout("", "[grow]5[grow]", "[grow]5[grow]"));
+        listener = this::spriteChanged;
+
+        setLayout(new MigLayout("fillx"));
         initComponents();
+        revalidateComponents();
     }
 
     private void initComponents() {
         x = new JSpinner();
-        y = new JSpinner();
-        width = new JSpinner();
-        height = new JSpinner();
+        x.addChangeListener(this::spinnerChanged);
+        xModel = new SpinnerNumberModel();
+        x.setModel(xModel);
 
+        y = new JSpinner();
+        y.addChangeListener(this::spinnerChanged);
+        yModel = new SpinnerNumberModel(1, null, null, 1);
+        y.setModel(yModel);
+
+        width = new JSpinner();
+        width.addChangeListener(this::spinnerChanged);
+        widthModel = new SpinnerNumberModel(1, null, null, 1);
+        width.setModel(widthModel);
+
+        height = new JSpinner();
+        height.addChangeListener(this::spinnerChanged);
+        heightModel = new SpinnerNumberModel();
+        height.setModel(heightModel);
+
+        add(new JLabel("X:"), "grow");
         add(x);
+        add(new JLabel("Y:"), "grow");
         add(y);
+        add(new JLabel("Width:"), "grow");
         add(width);
+        add(new JLabel("Height:"), "grow");
         add(height);
     }
 
-    private void selectedSpriteChanged(PropertyChangeEvent evt) {
+    private void spinnerChanged(ChangeEvent e) {
+        if (fire) {
+            sprite.setX((Integer) x.getValue());
+            sprite.setY((Integer) y.getValue());
+            sprite.setWidth((Integer) width.getValue());
+            sprite.setHeight((Integer) height.getValue());
+        }
+    }
+
+    private void spriteChanged(ChangeEvent e) {
+        updateModels(sprite, false);
+    }
+
+    private void revalidateComponents() {
         AbstractSprite s = model.getSelectedSprite();
+
+        if (sprite != null) {
+            sprite.removeChangeListener(listener);
+        }
 
         if (s instanceof SubSprite) {
             this.sprite = (SubSprite) s;
+            sprite.addChangeListener(listener);
 
-            PackImage image = model.getImage(sprite);
-
-            x.setModel(new SpinnerNumberModel(sprite.getX(), 0, image.getWidth(), 1));
-            y.setModel(new SpinnerNumberModel(sprite.getY(), 0, image.getHeight(), 1));
-            width.setModel(new SpinnerNumberModel(sprite.getWidth(), 0, image.getWidth(), 1));
-            height.setModel(new SpinnerNumberModel(sprite.getHeight(), 0, image.getWidth(), 1));
+            fire = false;
+            updateModels(sprite, false);
+            fire = true;
+            setVisible(true);
         } else {
             sprite = null;
+            setVisible(false);
         }
+    }
+
+    private void updateModels(SubSprite sprite, boolean fire) {
+        boolean old = this.fire;
+
+        this.fire = fire;
+
+        PackImage image = sprite.getImage();
+
+        xModel.setValue(sprite.getX());
+        yModel.setValue(sprite.getY());
+        widthModel.setValue(sprite.getWidth());
+        heightModel.setValue(sprite.getHeight());
+
+        xModel.setMaximum(image.getWidth() - sprite.getWidth());
+        yModel.setMaximum(image.getHeight() - sprite.getHeight());
+        widthModel.setMaximum(image.getWidth() - sprite.getX());
+        heightModel.setMaximum(image.getHeight() - sprite.getY());
+
+        this.fire = old;
     }
 }

@@ -90,10 +90,10 @@ public class PackIO {
             reader.assertKeyEquals(spriteName);
 
             reader.beginObject();
-            AbstractSprite sprite = parseSprite(pack, reader, system, true);
+            AbstractSprite sprite = parseSprite(spriteName, pack, reader, system, true);
             reader.endObject();
 
-            pack.putSprite(spriteName, sprite);
+            pack.addSprite(sprite);
         }
 
         reader.endObject();
@@ -114,8 +114,8 @@ public class PackIO {
                 reader.assertKeyEquals(type);
 
                 reader.beginObject();
-                AbstractSprite sprite = parseSprite(pack, reader, system, true);
-                pack.putSprite(direction + "_" + type, sprite);
+                AbstractSprite sprite = parseSprite(direction + "_" + type, pack, reader, system, true);
+                pack.addSprite(sprite);
 
                 reader.endObject();
             }
@@ -127,41 +127,44 @@ public class PackIO {
         reader.close();
     }
 
-    private static AbstractSprite parseSprite(Pack pack, IJsonReader reader, FileSystem system, boolean acceptAnimatedSprite) throws IOException, JsonException {
+    private static AbstractSprite parseSprite(String name, Pack pack, IJsonReader reader, FileSystem system, boolean acceptAnimatedSprite) throws IOException, JsonException {
         String type = reader.assertKeyEquals("type").nextString();
 
         switch (type) {
             case "sprite" -> {
                 String image = reader.assertKeyEquals("image").nextString();
-                loadIfNeeded(image, pack, system);
+                PackImage packImage = loadIfNeeded(image, pack, system);
 
-                return new Sprite(pack, image);
+                return new BasicSprite(name, packImage);
             }
             case "sub_sprite" -> {
                 String image = reader.assertKeyEquals("image").nextString();
-                loadIfNeeded(image, pack, system);
+                PackImage packImage = loadIfNeeded(image, pack, system);
 
                 int x = reader.assertKeyEquals("x").nextInt();
                 int y = reader.assertKeyEquals("y").nextInt();
                 int w = reader.assertKeyEquals("w").nextInt();
                 int h = reader.assertKeyEquals("h").nextInt();
 
-                return new SubSprite(pack, image, x, y, w, h);
+                return new SubSprite(name, packImage, x, y, w, h);
             }
             case "animated_sprite" -> {
                 if (acceptAnimatedSprite) {
                     int delay =  reader.assertKeyEquals("delay").nextInt();
 
-                    AnimatedSprite sprite = new AnimatedSprite(pack, delay);
+                    AnimatedSprite sprite = new AnimatedSprite(name, delay);
 
                     reader.assertKeyEquals("frames").beginArray(); // frames
 
+                    int i = 0;
                     while (!reader.isArrayEnd()) {
                         reader.beginObject();
 
-                        sprite.addFrame(parseSprite(pack, reader, system, false));
+                        sprite.addFrame(parseSprite(name + "_" + i, pack, reader, system, false));
 
                         reader.endObject();
+
+                        i++;
                     }
 
                     reader.endArray();
@@ -175,15 +178,17 @@ public class PackIO {
         }
     }
 
-    private static void loadIfNeeded(String image, Pack pack, FileSystem system) throws IOException {
-        PackImage img = pack.getImage(image);
+    private static PackImage loadIfNeeded(String image, Pack pack, FileSystem system) throws IOException {
+        PackImage img = pack.getImage(image + ".png");
 
         if (img == null) {
             Path path = system.getPath(String.format("sprites/%s.png", image));
 
-            img = new PackImage(ImageIO.read(Files.newInputStream(path)));
-            pack.putImage(image, img);
+            img = new PackImage(image + ".png", ImageIO.read(Files.newInputStream(path)));
+            pack.addImage(img);
         }
+
+        return img;
     }
 
     private static ArrayList<Level> readLevels(Path levelDirectory) throws IOException, JsonException {
@@ -298,20 +303,21 @@ public class PackIO {
     }
 
     private static void writeSprite(Pack pack, AbstractSprite sprite, IJsonWriter writer) throws IOException, JsonException {
-        if (sprite instanceof Sprite) {
+        if (sprite instanceof BasicSprite) {
             writer.field("type", "sprite");
-            writer.field("image", sprite.getTexture());
+            writer.field("image", ((BasicSprite) sprite).getImage().getName());
         } else if (sprite instanceof SubSprite) {
-            writer.field("type", "sub_sprite");
-            writer.field("image", sprite.getTexture());
-
             SubSprite subSprite = (SubSprite) sprite;
+
+            writer.field("type", "sub_sprite");
+            writer.field("image", subSprite.getImage().getName());
+
             writer.field("x", subSprite.getX());
             writer.field("y", subSprite.getY());
             writer.field("w", subSprite.getWidth());
             writer.field("h", subSprite.getHeight());
-        } else if (sprite instanceof AnimatedSprite) {
-            AnimatedSprite animatedSprite = (AnimatedSprite) sprite;
+        } else if (sprite instanceof IAnimatedSprite) {
+            IAnimatedSprite animatedSprite = (IAnimatedSprite) sprite;
 
             writer.field("type", "animated_sprite");
             writer.field("delay", animatedSprite.getDelay());
@@ -330,11 +336,11 @@ public class PackIO {
     private static void writeImages(Pack pack, FileSystem system) throws IOException {
         createDirectory("sprites", system);
 
-        for (Map.Entry<String, PackImage> images : pack.getImages().entrySet()) {
-            Path out = system.getPath("sprites/" + images.getKey() + ".png");
+        for (PackImage image : pack.getImages()) {
+            Path out = system.getPath("sprites/" + image);
 
             try (OutputStream stream = Files.newOutputStream(out)) {
-                images.getValue().write("png", stream);
+                image.write("png", stream);
             }
         }
     }
