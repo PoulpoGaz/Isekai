@@ -4,6 +4,7 @@ import fr.poulpogaz.isekai.editor.Map;
 import fr.poulpogaz.isekai.editor.MapSizeListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
+import fr.poulpogaz.isekai.editor.utils.Math2;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
@@ -12,9 +13,15 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 
+// TODO: Make a better zoom
 public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Map<M, T>, T> extends JPanel {
+
+    public static final String ZOOM_PROPERTY = "ZoomProperty";
+    public static final String MIN_ZOOM_PROPERTY = "MinZoomProperty";
+    public static final String MAX_ZOOM_PROPERTY = "MaxZoomProperty";
 
     protected final Pack pack;
     protected final E editor;
@@ -30,6 +37,10 @@ public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Ma
 
     protected boolean showCursor;
 
+    protected boolean zoom = true;
+    protected int minZoom = 1;
+    protected int maxZoom = 64; // one map element -> 64 pixels
+
     public MapPanelBase(Pack pack, E editor) {
         this.pack = pack;
         this.editor = editor;
@@ -37,6 +48,7 @@ public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Ma
         MouseAdapter listener = createMouseAdapter();
         addMouseListener(listener);
         addMouseMotionListener(listener);
+        addMouseWheelListener(listener);
 
         addSelectedMapListener();
         addShowGridListener();
@@ -96,6 +108,11 @@ public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Ma
             @Override
             public void mouseMoved(MouseEvent e) {
                 move(e);
+            }
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                zoom(e);
             }
         };
     }
@@ -201,6 +218,17 @@ public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Ma
         repaint();
     }
 
+    protected void zoom(MouseWheelEvent e) {
+        if (canZoom() && e.isControlDown()) {
+            pixelSize = Math2.clamp(pixelSize - e.getWheelRotation(), minZoom, maxZoom);
+
+            move(e); // update cursor
+
+            setPreferredSize();
+            repaint();
+        }
+    }
+
     protected void applyTool() {
         if (isCursorInsideMap()) {
             map.setModifyingMap(true);
@@ -232,5 +260,57 @@ public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Ma
     protected void mapSizeChanged(M map, int newWidth, int newHeight) {
         setPreferredSize();
         repaint();
+    }
+
+    public boolean canZoom() {
+        return zoom;
+    }
+
+    public void canZoom(boolean zoom) {
+        if (this.zoom != zoom) {
+            boolean old = this.zoom;
+
+            this.zoom = zoom;
+
+            firePropertyChange(ZOOM_PROPERTY, old, zoom);
+        }
+    }
+
+    public int getMinZoom() {
+        return minZoom;
+    }
+
+    public void setMinZoom(int minZoom) {
+        if (this.minZoom != minZoom && minZoom > 0) {
+            int old = this.minZoom;
+
+            if (maxZoom < minZoom) {
+                this.minZoom = maxZoom;
+                setMaxZoom(minZoom);
+            } else {
+                this.minZoom = minZoom;
+            }
+
+            firePropertyChange(MIN_ZOOM_PROPERTY, old, minZoom);
+        }
+    }
+
+    public int getMaxZoom() {
+        return maxZoom;
+    }
+
+    public void setMaxZoom(int maxZoom) {
+        if (this.maxZoom != maxZoom && maxZoom > 0) {
+            int old = this.maxZoom;
+
+            if (maxZoom < minZoom) {
+                this.maxZoom = minZoom;
+                setMinZoom(maxZoom);
+            } else {
+                this.maxZoom = maxZoom;
+            }
+
+            firePropertyChange(MAX_ZOOM_PROPERTY, old, maxZoom);
+        }
     }
 }

@@ -17,6 +17,7 @@ public class TileMapPanel extends MapPanelBase<LevelEditorModel, Level, Tile> {
         super(pack, editor);
 
         pixelSize = 32;
+        canZoom(false);
         setPreferredSize();
     }
 
