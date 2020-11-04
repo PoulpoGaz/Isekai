@@ -271,7 +271,7 @@ public class PackIO {
             String key = tile.name().toLowerCase();
 
             writer.key(key).beginObject();
-            writeSprite(pack, pack.getSprite(key), writer);
+            writeSprite(pack.getSprite(key), writer);
             writer.endObject();
         }
 
@@ -288,11 +288,11 @@ public class PackIO {
             writer.key(direction).beginObject();
 
             writer.key("static").beginObject();
-            writeSprite(pack, pack.getSprite(direction + "_static"), writer);
+            writeSprite(pack.getSprite(direction + "_static"), writer);
             writer.endObject();
 
             writer.key("walk").beginObject();
-            writeSprite(pack, pack.getSprite(direction + "_walk"), writer);
+            writeSprite(pack.getSprite(direction + "_walk"), writer);
             writer.endObject();
 
             writer.endObject();
@@ -302,7 +302,7 @@ public class PackIO {
         writer.close();
     }
 
-    private static void writeSprite(Pack pack, AbstractSprite sprite, IJsonWriter writer) throws IOException, JsonException {
+    private static void writeSprite(AbstractSprite sprite, IJsonWriter writer) throws IOException, JsonException {
         if (sprite instanceof BasicSprite) {
             writer.field("type", "sprite");
             writer.field("image", ((BasicSprite) sprite).getImage().getName());
@@ -310,14 +310,14 @@ public class PackIO {
             SubSprite subSprite = (SubSprite) sprite;
 
             writer.field("type", "sub_sprite");
-            writer.field("image", subSprite.getImage().getName());
+            writer.field("image", subSprite.getParent().getName());
 
             writer.field("x", subSprite.getX());
             writer.field("y", subSprite.getY());
             writer.field("w", subSprite.getWidth());
             writer.field("h", subSprite.getHeight());
-        } else if (sprite instanceof IAnimatedSprite) {
-            IAnimatedSprite animatedSprite = (IAnimatedSprite) sprite;
+        } else if (sprite instanceof AnimatedSprite) {
+            AnimatedSprite animatedSprite = (AnimatedSprite) sprite;
 
             writer.field("type", "animated_sprite");
             writer.field("delay", animatedSprite.getDelay());
@@ -325,7 +325,7 @@ public class PackIO {
             writer.key("frames").beginArray();
             for (AbstractSprite frame : animatedSprite.getFrames()) {
                 writer.beginObject();
-                writeSprite(pack, frame, writer);
+                writeSprite(frame, writer);
                 writer.endObject();
             }
 

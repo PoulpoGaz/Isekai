@@ -9,6 +9,10 @@ import java.util.Objects;
 
 public abstract class AbstractSprite extends Model {
 
+    public static final String SPRITE = "Sprite";
+    public static final String SUB_SPRITE = "Sub sprite";
+    public static final String ANIMATED_SPRITE = "Animated sprite";
+
     protected final String name;
 
     public AbstractSprite(String name) {
@@ -22,6 +26,12 @@ public abstract class AbstractSprite extends Model {
     public abstract int getWidth();
 
     public abstract int getHeight();
+
+    public abstract SubSprite toSubSprite();
+
+    public abstract BasicSprite toSprite();
+
+    public abstract AnimatedSprite toAnimatedSprite();
 
     public String getName() {
         return name;

@@ -11,13 +11,12 @@ import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
+import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeEvent;
 
-public class SpritePanel extends JPanel {
+import static fr.poulpogaz.isekai.editor.pack.image.AbstractSprite.*;
 
-    private static final String SPRITE = "Sprite";
-    private static final String SUB_SPRITE = "Sub sprite";
-    private static final String ANIMATED_SPRITE = "Animated sprite";
+public class SpritePanel extends JPanel {
 
     private final Pack pack;
     private final SpriteEditorModel editor;
@@ -54,19 +53,32 @@ public class SpritePanel extends JPanel {
         spriteType.addItem(ANIMATED_SPRITE);
         setSpriteType();
 
+        spriteType.addItemListener(this::changeSpriteType);
+
         add(Utils.split(sprites, spriteType), constraint);
     }
 
     private void setSpriteType() {
         AbstractSprite sprite = editor.getSelectedSprite();
 
-        if (sprite instanceof BasicSprite) {
-            spriteType.setSelectedItem(SPRITE);
-        } else if (sprite instanceof SubSprite){
+        if (sprite instanceof SubSprite){
             spriteType.setSelectedItem(SUB_SPRITE);
+        } else if (sprite instanceof BasicSprite) {
+            spriteType.setSelectedItem(SPRITE);
         } else if (sprite instanceof AnimatedSprite) {
             spriteType.setSelectedItem(ANIMATED_SPRITE);
         }
+    }
+
+    private void changeSpriteType(ItemEvent e) {
+        String type = (String) spriteType.getSelectedItem();
+        AbstractSprite sprite = editor.getSelectedSprite();
+
+        if (type == null) {
+            return;
+        }
+
+        editor.changeSpriteType(sprite, type);
     }
 
     private void switchSprite(PropertyChangeEvent evt) {

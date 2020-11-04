@@ -1,11 +1,11 @@
 package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.pack.image.IImageSprite;
 import fr.poulpogaz.isekai.editor.pack.image.PackImage;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ public class Pack extends Model {
     public static final String VERSION_PROPERTY = "VersionProperty";
 
     private HashSet<PackImage> images;
-    private HashSet<AbstractSprite> sprites;
+    private HashMap<String, AbstractSprite> sprites;
 
     private String name;
     private String author;
@@ -27,7 +27,7 @@ public class Pack extends Model {
     public Pack() {
         this.levels = new ArrayList<>();
         images = new HashSet<>();
-        sprites = new HashSet<>();
+        sprites = new HashMap<>();
 
         addLevel(new Level());
     }
@@ -169,30 +169,16 @@ public class Pack extends Model {
         return null;
     }
 
-    public AbstractSprite getSprite(String name) {
-        for (AbstractSprite sprite : sprites) {
-            if (sprite.getName().equals(name)) {
-                return sprite;
-            }
-        }
+    public HashSet<PackImage> getImages() {
+        return images;
+    }
 
-        return null;
+    public AbstractSprite getSprite(String name) {
+        return sprites.get(name);
     }
 
     public void addSprite(AbstractSprite sprite) {
-        if (!sprites.contains(sprite)) {
-            sprites.add(sprite);
-
-            if (sprite instanceof IImageSprite) {
-                PackImage image = ((IImageSprite) sprite).getImage();
-
-                images.add(image);
-            }
-        }
-    }
-
-    public HashSet<PackImage> getImages() {
-        return images;
+        sprites.put(sprite.getName(), sprite);
     }
 
 

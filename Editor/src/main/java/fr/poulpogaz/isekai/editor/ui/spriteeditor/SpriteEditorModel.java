@@ -2,10 +2,7 @@ package fr.poulpogaz.isekai.editor.ui.spriteeditor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.pack.image.IAnimatedSprite;
-import fr.poulpogaz.isekai.editor.pack.image.IImageSprite;
-import fr.poulpogaz.isekai.editor.pack.image.PackImage;
+import fr.poulpogaz.isekai.editor.pack.image.*;
 import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModelBase;
 
 import java.awt.*;
@@ -28,6 +25,20 @@ public class SpriteEditorModel extends EditorModelBase<PackImage, Color> {
         showGrid = false;
     }
 
+    public void changeSpriteType(AbstractSprite sprite, String newType) {
+        AbstractSprite newSprite = switch (newType) {
+            case AbstractSprite.SPRITE -> sprite.toSprite();
+            case AbstractSprite.SUB_SPRITE -> sprite.toSubSprite();
+            case AbstractSprite.ANIMATED_SPRITE -> sprite.toAnimatedSprite();
+            default -> null;
+        };
+
+        if (newSprite != sprite) {
+            pack.addSprite(newSprite);
+            setSelectedSprite(sprite);
+        }
+    }
+
     public AbstractSprite getSelectedSprite() {
         return selectedSprite;
     }
@@ -44,10 +55,12 @@ public class SpriteEditorModel extends EditorModelBase<PackImage, Color> {
     }
 
     protected PackImage getImageFor(AbstractSprite sprite) {
-        if (sprite instanceof IImageSprite) {
-            return ((IImageSprite) sprite).getImage();
-        } else if (sprite instanceof IAnimatedSprite) {
-            IAnimatedSprite animatedSprite = (IAnimatedSprite) sprite;
+        if (sprite instanceof BasicSprite) {
+            return ((BasicSprite) sprite).getImage();
+        } else if (sprite instanceof SubSprite) {
+           return ((SubSprite) sprite).getParent();
+        } else if (sprite instanceof AnimatedSprite) {
+            AnimatedSprite animatedSprite = (AnimatedSprite) sprite;
 
             AbstractSprite frame0 = animatedSprite.getFrame(0);
 

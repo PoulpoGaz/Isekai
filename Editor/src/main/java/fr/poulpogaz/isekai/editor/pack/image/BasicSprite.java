@@ -3,7 +3,7 @@ package fr.poulpogaz.isekai.editor.pack.image;
 import java.awt.*;
 import java.util.Objects;
 
-public class BasicSprite extends AbstractSprite implements IImageSprite {
+public class BasicSprite extends AbstractSprite {
 
     private PackImage image;
 
@@ -33,6 +33,23 @@ public class BasicSprite extends AbstractSprite implements IImageSprite {
     }
 
     @Override
+    public SubSprite toSubSprite() {
+        return new SubSprite(this);
+    }
+
+    @Override
+    public BasicSprite toSprite() {
+        return this;
+    }
+
+    @Override
+    public AnimatedSprite toAnimatedSprite() {
+        AnimatedSprite sprite = new AnimatedSprite(name);
+        sprite.addFrame(this);
+
+        return sprite;
+    }
+
     public PackImage getImage() {
         return image;
     }

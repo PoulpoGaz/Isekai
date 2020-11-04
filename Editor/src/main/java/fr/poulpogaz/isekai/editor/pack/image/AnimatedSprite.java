@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
+public class AnimatedSprite extends AbstractSprite {
 
     private final ArrayList<AbstractSprite> sprites;
     private int delay;
@@ -30,7 +30,6 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
         paint(g2d, 0, x, y, width, height);
     }
 
-    @Override
     public void paint(Graphics2D g2d, int index, int x, int y) {
         if (index < 0 || index >= sprites.size()) {
             return;
@@ -40,7 +39,6 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
         sprite.paint(g2d, x, y);
     }
 
-    @Override
     public void paint(Graphics2D g2d, int index, int x, int y, int width, int height) {
         if (index < 0 || index >= sprites.size()) {
             return;
@@ -61,6 +59,36 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
     }
 
     @Override
+    public SubSprite toSubSprite() {
+        AbstractSprite sprite = sprites.get(0);
+
+        if (sprite instanceof SubSprite) {
+            return (SubSprite) sprite;
+        } else if (sprite instanceof BasicSprite) {
+            return new SubSprite((BasicSprite) sprite);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public BasicSprite toSprite() {
+        AbstractSprite sprite = sprites.get(0);
+
+        if (sprite instanceof BasicSprite) {
+            return (BasicSprite) sprite;
+        } else if (sprite instanceof SubSprite) {
+            return new SpriteFromSubSprite((SubSprite) sprite);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public AnimatedSprite toAnimatedSprite() {
+        return this;
+    }
+
     public void addFrame(AbstractSprite sprite) {
         if (isValid(sprite)) {
             sprites.add(sprite);
@@ -69,14 +97,12 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
         }
     }
 
-    @Override
     public void removeFrame(AbstractSprite sprite) {
         if (sprites.remove(sprite)) {
             fireChangeListener();
         }
     }
 
-    @Override
     public void insertFrame(AbstractSprite sprite, int index) {
         if (isValid(sprite)) {
             sprites.add(index, sprite);
@@ -85,30 +111,26 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
         }
     }
 
-    @Override
     public void removeFrame(int index) {
         if (sprites.remove(index) != null) {
             fireChangeListener();
         }
     }
 
-    @Override
     public int size() {
         return sprites.size();
     }
 
-    @Override
     public AbstractSprite getFrame(int index) {
         return sprites.get(index);
     }
 
-    @Override
     public List<AbstractSprite> getFrames() {
         return sprites;
     }
 
     protected boolean isValid(AbstractSprite sprite) {
-        if (sprite instanceof IAnimatedSprite) {
+        if (sprite instanceof AnimatedSprite) {
             return false;
         }
 
@@ -119,7 +141,6 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
         return getWidth() == sprite.getWidth() && sprite.getHeight() == 0;
     }
 
-    @Override
     public void setDelay(int delay) {
         if (delay > 0 && this.delay != delay) {
             this.delay = delay;
@@ -128,7 +149,6 @@ public class AnimatedSprite extends AbstractSprite implements IAnimatedSprite {
         }
     }
 
-    @Override
     public int getDelay() {
         return delay;
     }

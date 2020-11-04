@@ -5,7 +5,7 @@ import fr.poulpogaz.isekai.editor.utils.Utils;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class SubSprite extends AbstractSprite implements IImageSprite {
+public class SubSprite extends AbstractSprite {
 
     private PackImage parent;
 
@@ -38,6 +38,10 @@ public class SubSprite extends AbstractSprite implements IImageSprite {
         setHeight(height);
     }
 
+    public SubSprite(BasicSprite sprite) {
+        this(sprite.getName(), sprite.getImage());
+    }
+
     @Override
     public void paint(Graphics2D g2d, int x, int y) {
         BufferedImage sub = getSubImage();
@@ -60,12 +64,11 @@ public class SubSprite extends AbstractSprite implements IImageSprite {
         return subImage;
     }
 
-    @Override
-    public PackImage getImage() {
+    public PackImage getParent() {
         return parent;
     }
 
-    public void setImage(PackImage parent) {
+    public void setParent(PackImage parent) {
         this.parent = parent;
 
         if (x + width >= parent.getWidth()) { // reset
@@ -141,6 +144,28 @@ public class SubSprite extends AbstractSprite implements IImageSprite {
     @Override
     public int getHeight() {
         return height;
+    }
+
+    @Override
+    public SubSprite toSubSprite() {
+        return this;
+    }
+
+    @Override
+    public BasicSprite toSprite() {
+        if (x == 0 && y == 0 && width == parent.getWidth() && height == parent.getHeight()) {
+            return new BasicSprite(name, parent);
+        }
+
+        return new SpriteFromSubSprite(this);
+    }
+
+    @Override
+    public AnimatedSprite toAnimatedSprite() {
+        AnimatedSprite sprite = new AnimatedSprite(name);
+        sprite.addFrame(this);
+
+        return sprite;
     }
 
     public void setHeight(int height) {

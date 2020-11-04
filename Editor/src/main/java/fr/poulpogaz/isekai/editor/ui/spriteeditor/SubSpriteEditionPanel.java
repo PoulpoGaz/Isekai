@@ -110,7 +110,7 @@ public class SubSpriteEditionPanel extends JPanel {
 
         this.fire = fire;
 
-        PackImage image = sprite.getImage();
+        PackImage image = sprite.getParent();
 
         xModel.setValue(sprite.getX());
         yModel.setValue(sprite.getY());
