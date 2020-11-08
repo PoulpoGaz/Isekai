@@ -1,10 +1,13 @@
 package fr.poulpogaz.isekai.editor.pack.image;
 
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatedSprite extends AbstractSprite {
+
+    private final ChangeListener redirect = (e) -> fireChangeListener();
 
     private final ArrayList<AbstractSprite> sprites;
     private int delay;
@@ -93,12 +96,16 @@ public class AnimatedSprite extends AbstractSprite {
         if (isValid(sprite)) {
             sprites.add(sprite);
 
+            sprite.addChangeListener(redirect);
+
             fireChangeListener();
         }
     }
 
     public void removeFrame(AbstractSprite sprite) {
         if (sprites.remove(sprite)) {
+            sprite.removeChangeListener(redirect);
+
             fireChangeListener();
         }
     }
@@ -107,12 +114,18 @@ public class AnimatedSprite extends AbstractSprite {
         if (isValid(sprite)) {
             sprites.add(index, sprite);
 
+            sprite.addChangeListener(redirect);
+
             fireChangeListener();
         }
     }
 
     public void removeFrame(int index) {
-        if (sprites.remove(index) != null) {
+        AbstractSprite sprite = sprites.remove(index);
+
+        if (sprite != null) {
+            sprite.removeChangeListener(redirect);
+
             fireChangeListener();
         }
     }
@@ -138,7 +151,7 @@ public class AnimatedSprite extends AbstractSprite {
             return true;
         }
 
-        return getWidth() == sprite.getWidth() && sprite.getHeight() == 0;
+        return getWidth() == sprite.getWidth() && getHeight() == sprite.getHeight();
     }
 
     public void setDelay(int delay) {

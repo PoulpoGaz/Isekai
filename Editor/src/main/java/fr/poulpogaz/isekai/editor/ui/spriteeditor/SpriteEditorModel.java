@@ -18,9 +18,8 @@ public class SpriteEditorModel extends EditorModelBase<PackImage, Color> {
     protected SpriteEditorModel(Pack pack) {
         this.pack = pack;
 
-        selectedSprite = pack.getSprite(PackSprites.FLOOR);
-        selectedMap = getImageFor(selectedSprite);
         selectedElement = Color.WHITE;
+        setSelectedSprite(pack.getSprite(PackSprites.FLOOR));
 
         showGrid = false;
     }
@@ -35,7 +34,7 @@ public class SpriteEditorModel extends EditorModelBase<PackImage, Color> {
 
         if (newSprite != sprite) {
             pack.addSprite(newSprite);
-            setSelectedSprite(sprite);
+            setSelectedSprite(newSprite);
         }
     }
 

@@ -69,21 +69,23 @@ public class SubSprite extends AbstractSprite {
     }
 
     public void setParent(PackImage parent) {
-        this.parent = parent;
+        if (!this.parent.equals(parent)) {
+            this.parent = parent;
 
-        if (x + width >= parent.getWidth()) { // reset
-            x = 0;
-            width = parent.getWidth();
+            if (x + width >= parent.getWidth()) { // reset
+                x = 0;
+                width = parent.getWidth();
+            }
+
+            if (y + height >= parent.getHeight()) { // reset
+                y = 0;
+                height = parent.getHeight();
+            }
+
+            subImage = null;
+
+            fireChangeListener();
         }
-
-        if (y + height >= parent.getHeight()) { // reset
-            y = 0;
-            height = parent.getHeight();
-        }
-
-        subImage = null;
-
-        fireChangeListener();
     }
 
     public int getX() {

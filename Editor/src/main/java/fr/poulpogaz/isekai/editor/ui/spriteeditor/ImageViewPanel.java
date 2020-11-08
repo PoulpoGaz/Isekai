@@ -8,12 +8,16 @@ import fr.poulpogaz.isekai.editor.utils.Bounds;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, Color> {
 
     private static final int SPRITE = 0;
     private static final int SUB_SPRITE = 1;
     private static final int ANIMATED_SPRITE = 2;
+
+    private final ColorProducer colorProducer = new ColorProducer();
 
     private final ChangeListener spriteChanged;
 
@@ -61,14 +65,46 @@ public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, C
             g2d.setColor(new Color(26, 22, 22));
             g2d.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {6f}, 0.0f));
 
-            int x = offset.x + sprite.getX() * pixelSize;
-            int y = offset.y + sprite.getY() * pixelSize;
-            int width = sprite.getWidth() * pixelSize;
-            int height = sprite.getHeight() * pixelSize;
-            g2d.drawRect(x, y, width, height);
+            drawSubSpriteRect(sprite, g2d, offset);
+
+            g2d.setStroke(old);
+        } else if (type == ANIMATED_SPRITE) {
+            AnimatedSprite animSprite = (AnimatedSprite) this.sprite;
+
+            Stroke old = g2d.getStroke();
+
+            g2d.setColor(new Color(26, 22, 22));
+            g2d.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {6f}, 0.0f));
+
+            List<AbstractSprite> sprites = animSprite.getFrames();
+            for (int i = 0; i < sprites.size(); i++) {
+                AbstractSprite sprite = sprites.get(i);
+
+                if (sprite instanceof SubSprite) {
+                    SubSprite s = (SubSprite) sprite;
+
+                    if (s.getParent().equals(map)) {
+                        g2d.setColor(colorProducer.produce(i));
+                        drawSubSpriteRect(s, g2d, offset);
+                    }
+                }
+            }
 
             g2d.setStroke(old);
         }
+    }
+
+    /**
+     * Only draw the rectangle. This method
+     * doesn't set the stroke.
+     */
+    protected void drawSubSpriteRect(SubSprite sprite, Graphics2D g2d, Point offset) {
+        int x = offset.x + sprite.getX() * pixelSize;
+        int y = offset.y + sprite.getY() * pixelSize;
+        int width = sprite.getWidth() * pixelSize;
+        int height = sprite.getHeight() * pixelSize;
+
+        g2d.drawRect(x, y, width, height);
     }
 
     protected void drawCheckerboard(Graphics2D g2d, Point offset, Rectangle visibleRect, Bounds mapBounds) {
@@ -120,5 +156,24 @@ public class ImageViewPanel extends MapPanelBase<SpriteEditorModel, PackImage, C
 
         setSpriteType();
         repaint();
+    }
+
+    private static class ColorProducer {
+
+        private final List<Color> colors = new ArrayList<>();
+
+        public Color produce(int index) {
+            for (int i = colors.size(); i <= index; i ++) {
+                Color last = colors.size() == 0 ? Color.RED : colors.get(i - 1);
+
+                float hue = Color.RGBtoHSB(last.getRed(), last.getGreen(), last.getBlue(), null) [0];
+
+                hue += 0.142;
+
+                colors.add(Color.getHSBColor(hue, 0.9f, 0.9f));
+            }
+
+            return colors.get(index);
+        }
     }
 }

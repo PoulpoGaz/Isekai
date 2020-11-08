@@ -11,9 +11,7 @@ import javax.swing.event.ChangeListener;
 
 public class SubSpriteEditionPanel extends JPanel {
 
-    private final SpriteEditorModel model;
-
-    private ChangeListener listener;
+    private final ChangeListener listener;
 
     private SubSprite sprite;
 
@@ -30,35 +28,34 @@ public class SubSpriteEditionPanel extends JPanel {
     private boolean fire = true;
 
     public SubSpriteEditionPanel(SpriteEditorModel model) {
-        this.model = model;
-        model.addPropertyChangeListener(SpriteEditorModel.SELECTED_SPRITE_PROPERTY, (e) -> revalidateComponents());
+        model.addPropertyChangeListener(SpriteEditorModel.SELECTED_SPRITE_PROPERTY, (e) -> revalidateComponents(model.getSelectedSprite()));
 
         listener = this::spriteChanged;
 
         setLayout(new MigLayout("fillx"));
         initComponents();
-        revalidateComponents();
+        revalidateComponents(model.getSelectedSprite());
     }
 
     private void initComponents() {
         x = new JSpinner();
         x.addChangeListener(this::spinnerChanged);
-        xModel = new SpinnerNumberModel();
+        xModel = new SpinnerNumberModel(0, 0, null, 1);
         x.setModel(xModel);
 
         y = new JSpinner();
         y.addChangeListener(this::spinnerChanged);
-        yModel = new SpinnerNumberModel(1, null, null, 1);
+        yModel = new SpinnerNumberModel(0, 0, null, 1);
         y.setModel(yModel);
 
         width = new JSpinner();
         width.addChangeListener(this::spinnerChanged);
-        widthModel = new SpinnerNumberModel(1, null, null, 1);
+        widthModel = new SpinnerNumberModel(1, 1, null, 1);
         width.setModel(widthModel);
 
         height = new JSpinner();
         height.addChangeListener(this::spinnerChanged);
-        heightModel = new SpinnerNumberModel();
+        heightModel = new SpinnerNumberModel(1, 1, null, 1);
         height.setModel(heightModel);
 
         add(new JLabel("X:"), "grow");
@@ -84,9 +81,7 @@ public class SubSpriteEditionPanel extends JPanel {
         updateModels(sprite, false);
     }
 
-    private void revalidateComponents() {
-        AbstractSprite s = model.getSelectedSprite();
-
+    private void revalidateComponents(AbstractSprite s) {
         if (sprite != null) {
             sprite.removeChangeListener(listener);
         }

@@ -54,7 +54,6 @@ public class SpriteIcon extends AbstractIcon {
             animator.start();
 
             alarm = new Alarm("SpriteIconAnimator");
-            System.out.println(animatedSprite.getDelay());
             alarm.schedule(this::repaint, animatedSprite.getDelay(), animatedSprite.getDelay());
         } else if (alarm != null) {
             alarm.shutdown();
