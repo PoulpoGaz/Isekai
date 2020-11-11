@@ -9,42 +9,12 @@
             "h": 16
         },
         "walk": {
-            "type": "animated_sprite",
-            "delay": 250,
-            "frames": [
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 16,
-                    "y": 0,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 482,
-                    "y": 0,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 48,
-                    "y": 0,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 4,
-                    "y": 0,
-                    "w": 16,
-                    "h": 16
-                }
-            ]
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 16,
+            "y": 0,
+            "w": 16,
+            "h": 16
         }
     },
     "right": {
@@ -57,42 +27,12 @@
             "h": 16
         },
         "walk": {
-            "type": "animated_sprite",
-            "delay": 250,
-            "frames": [
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 16,
-                    "y": 16,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 482,
-                    "y": 16,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 48,
-                    "y": 16,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 4,
-                    "y": 16,
-                    "w": 16,
-                    "h": 16
-                }
-            ]
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 16,
+            "y": 16,
+            "w": 16,
+            "h": 16
         }
     },
     "up": {
@@ -105,42 +45,12 @@
             "h": 16
         },
         "walk": {
-            "type": "animated_sprite",
-            "delay": 250,
-            "frames": [
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 16,
-                    "y": 48,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 482,
-                    "y": 48,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 48,
-                    "y": 48,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 4,
-                    "y": 48,
-                    "w": 16,
-                    "h": 16
-                }
-            ]
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 16,
+            "y": 48,
+            "w": 16,
+            "h": 16
         }
     },
     "down": {
@@ -153,42 +63,12 @@
             "h": 16
         },
         "walk": {
-            "type": "animated_sprite",
-            "delay": 250,
-            "frames": [
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 16,
-                    "y": 32,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 482,
-                    "y": 32,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 48,
-                    "y": 32,
-                    "w": 16,
-                    "h": 16
-                },
-                {
-                    "type": "sub_sprite",
-                    "image": "player",
-                    "x": 4,
-                    "y": 32,
-                    "w": 16,
-                    "h": 16
-                }
-            ]
+            "type": "sub_sprite",
+            "image": "player",
+            "x": 16,
+            "y": 32,
+            "w": 16,
+            "h": 16
         }
     }
 }

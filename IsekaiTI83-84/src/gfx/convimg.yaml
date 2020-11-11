@@ -1,56 +1,32 @@
-output: c
+palettes:
+  - name: palette
+    images: automatic
+    fixed-entries:
+      - color: {index: 0, r:   0, g:   0, b:   0} # Black
+      - color: {index: 1, r: 255, g: 255, b: 255} # White 
+      - color: {index: 2, r: 255, g:   0, b: 255} # Magenta -> transparent color
+
+      - color: {index: 3, r:  23, g:   4, b:  50} # AF ->  23,   4,  50
+      - color: {index: 4, r:  12, g:  34, b:  81} # 03 ->  12,  34,  81
+      - color: {index: 5, r:  18, g:  59, b: 147} # 11 ->  18,  59, 147
+      - color: {index: 6, r:   0, g: 107, b:  70} # 3F ->   0, 107,  70
+      - color: {index: 7, r:  47, g: 129, b:  54} # 06 ->  47, 129,  54
+      - color: {index: 8, r:  73, g: 146, b:  49} # 32 ->  73, 146,  49
+      - color: {index: 9, r: 100, g: 164, b:  44} # 28 -> 100, 164,  44
+
+converts:
+  - name: chicken_left
+    palette: palette
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - chicken_left.png
+
+outputs:
+  - type: c
     include-file: gfx.h
     palettes:
-        - palette
+      - palette
     converts:
-        - sprites
-        - map_tileset
-        - chicken_down_walk
-        - chicken_left_walk
-        - chicken_up_walk
-
-palette: palette
-    images: automatic
-    fixed-color: {index: 0, r:   0, g:   0, b:   0} # Black
-    fixed-color: {index: 1, r: 255, g: 255, b: 255} # White 
-    fixed-color: {index: 2, r: 255, g:   0, b: 255} # Magenta -> transparent color
-
-    fixed-color: {index: 3, r:  23, g:   4, b:  50} # AF ->  23,   4,  50
-    fixed-color: {index: 4, r:  12, g:  34, b:  81} # 03 ->  12,  34,  81
-    fixed-color: {index: 5, r:  18, g:  59, b: 147} # 11 ->  18,  59, 147
-    fixed-color: {index: 6, r:   0, g: 107, b:  70} # 3F ->   0, 107,  70
-    fixed-color: {index: 7, r:  47, g: 129, b:  54} # 06 ->  47, 129,  54
-    fixed-color: {index: 8, r:  73, g: 146, b:  49} # 32 ->  73, 146,  49
-    fixed-color: {index: 9, r: 100, g: 164, b:  44} # 28 -> 100, 164,  44
-
-convert: sprites
-    palette: palette
-    transparent-color-index: 2
-    images:
-        -chicken_down.png
-        -chicken_left.png
-        -chicken_up.png
-
-convert: map_tileset
-    palette: palette
-    transparent-color-index: 2
-    tilesets: {tile-width: 16, tile-height: 16}
-        -map_tileset.png
-
-convert: chicken_down_walk
-    palette: palette
-    transparent-color-index: 2
-    tilesets: {tile-width: 16, tile-height: 16}
-        -chicken_down_walk.png
-
-convert: chicken_left_walk
-    palette: palette
-    transparent-color-index: 2
-    tilesets: {tile-width: 16, tile-height: 16}
-        -chicken_left_walk.png
-
-convert: chicken_up_walk
-    palette: palette
-    transparent-color-index: 2
-    tilesets: {tile-width: 16, tile-height: 16}
-        -chicken_up_walk.png
+      - chicken_left

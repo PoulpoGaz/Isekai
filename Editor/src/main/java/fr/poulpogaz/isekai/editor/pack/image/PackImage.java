@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-public class PackImage extends Map<PackImage, Color> {
+public class PackImage extends Map<PackImage, Color> implements INamedImage {
 
     private final String name;
     private final BufferedImage image;
@@ -57,6 +57,12 @@ public class PackImage extends Map<PackImage, Color> {
         return new Color(buffer.getElem(i), true);
     }
 
+    public int getRGBA(int x, int y) {
+        int i = y * getWidth() + x;
+
+        return buffer.getElem(i);
+    }
+
     public BufferedImage getSubImage(int x, int y, int width, int height) {
         return image.getSubimage(x, y, width, height);
     }
@@ -83,6 +89,7 @@ public class PackImage extends Map<PackImage, Color> {
         return image.getHeight();
     }
 
+    @Override
     public String getName() {
         return name;
     }

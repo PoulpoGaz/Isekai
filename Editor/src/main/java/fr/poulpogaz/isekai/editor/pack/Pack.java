@@ -1,13 +1,9 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.pack.image.PackImage;
+import fr.poulpogaz.isekai.editor.pack.image.*;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 public class Pack extends Model {
 
@@ -181,6 +177,9 @@ public class Pack extends Model {
         sprites.put(sprite.getName(), sprite);
     }
 
+    public Collection<AbstractSprite> getSprites() {
+        return sprites.values();
+    }
 
     /**
      *  LISTENERS
@@ -211,5 +210,37 @@ public class Pack extends Model {
 
     private void fireNewLevels() {
         fireListener(LevelsOrganisationListener.class, LevelsOrganisationListener::newLevels);
+    }
+
+    /**
+     * A pack is valid for TI calculators if
+     *  -the dimension of the sprites is 16x16
+     *
+     * @return true if the pack is valid for calculators
+     */
+    public boolean isTIPack() {
+        for (AbstractSprite sprite : sprites.values()) {
+            int w = 0;
+            int h = 0;
+
+            if (sprite instanceof BasicSprite) {
+                BasicSprite s = (BasicSprite) sprite;
+                w = s.getWidth();
+                h = s.getHeight();
+            } else if (sprite instanceof SubSprite) {
+                SubSprite s = (SubSprite) sprite;
+
+                w = s.getWidth();
+                h = s.getHeight();
+            } else if (sprite instanceof AnimatedSprite) {
+                return false; // TODO: add animated sprite support
+            }
+
+            if (w != 16 || h != 16) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

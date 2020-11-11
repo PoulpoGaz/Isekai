@@ -27,4 +27,6 @@ public final class PackSprites {
             PLAYER_DOWN_STATIC, PLAYER_UP_STATIC, PLAYER_LEFT_STATIC, PLAYER_RIGHT_STATIC,
             PLAYER_DOWN_WALK, PLAYER_UP_WALK, PLAYER_LEFT_WALK, PLAYER_RIGHT_WALK
     };
+
+    public static final int SIZE = SPRITES.length;
 }

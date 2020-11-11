@@ -1,6 +1,7 @@
 #include "screen.h"
 #include <stdlib.h>
 #include <debug.h>
+#include <graphx.h>
 
 // "private"
 void swap(screen_t **current, screen_t *new);
@@ -35,6 +36,7 @@ void run() {
 			switch (next_state) {
 				case DRAW:
 					draw(current);
+					gfx_SwapDraw();
 					break;
 				case EXIT:
 					continue;

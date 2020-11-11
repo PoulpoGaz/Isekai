@@ -15,8 +15,6 @@ void draw_menu(screen_t *self) {
     uint8_t y = 140;
     static uint8_t offset = 0;
 
-    //gfx_ZeroScreen();
-
     draw_menu_background(true, true, offset);
 
     for (i = 0; i < menu->length; i++) {
@@ -31,8 +29,6 @@ void draw_menu(screen_t *self) {
     }
 
     offset++;
-
-    gfx_SwapDraw();
 }
 
 uint8_t update_menu(screen_t *self) {

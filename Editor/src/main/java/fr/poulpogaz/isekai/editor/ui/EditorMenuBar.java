@@ -149,7 +149,7 @@ public class EditorMenuBar extends JMenuBar {
                 TIPackIO.serialize(editor.getPack(), directory);
             } catch (TIPackIOException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nError(s):\n" + e, "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
