@@ -1,18 +1,15 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.pack.image.*;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class Pack extends Model {
 
     public static final String NAME_PROPERTY = "NameProperty";
     public static final String AUTHOR_PROPERTY = "AuthorProperty";
     public static final String VERSION_PROPERTY = "VersionProperty";
-
-    private HashSet<PackImage> images;
-    private HashMap<String, AbstractSprite> sprites;
 
     private String name;
     private String author;
@@ -22,8 +19,6 @@ public class Pack extends Model {
 
     public Pack() {
         this.levels = new ArrayList<>();
-        images = new HashSet<>();
-        sprites = new HashMap<>();
 
         addLevel(new Level());
     }
@@ -151,36 +146,6 @@ public class Pack extends Model {
         }
     }
 
-    public void addImage(PackImage image) {
-        images.add(image);
-    }
-
-    public PackImage getImage(String name) {
-        for (PackImage image : images) {
-            if (image.getName().equals(name)) {
-                return image;
-            }
-        }
-
-        return null;
-    }
-
-    public HashSet<PackImage> getImages() {
-        return images;
-    }
-
-    public AbstractSprite getSprite(String name) {
-        return sprites.get(name);
-    }
-
-    public void addSprite(AbstractSprite sprite) {
-        sprites.put(sprite.getName(), sprite);
-    }
-
-    public Collection<AbstractSprite> getSprites() {
-        return sprites.values();
-    }
-
     /**
      *  LISTENERS
      */
@@ -210,37 +175,5 @@ public class Pack extends Model {
 
     private void fireNewLevels() {
         fireListener(LevelsOrganisationListener.class, LevelsOrganisationListener::newLevels);
-    }
-
-    /**
-     * A pack is valid for TI calculators if
-     *  -the dimension of the sprites is 16x16
-     *
-     * @return true if the pack is valid for calculators
-     */
-    public boolean isTIPack() {
-        for (AbstractSprite sprite : sprites.values()) {
-            int w = 0;
-            int h = 0;
-
-            if (sprite instanceof BasicSprite) {
-                BasicSprite s = (BasicSprite) sprite;
-                w = s.getWidth();
-                h = s.getHeight();
-            } else if (sprite instanceof SubSprite) {
-                SubSprite s = (SubSprite) sprite;
-
-                w = s.getWidth();
-                h = s.getHeight();
-            } else if (sprite instanceof AnimatedSprite) {
-                return false; // TODO: add animated sprite support
-            }
-
-            if (w != 16 || h != 16) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

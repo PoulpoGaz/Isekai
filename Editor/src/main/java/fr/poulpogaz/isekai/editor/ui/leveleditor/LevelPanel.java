@@ -3,15 +3,13 @@ package fr.poulpogaz.isekai.editor.ui.leveleditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModelBase;
+import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModel;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.Utils;
-import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 
@@ -27,7 +25,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         pack.addLevelsOrganisationListener(this);
 
         this.editor = Objects.requireNonNull(editor);
-        editor.addPropertyChangeListener(EditorModelBase.SELECTED_MAP_PROPERTY, this::switchLevel);
+        editor.addPropertyChangeListener(EditorModel.SELECTED_MAP_PROPERTY, this::switchLevel);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Level order"));
@@ -39,11 +37,11 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 
-        JButton insertLevel = createButton("/icons/add.svg", "Insert level", this::insertLevel);
-        JButton deleteLevel = createButton("/icons/delete.svg", "Delete level", this::deleteLevel);
+        JButton insertLevel = Utils.createButton("/icons/add.svg", "Insert level", this::insertLevel);
+        JButton deleteLevel = Utils.createButton("/icons/delete.svg", "Delete level", this::deleteLevel);
 
-        JButton moveUp = createButton("/icons/move_up.svg", "Move up", this::moveUp);
-        JButton moveDown = createButton("/icons/move_down.svg", "Move down", this::moveDown);
+        JButton moveUp = Utils.createButton("/icons/move_up.svg", "Move up", this::moveUp);
+        JButton moveDown = Utils.createButton("/icons/move_down.svg", "Move down", this::moveDown);
 
         levelsComboBox = new JComboBox<>();
         levelsComboBox.addItemListener((e) -> {
@@ -59,15 +57,6 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         add(Utils.split(insertLevel, deleteLevel), constraint);
         add(Utils.split(moveUp, moveDown), constraint);
         add(levelsComboBox, constraint);
-    }
-
-    private JButton createButton(String resource, String text, ActionListener listener) {
-        JButton button = new JButton();
-        button.addActionListener(listener);
-        button.setText(text);
-        button.setIcon(IconLoader.loadSVGIcon(resource));
-
-        return button;
     }
 
     private void insertLevel(ActionEvent e) {

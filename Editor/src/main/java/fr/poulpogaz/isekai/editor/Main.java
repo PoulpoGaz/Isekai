@@ -2,10 +2,11 @@ package fr.poulpogaz.isekai.editor;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLaf;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.settings.Settings;
 import fr.poulpogaz.isekai.editor.utils.Cache;
-import fr.poulpogaz.isekai.editor.utils.Compressor;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,9 +16,12 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Compressor.compress();
+            PackSprites.initialize();
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Failed to load tileset:\n" + e.toString(), "FATAL", JOptionPane.ERROR_MESSAGE);
+
             e.printStackTrace();
+            return;
         }
 
         Cache.setRoot(System.getProperty("user.home"), ".PoulpoGaz/Isekai/editor");

@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 
-public class ToolBar<E extends EditorModelBase<? extends Map<?, ?>, ?>> extends JToolBar {
+public class ToolBar<E extends EditorModel<? extends Map<?, ?>, ?>> extends JToolBar {
 
     protected final E editor;
 

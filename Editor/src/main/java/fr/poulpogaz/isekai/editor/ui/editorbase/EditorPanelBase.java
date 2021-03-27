@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AdjustmentListener;
 
-public abstract class EditorPanelBase<E extends EditorModelBase<? extends Map<?, ?>, ?>> extends JPanel {
+public abstract class EditorPanelBase<E extends EditorModel<? extends Map<?, ?>, ?>> extends JPanel {
 
     protected final Pack pack;
     protected final E editor;

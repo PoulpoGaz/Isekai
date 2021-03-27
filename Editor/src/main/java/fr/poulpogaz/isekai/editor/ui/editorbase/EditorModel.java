@@ -7,7 +7,7 @@ import fr.poulpogaz.isekai.editor.ui.Model;
 
 import java.util.Objects;
 
-public class EditorModelBase<M extends Map<M, E>, E> extends Model {
+public class EditorModel<M extends Map<M, E>, E> extends Model {
 
     public static final String SELECTED_MAP_PROPERTY = "SelectedMapProperty";
     public static final String SELECTED_ELEMENT_PROPERTY = "SelectedElementProperty";
@@ -20,12 +20,12 @@ public class EditorModelBase<M extends Map<M, E>, E> extends Model {
 
     protected boolean showGrid = true;
 
-    protected EditorModelBase() {
+    protected EditorModel() {
         selectedMap = null;
         selectedElement = null;
     }
 
-    public EditorModelBase(M selectedMap, E selectedElement) {
+    public EditorModel(M selectedMap, E selectedElement) {
         this.selectedMap = Objects.requireNonNull(selectedMap);
         this.selectedElement = Objects.requireNonNull(selectedElement);
     }

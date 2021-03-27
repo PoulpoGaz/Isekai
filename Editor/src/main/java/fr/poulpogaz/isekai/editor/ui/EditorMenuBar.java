@@ -1,13 +1,10 @@
 package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
-import com.sun.jdi.InternalException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.io.PackBuilder;
-import fr.poulpogaz.isekai.editor.pack.io.PackIO;
-import fr.poulpogaz.isekai.editor.pack.io.TIPackIO;
-import fr.poulpogaz.isekai.editor.pack.io.TIPackIOException;
+import fr.poulpogaz.isekai.editor.pack.TIPackIO;
+import fr.poulpogaz.isekai.editor.pack.TIPackIOException;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
@@ -39,7 +36,7 @@ public class EditorMenuBar extends JMenuBar {
 
         JMenuItem newItem = new JMenuItem("New");
         newItem.setIcon(IconLoader.loadSVGIcon("/icons/new.svg"));
-        newItem.addActionListener((e) -> editor.setPack(PackBuilder.emptyPack()));
+        newItem.addActionListener((e) -> editor.setPack(new Pack()));
 
         JMenuItem open = new JMenuItem("Open");
         open.setIcon(new FlatTreeOpenIcon());
@@ -47,13 +44,7 @@ public class EditorMenuBar extends JMenuBar {
 
         JMenuItem openTemplate = new JMenuItem("Open template");
         openTemplate.addActionListener((e) -> {
-            Pack pack = PackBuilder.loadDefaultPack();
-
-            if (pack == null) {
-                throw new InternalException();
-            }
-
-            editor.setPack(pack);
+            JOptionPane.showMessageDialog(editor, "Template not available right now. Sorry", "No template", JOptionPane.INFORMATION_MESSAGE);
         });
 
         JMenuItem save = new JMenuItem("Save");
@@ -96,7 +87,7 @@ public class EditorMenuBar extends JMenuBar {
     }
 
     private void open() {
-        initFileChooserForSKB();
+        /*initFileChooserForSKB();
 
         int result = chooser.showOpenDialog(editor);
 
@@ -108,12 +99,13 @@ public class EditorMenuBar extends JMenuBar {
             } else {
                 JOptionPane.showMessageDialog(editor, "Corrupted file", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }*/
 
-        }
+        JOptionPane.showMessageDialog(editor, "Open not implemented. Sorry", "Can't open", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void save() {
-        initFileChooserForSKB();
+        /*initFileChooserForSKB();
 
         int result = chooser.showSaveDialog(editor);
 
@@ -128,7 +120,8 @@ public class EditorMenuBar extends JMenuBar {
             if (!PackIO.serialize(editor.getPack(), selectedFile)) {
                 JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        }*/
+        JOptionPane.showMessageDialog(editor, "Save not implemented. Sorry", "Can't save", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void initFileChooserForX8V() {

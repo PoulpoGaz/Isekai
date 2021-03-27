@@ -24,15 +24,11 @@ void main(void) {
 	dbg_ClearConsole();
 	dbg_sprintf(dbgout, "Initializing\n");
 
-    load_packs();
-    load_save();
-
     main_menu = new_main_menu();
 
  	gfx_Begin(gfx_8bpp);
     gfx_SetPalette(palette, sizeof_palette, 0);
-    gfx_SetTextFGColor(0x01);
-    gfx_SetTransparentColor(TRANSPARENT_COLOR);
+    gfx_SetTextFGColor(0x00);
     gfx_SetDrawBuffer();
 
     add_screen(&main_menu);  
@@ -40,8 +36,6 @@ void main(void) {
     dbg_sprintf(dbgout, "Running\n");
     run();
  	
-    free_packs();
-
  	dbg_sprintf(dbgout, "Exiting\n");
  	gfx_End();
     prgm_CleanUp();

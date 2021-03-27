@@ -4,22 +4,23 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
-import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModelBase;
+import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModel;
 
-public class LevelEditorModel extends EditorModelBase<Level, Tile> {
+import java.awt.image.BufferedImage;
+
+public class LevelEditorModel extends EditorModel<Level, Tile> {
 
     public LevelEditorModel(Level level) {
         super(level, Tile.FLOOR);
     }
 
-    public AbstractSprite getToolSprite(Pack pack) {
+    public BufferedImage getToolSprite() {
         if (tool instanceof PlayerTool) {
-            return pack.getSprite(PackSprites.PLAYER_DOWN_STATIC);
+            return PackSprites.getPlayer();
         } else {
-            return selectedElement.getSprite(pack);
+            return selectedElement.getSprite();
         }
     }
 

@@ -4,7 +4,6 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
 import fr.poulpogaz.isekai.editor.ui.editorbase.MapPanelBase;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
@@ -32,10 +31,10 @@ public class TileMapPanel extends MapPanelBase<LevelEditorModel, Level, Tile> {
                 int drawX = offset.x + x * pixelSize;
                 int drawY = offset.y + y * pixelSize;
 
-                drawTile(g2d, drawX, drawY, t);
+                g2d.drawImage(t.getSprite(), drawX, drawY, pixelSize, pixelSize, null);
 
                 if (player.equals(x, y)) {
-                    drawSprite(g2d, drawX, drawY, pack.getSprite(PackSprites.PLAYER_DEFAULT_STATIC));
+                    g2d.drawImage(PackSprites.getPlayer(), drawX, drawY, pixelSize, pixelSize, null);
                 }
             }
         }
@@ -49,18 +48,8 @@ public class TileMapPanel extends MapPanelBase<LevelEditorModel, Level, Tile> {
         int x = offset.x + hoverX * pixelSize;
         int y = offset.y + hoverY * pixelSize;
 
-        drawSprite(g2d, x, y, editor.getToolSprite(pack));
+        g2d.drawImage(editor.getToolSprite(), x, y, pixelSize, pixelSize, null);
 
         g2d.setComposite(old);
-    }
-
-    private void drawTile(Graphics2D g2d, int x, int y, Tile t) {
-        AbstractSprite sprite = pack.getSprite(t.getSprite());
-
-        drawSprite(g2d, x, y, sprite);
-    }
-
-    private void drawSprite(Graphics2D g2d, int x, int y, AbstractSprite sprite) {
-        sprite.paint(g2d, x, y, pixelSize, pixelSize);
     }
 }

@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.pack.io;
+package fr.poulpogaz.isekai.editor.pack;
 
 import java.io.IOException;
 

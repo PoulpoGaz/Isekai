@@ -17,7 +17,7 @@ import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 
 // TODO: Make a better zoom
-public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Map<M, T>, T> extends JPanel {
+public abstract class MapPanelBase<E extends EditorModel<M, T>, M extends Map<M, T>, T> extends JPanel {
 
     public static final String ZOOM_PROPERTY = "ZoomProperty";
     public static final String MIN_ZOOM_PROPERTY = "MinZoomProperty";
@@ -64,11 +64,11 @@ public abstract class MapPanelBase<E extends EditorModelBase<M, T>, M extends Ma
     }
 
     protected void addSelectedMapListener() {
-        editor.addPropertyChangeListener(EditorModelBase.SELECTED_MAP_PROPERTY, this::selectedMapChanged);
+        editor.addPropertyChangeListener(EditorModel.SELECTED_MAP_PROPERTY, this::selectedMapChanged);
     }
 
     protected void addShowGridListener() {
-        editor.addPropertyChangeListener(EditorModelBase.SHOW_GRID_PROPERTY, (e) -> repaint());
+        editor.addPropertyChangeListener(EditorModel.SHOW_GRID_PROPERTY, (e) -> repaint());
     }
 
     protected MapSizeListener<M> createMapSizeListener() {

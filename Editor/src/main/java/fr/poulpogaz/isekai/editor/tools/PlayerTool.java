@@ -5,8 +5,6 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.image.AbstractSprite;
-import fr.poulpogaz.isekai.editor.pack.image.SpriteIcon;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
 import javax.swing.*;
@@ -41,9 +39,7 @@ public class PlayerTool implements Tool {
 
     @Override
     public Icon getIcon() {
-        AbstractSprite sprite = pack.getSprite(PackSprites.PLAYER_DEFAULT_STATIC);
-
-        return new SpriteIcon(sprite);
+        return new ImageIcon(PackSprites.getPlayer());
     }
 
     public static PlayerTool getInstance(Pack pack) {

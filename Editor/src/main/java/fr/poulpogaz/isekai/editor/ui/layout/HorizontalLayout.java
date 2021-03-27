@@ -115,6 +115,8 @@ public class HorizontalLayout implements LayoutManager2 {
 
         for (Component component : parent.getComponents()) {
             if (!component.isVisible()) {
+                component.setBounds(0, 0, 0, 0);
+
                 continue;
             }
 
@@ -160,6 +162,8 @@ public class HorizontalLayout implements LayoutManager2 {
 
         for (Component component : components) {
             if (!component.isVisible()) {
+                component.setBounds(0, 0, 0, 0);
+
                 continue;
             }
 
@@ -184,8 +188,8 @@ public class HorizontalLayout implements LayoutManager2 {
                 h = height;
                 y = insets.top;
             } else {
-                h = compDim.height;
-                y = getYAlignment(height, compDim.height, constraint.yAlignment, insets.top);
+                h = Math.min(compDim.height, height);
+                y = getYAlignment(height, h, constraint.yAlignment, insets.top);
             }
 
             if ((constraint.orientation == LEFT && leftToRight) || (constraint.orientation == RIGHT && !leftToRight)) {
@@ -237,7 +241,7 @@ public class HorizontalLayout implements LayoutManager2 {
             h = parentHeight;
             y = topY;
         } else {
-            h = component.getPreferredSize().height;
+            h = Math.min(component.getPreferredSize().height, parentHeight);
             y = getYAlignment(parentHeight, h, constraint.yAlignment, topY);
         }
 

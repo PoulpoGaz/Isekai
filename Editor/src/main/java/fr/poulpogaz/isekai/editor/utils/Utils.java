@@ -2,9 +2,11 @@ package fr.poulpogaz.isekai.editor.utils;
 
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
+import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URISyntaxException;
@@ -36,6 +38,15 @@ public class Utils {
         panel.add(right);
 
         return panel;
+    }
+
+    public static JButton createButton(String resource, String text, ActionListener listener) {
+        JButton button = new JButton();
+        button.addActionListener(listener);
+        button.setText(text);
+        button.setIcon(IconLoader.loadSVGIcon(resource));
+
+        return button;
     }
 
     public static String getExtension(File file) {
