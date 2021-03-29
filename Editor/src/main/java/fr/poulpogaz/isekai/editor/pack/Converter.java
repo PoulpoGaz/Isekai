@@ -82,4 +82,12 @@ public class Converter {
 
         return checksum;
     }
+
+    public static byte[] extract(byte[] in) {
+        byte[] output = new byte[in.length - DATA - CHECKSUM_LEN];
+
+        System.arraycopy(in, DATA, output, 0, output.length);
+
+        return output;
+    }
 }

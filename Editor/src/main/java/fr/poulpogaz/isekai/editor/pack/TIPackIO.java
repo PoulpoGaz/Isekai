@@ -4,13 +4,13 @@ import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TIPackIO {
 
@@ -33,6 +33,7 @@ public class TIPackIO {
      *  height                   1 byte
      *  compressed               1 byte
      *  data                     n byte compressed or not with RLE
+     *  OxFF                     marks end
      */
     public static void serialize(Pack pack, Path out) throws TIPackIOException {
         if (!Files.isDirectory(out)) {
@@ -67,15 +68,15 @@ public class TIPackIO {
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {
-        byte[] name = pack.getName().getBytes();
+        byte[] name = pack.getName().getBytes(StandardCharsets.ISO_8859_1);
         os.write(name, 0, Math.min(name.length, 31));
         os.write('\0'); // string end
 
-        byte[] author = pack.getAuthor().getBytes();
+        byte[] author = pack.getAuthor().getBytes(StandardCharsets.ISO_8859_1);
         os.write(author, 0, Math.min(author.length, 31));
         os.write('\0');
 
-        byte[] version = pack.getVersion().getBytes();
+        byte[] version = pack.getVersion().getBytes(StandardCharsets.ISO_8859_1);
         os.write(version, 0, Math.min(version.length, 7));
         os.write('\0');
     }
@@ -137,7 +138,7 @@ public class TIPackIO {
         return out;
     }
 
-    // RLE compress algorithm
+    // Run Length Encoding
     private static byte[] compress(byte[] in) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -161,8 +162,165 @@ public class TIPackIO {
 
             last = in[i];
         }
-        baos.write((byte) 255);
+
+        if (n > 0) {
+            baos.write((byte) n);
+            baos.write(last);
+        }
+
+        baos.write(0xFF);
 
         return baos.toByteArray();
+    }
+
+    public static Pack deserialize(Path in) throws TIPackIOException {
+        if (Files.isDirectory(in)) {
+            throw new TIPackIOException("Input path isn't a file");
+        }
+
+        LOGGER.info("Importing pack from {}", in);
+
+        byte[] data;
+        try {
+            data = Converter.extract(Files.readAllBytes(in));
+        } catch (IOException e) {
+            LOGGER.warn("Failed to import pack", e);
+
+            return null;
+        }
+
+        Pack pack = new Pack();
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+
+        try {
+            bais.readNBytes(PACK_MARKER.length);
+
+            readPackInfo(pack, bais);
+            readLevels(pack, bais);
+
+        }  catch (TIPackIOException e) {
+            throw e;
+        } catch (IOException ignored) {} // can't happen
+
+        return pack;
+    }
+
+    private static void readPackInfo(Pack pack, InputStream is) throws IOException {
+        pack.setName(readString(is));
+        pack.setAuthor(readString(is));
+        pack.setVersion(readString(is));
+    }
+
+    private static String readString(InputStream is) throws IOException {
+        StringBuilder builder = new StringBuilder();
+
+        while (true) {
+            int next = is.read();
+
+            if (next == -1) {
+                throw new TIPackIOException("EOF");
+            }
+
+            if (next == '\0') {
+                return builder.toString();
+            }
+
+            builder.append((char) next);
+        }
+    }
+
+    private static void readLevels(Pack pack, InputStream is) throws IOException {
+        int nLevels = is.read();
+
+        is.readNBytes(nLevels * 2); // skip offsets, they are useless here
+
+        for (int i = 0; i < nLevels; i++) {
+            Level level = new Level();
+
+            Vector2i pos = level.getPlayerPos();
+            pos.setX(is.read());
+            pos.setY(is.read());
+
+            level.resize(is.read(), is.read());
+
+            boolean compressed = is.read() == 1;
+
+            if (compressed) {
+                fillLevelCompressed(level, is);
+            } else {
+                fillLevel(level, is);
+            }
+
+            if (i == 0) {
+                pack.setLevel(level, 0);
+            } else {
+                pack.addLevel(level);
+            }
+        }
+    }
+
+    private static void fillLevel(Level level, InputStream is) throws IOException {
+        int width = level.getWidth();
+        int height = level.getHeight();
+
+        Tile[] values = Tile.values();
+        Tile[][] data = level.getTiles();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int i = is.read();
+
+                if (i == -1) {
+                    throw new TIPackIOException("EOF");
+                }
+
+                data[y][x] = values[i];
+            }
+        }
+    }
+
+    private static void fillLevelCompressed(Level level, InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // uncompress
+        int count = -1;
+        int i;
+        while ((i = is.read()) != 0xFF) {
+            if (i == -1) {
+                throw new TIPackIOException("EOF");
+            }
+
+            if (count > 0) {
+                for (int j = 0; j < count; j++) {
+                    baos.write(i);
+                }
+
+                count = -1;
+            } else {
+                count = i + 1;
+            }
+        }
+
+        // setup data
+        byte[] data = baos.toByteArray();
+
+        int width = level.getWidth();
+        int height = level.getHeight();
+
+        Tile[] values = Tile.values();
+        Tile[][] levelData = level.getTiles();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                i = y * width + x;
+
+                if (data[i] >= values.length) {
+                    continue;
+                }
+
+                levelData[y][x] = values[data[i]];
+            }
+        }
     }
 }

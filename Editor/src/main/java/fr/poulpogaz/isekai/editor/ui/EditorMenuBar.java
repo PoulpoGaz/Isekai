@@ -17,8 +17,6 @@ public class EditorMenuBar extends JMenuBar {
 
     private final IsekaiEditor editor;
 
-    private static final FileFilter FILTER = new FileNameExtensionFilter("SKB files", "skb");
-
     private final JFileChooser chooser;
     private final SettingsDialog settingsDialog;
 
@@ -53,10 +51,6 @@ public class EditorMenuBar extends JMenuBar {
 
         JMenuItem saveAs = new JMenuItem("Save as");
 
-        JMenuItem importFile = new JMenuItem("Import");
-        JMenuItem exportFile = new JMenuItem("Export");
-        exportFile.addActionListener((e) -> export());
-
         JMenuItem settings = new JMenuItem("Settings");
         settings.addActionListener((e) -> settingsDialog.setVisible(true));
 
@@ -69,9 +63,6 @@ public class EditorMenuBar extends JMenuBar {
         file.add(save);
         file.add(saveAs);
         file.addSeparator();
-        file.add(importFile);
-        file.add(exportFile);
-        file.addSeparator();
         file.add(settings);
         file.addSeparator();
         file.add(quit);
@@ -79,60 +70,30 @@ public class EditorMenuBar extends JMenuBar {
         add(file);
     }
 
-    private void initFileChooserForSKB() {
+    private void open() {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setFileFilter(FILTER);
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setSelectedFile(Utils.getJARLocation());
-    }
-
-    private void open() {
-        /*initFileChooserForSKB();
 
         int result = chooser.showOpenDialog(editor);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            Pack pack = PackIO.deserialize(chooser.getSelectedFile().toPath());
+            try {
+                Pack pack = TIPackIO.deserialize(chooser.getSelectedFile().toPath());
 
-            if (pack != null) {
                 editor.setPack(pack);
-            } else {
+            } catch (TIPackIOException e) {
+                e.printStackTrace();
+
                 JOptionPane.showMessageDialog(editor, "Corrupted file", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }*/
-
-        JOptionPane.showMessageDialog(editor, "Open not implemented. Sorry", "Can't open", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private void save() {
-        /*initFileChooserForSKB();
-
-        int result = chooser.showSaveDialog(editor);
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-            Path selectedFile = chooser.getSelectedFile().toPath();
-            String fileName = selectedFile.getFileName().toString();
-
-            if (Utils.getExtension(fileName).equals(fileName)) {
-                selectedFile = selectedFile.getParent().resolve(fileName + ".skb");
-            }
-
-            if (!PackIO.serialize(editor.getPack(), selectedFile)) {
-                JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nSorry", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }*/
-        JOptionPane.showMessageDialog(editor, "Save not implemented. Sorry", "Can't save", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void initFileChooserForX8V() {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.removeChoosableFileFilter(FILTER);
         chooser.setSelectedFile(Utils.getJARLocation());
-    }
 
-    private void export() {
-        initFileChooserForX8V();
-        
         int result = chooser.showSaveDialog(editor);
 
         if (result == JFileChooser.APPROVE_OPTION) {
