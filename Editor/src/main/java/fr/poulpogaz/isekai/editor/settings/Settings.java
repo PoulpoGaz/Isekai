@@ -9,10 +9,8 @@ import fr.poulpogaz.json.tree.JsonTreeWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,26 +19,12 @@ import java.util.List;
 
 public class Settings {
 
-    public static final String CONV_BIN = "convbin path";
-    public static final String CONV_IMG = "convimg path";
-
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
     private static final Path SETTING_PATH;
-    private static SettingGroup settings = new SettingGroup("Settings");
+    private static final SettingGroup settings = new SettingGroup("Settings");
 
     public static void initSettings() {
-        SettingGroup ti83_84 = new SettingGroup("TI-83/84");
-        PathSetting convimgPath = new PathSetting(CONV_IMG, new File(""));
-        convimgPath.getComponent().setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        PathSetting convbinPath = new PathSetting(CONV_BIN, new File(""));
-        convbinPath.getComponent().setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        ti83_84.add(convimgPath);
-        ti83_84.add(convbinPath);
-
-        settings.add(ti83_84);
         settings.init();
     }
 

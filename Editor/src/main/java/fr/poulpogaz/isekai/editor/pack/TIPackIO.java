@@ -1,8 +1,5 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.process.CommandExecutor;
-import fr.poulpogaz.isekai.editor.settings.PathSetting;
-import fr.poulpogaz.isekai.editor.settings.Settings;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 public class TIPackIO {
@@ -19,13 +17,6 @@ public class TIPackIO {
     private static final byte[] PACK_MARKER = new byte[] {'I', 'S', 'K', 'V', '0'};
 
     private static final Logger LOGGER = LogManager.getLogger(TIPackIO.class);
-
-    private static final PathSetting CONVBIN_PATH = (PathSetting) Settings.find(Settings.CONV_BIN)[0];
-    private static final PathSetting CONVIMG_PATH = (PathSetting) Settings.find(Settings.CONV_IMG)[0];
-
-    private static final Path TEMP = Path.of(System.getProperty("java.io.tmpdir"));
-
-    private static final int MAGENTA = 0xFFFF00FF;
 
     /**
      * Pack format
@@ -50,22 +41,11 @@ public class TIPackIO {
 
         LOGGER.info("Exporting pack to {}", out);
 
-        Path convbinPath = CONVBIN_PATH.getValue().toPath();
-        Path convimgPath = CONVIMG_PATH.getValue().toPath();
-
-        if (!Files.exists(convbinPath)) {
-            throw new TIPackIOException("convbin not specified");
-        }
-        if (!Files.exists(convimgPath)) {
-            throw new TIPackIOException("convimg not specified");
-        }
-
-        String p = pack.getName();
-        String tiFileName = p.substring(0, Math.min(p.length(), 7));
+        String packName = pack.getName();
+        String varName = packName.substring(0, Math.min(packName.length(), 8));
 
         try {
-            LOGGER.info("Writing temp data");
-            writePack(pack, tiFileName + "0", out, convbinPath);
+            writePack(pack, varName, out.resolve(varName + ".8xv"));
         } catch (IOException e) {
             LOGGER.warn("Failed to export pack", e);
         }
@@ -73,30 +53,17 @@ public class TIPackIO {
         LOGGER.info("Pack exported!");
     }
 
-    private static void writePack(Pack pack, String tiFileName, Path out, Path convbinPath) throws TIPackIOException, IOException {
-        Path path = Files.createTempFile(TEMP, "isekai_", ".bin");
-        OutputStream os = Files.newOutputStream(path);
+    private static void writePack(Pack pack, String varName, Path out) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        os.write(PACK_MARKER);
-        writePackInfo(pack, os);
+        baos.write(PACK_MARKER);
+        writePackInfo(pack, baos);
 
-        writeLevels(pack.getLevels(), os);
-        os.close();
+        writeLevels(pack.getLevels(), baos);
+        baos.close();
 
-        LOGGER.info("Exporting to 8xv");
-        CommandExecutor executor = new CommandExecutor(
-                convbinPath.toAbsolutePath().toString(),
-                "--iformat", "bin", "--oformat", "8xv",
-                "--input", path.toAbsolutePath().toString(),
-                "--output", out.resolve(tiFileName + ".8xv").toAbsolutePath().toString(),
-                "--name", tiFileName,
-                "--archive");
-
-        executor.get();
-
-        if (executor.getError().length != 0) {
-            throw new TIPackIOException(String.join("\n", executor.getError()));
-        }
+        byte[] data = Converter.convert(baos.toByteArray(), varName);
+        Files.write(out, data, StandardOpenOption.CREATE);
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {
