@@ -1,8 +1,6 @@
-#ifndef __main_menu_h__
-#define __main_menu_h__
+#ifndef __main_menu__h
+#define __main_menu__h
 
-#include "screen.h"
-
-screen_t new_main_menu();
+void show_main_menu();
 
 #endif

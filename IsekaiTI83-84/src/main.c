@@ -1,42 +1,51 @@
 #include <tice.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include <debug.h>
 #include <graphx.h>
 #include <keypadc.h>
 
 #include "gfx/gfx.h"
-#include "screen.h"
-
-#include "menu.h"
-#include "main_menu.h"
 
 #include "loader.h"
 #include "utils.h"
+#include "main_menu.h"
 
-#define MAIN_MENU 2
-#define GAME 3
+enum state_t state = MAIN_MENU;
 
-// MAIN
+void run();
+
 void main(void) {
-	screen_t main_menu;
-
 	dbg_ClearConsole();
-	dbg_sprintf(dbgout, "Initializing\n");
-
-    main_menu = new_main_menu();
 
  	gfx_Begin(gfx_8bpp);
     gfx_SetPalette(palette, sizeof_palette, 0);
-    gfx_SetTextFGColor(0x00);
+    gfx_SetTextFGColor(WHITE);
+    gfx_SetTransparentColor(MAGENTA);
     gfx_SetDrawBuffer();
 
-    add_screen(&main_menu);  
-
-    dbg_sprintf(dbgout, "Running\n");
     run();
- 	
- 	dbg_sprintf(dbgout, "Exiting\n");
+
  	gfx_End();
     prgm_CleanUp();
+}
+
+// doesn't call scan();
+void run() {
+    while (state != EXIT) {
+        switch (state) {
+            case MAIN_MENU:
+                show_main_menu();
+                break;
+            case PACK_LIST:
+                break;
+            case IN_GAME:
+                break;
+            case STATS:
+                break;
+            case EXIT:
+                return;
+        }
+    }
 }

@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdarg.h>
 #include <graphx.h>
 #include <tice.h>
 #include <math.h>
@@ -13,17 +12,17 @@
 #define COS_THETA cos(THETA)
 #define SIN_THETA sin(THETA)
 
-void print_string_centered_between(const char *str, uint8_t y, uint24_t min_x, uint8_t width) {
-    uint8_t x = (width - gfx_GetStringWidth(str)) / 2 + min_x;
+void print_string_centered_between(const char *str, uint8_t y, uint24_t min_x, uint24_t width) {
+    uint8_t x = get_x_centered_between(str, min_x, width);
 
     gfx_PrintStringXY(str, x, y);
 }
 
 void print_string_centered(const char *str, uint8_t y) {
-	gfx_PrintStringXY(str, get_x_centered_between(str, 0, gfx_lcdWidth), y);
+	gfx_PrintStringXY(str, get_x_centered(str), y);
 }
 
-uint24_t get_x_centered(const char *str, uint24_t min_x, uint8_t width) {
+uint24_t get_x_centered_between(const char *str, uint24_t min_x, uint24_t width) {
      return (width - gfx_GetStringWidth(str)) / 2 + min_x;
 }
 
@@ -35,26 +34,26 @@ void draw_menu_background(bool draw_title, bool draw_chicken, uint8_t offset) {
 
     gfx_FillScreen(BACKGROUND_1);
 
-    gfx_SetColor(BACKGROUND_2); 
+    gfx_SetColor(BACKGROUND_2);
     gfx_FillCircle(160, 240, 170);
 
-    gfx_SetColor(BACKGROUND_3); 
+    gfx_SetColor(BACKGROUND_3);
     gfx_FillCircle(160, 240, 140);
 
-    gfx_SetColor(BACKGROUND_4); 
+    gfx_SetColor(BACKGROUND_4);
     gfx_FillCircle(160, 240, 110);
 
-    gfx_SetColor(BACKGROUND_5); 
+    gfx_SetColor(BACKGROUND_5);
     gfx_FillCircle(160, 240, 90);
 
-    gfx_SetColor(BACKGROUND_6); 
+    gfx_SetColor(BACKGROUND_6);
     gfx_FillCircle(160, 240, 70);
 
-    gfx_SetColor(BACKGROUND_7); 
+    gfx_SetColor(BACKGROUND_7);
     gfx_FillCircle(160, 240, 50);
 
     gfx_SetColor(WHITE);
-    for(i = 0, max = randInt(70, 90); i < max; i++) { 
+    for(i = 0, max = randInt(70, 90); i < max; i++) {
         uint8_t l = randInt(1, 2);
 
 		uint16_t x = randInt(0, 320);
@@ -89,7 +88,7 @@ void draw_menu_background(bool draw_title, bool draw_chicken, uint8_t offset) {
     	  		// 63 (perform 90° clockwise rotation)
     	  		angular_255 = 63 + from_deg_to_255_angular(DEG * (i + 1) - offset);
 
-    			gfx_RotateScaleSprite(chicken_left_tiles[offset / 5], sprite, angular_255, 128);
+    			gfx_RotateScaleSprite(chicken_left_walk_tiles[offset / 5], sprite, angular_255, 128);
 
 				gfx_TransparentSprite(sprite, x_draw, y_draw);
 			}
@@ -103,38 +102,6 @@ void draw_menu_background(bool draw_title, bool draw_chicken, uint8_t offset) {
     if(draw_title) {
         print_string_centered("ISEKAI", 50);
     }
-}
-
-char **string_array_of(uint8_t length, ...) {
-	uint8_t i;
-	char **array;
-	va_list varg;
-
-	array = malloc(length * sizeof(char *));
-
-	va_start(varg, length);
-	for (i = 0; i < length; i++) {
-		array[i] = va_arg(varg, char *);
-	}
-	va_end(varg);
-
-	return array;
-}
-
-uint8_t *uin8_t_array_of(uint8_t length, ...) {
-	uint8_t i;
-	uint8_t *array;
-	va_list varg;
-
-	array = malloc(length * sizeof(uint8_t));
-
-	va_start(varg, length);
-	for (i = 0; i < length; i++) {
-		array[i] = va_arg(varg, uint8_t);
-	}
-	va_end(varg);
-
-	return array;
 }
 
 void rotate(float *x, float *y, float theta) {

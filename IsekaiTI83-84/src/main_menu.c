@@ -1,64 +1,84 @@
-#include "main_menu.h"
-
+#include <stdint.h>
 #include <graphx.h>
 
+#include "main_menu.h"
 #include "utils.h"
-#include "loader.h"
+
 #include "key.h"
+#include "defines.h"
 
-void draw_main_menu(screen_t *this) {
-	static uint8_t offset = 0;
-    uint8_t i;
+uint8_t selected = 0;
+const char *menus[] = {"Nouvelle partie", "Continuer", "Stats", "Quitter"};
+const char *selected_menus[] = {"> Nouvelle partie <", "> Continuer <", "> Stats <", "> Quitter <"};
 
-    draw_menu_background(true, true, offset);
+void draw_main_menu(uint8_t offset) {
+	draw_menu_background(true, true, offset);
 
-    gfx_SetTextFGColor(WHITE);
-    for (i = 0; i < num_packs; i++) {
-        pack_t pack = packs[i];
-        uint8_t y = i * 10 + 100;
+	uint8_t y = 140;
+	for (uint8_t i = 0; i < 4; i++) {
+		if (selected == i) {
+			print_string_centered(selected_menus[i], y);
+		} else {
+			print_string_centered(menus[i], y);
+		}
 
-        gfx_PrintStringXY(pack.name, 20, y);
-        gfx_PrintStringXY(pack.author, 100, y);
-        gfx_PrintStringXY(pack.version, 200, y);
-    }
-
-    offset++;
+		y += 20;
+	}
 }
 
-uint8_t update_main_menu(screen_t *this) {
-    uint8_t *next_state = NULL;
+bool update_main_menu() {
+	if (key_released(key_Down)) {
+		if (selected == 3) {
+			selected = 0;
+		} else {
+			selected++;
+		}
 
-    uint8_t wait = 10;
+	} else if (key_released(key_Up)) {
+		if (selected == 0) {
+			selected = 3;
+		} else {
+			selected--;
+		}
+	}
 
-    while (next_state == NULL) {
-        scan();
+	if (key_released(key_2nd)) {
+		switch (selected) {
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				state = EXIT;
+				break;
+		}
 
-        if (key_released(key_Enter)) {
-            uint8_t temp = DRAW;
-            next_state = &temp;
-        } else if (key_released(key_2nd)) {
-            uint8_t temp = EXIT;
-            next_state = &temp;
-        }
+		return true;
+	}
 
-        if (wait > 0) {
-            wait--;
-        } else {
-            uint8_t temp = DRAW;
-            next_state = &temp;
-        }
-    }
-
-    return *next_state;
+	return false;
 }
 
-screen_t new_main_menu() {
-    screen_t screen;
+void show_main_menu() {
+	uint8_t wait = 0;
+	uint8_t offset = 0;
 
-    screen.draw = draw_main_menu;
-    screen.update = update_main_menu;
-    screen.show = NULL;
-    screen.hide = NULL;
+	while (true) {
+		if (wait == 0) {
+			draw_main_menu(offset);
+			gfx_SwapDraw();
 
-    return screen;
+			wait = 10;
+			offset++;
+		}
+
+		scan();
+		if (update_main_menu()) {
+			return;
+		}
+
+		wait--;
+	}
 }

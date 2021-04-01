@@ -15,13 +15,19 @@ palettes:
       - color: {index: 9, r: 100, g: 164, b:  44} # 28 -> 100, 164,  44
 
 converts:
-  - name: chicken_left
+  - name: sprites
+    palette: palette
+    images:
+      - "*"
+converts:
+  - name: chicken_left_walk
     palette: palette
     tilesets:
       tile-width: 16
       tile-height: 16
       images:
-        - chicken_left.png
+        - chicken_left_walk.png
+
 
 outputs:
   - type: c
@@ -29,4 +35,5 @@ outputs:
     palettes:
       - palette
     converts:
-      - chicken_left
+      - sprites
+      - chicken_left_walk
