@@ -21,8 +21,11 @@
 #define BACKGROUND_6      8
 #define BACKGROUND_7      9
 
+#define max(a, b) a > b ? a : b
+#define min(a, b) a > b ? b : a
+
 #define to_rad(x) (x) * M_PI / 180.0
-#define from_deg_to_255_angular(x) (uint8_t) ((x) / 360.0 * 255) 
+#define from_deg_to_255_angular(x) (uint8_t) ((x) / 360.0 * 255)
 
 void print_string_centered_between(const char *str, uint8_t y, uint24_t min_x, uint24_t width);
 void print_string_centered(const char *str, uint8_t y);

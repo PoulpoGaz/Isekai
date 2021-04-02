@@ -14,13 +14,13 @@ import java.util.Arrays;
 
 public class TIPackIO {
 
-    private static final byte[] PACK_MARKER = new byte[] {'I', 'S', 'K', 'V', '0'};
+    private static final byte[] PACK_MARKER = new byte[] {(byte) 0xFE, (byte) 0xDC, (byte) 0xBA};
 
     private static final Logger LOGGER = LogManager.getLogger(TIPackIO.class);
 
     /**
      * Pack format
-     * header bytes              5 bytes
+     * header bytes              3 bytes
      * pack name                 (n <= 32 bytes)
      * author                    (n <= 32 bytes)
      * version                   (n <= 8 bytes)
@@ -65,6 +65,7 @@ public class TIPackIO {
 
         byte[] data = Converter.convert(baos.toByteArray(), varName);
         Files.write(out, data, StandardOpenOption.CREATE);
+        Files.write(Path.of(out.toString() + ".bin"), baos.toByteArray(), StandardOpenOption.CREATE);
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {

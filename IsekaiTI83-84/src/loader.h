@@ -5,14 +5,11 @@
 
 #include "defines.h"
 
-extern pack_t packs[256];
+extern pack_info_t packs[256];
 extern uint8_t num_packs;
 
-void load_packs();
-
-void loadGFX(pack_t pack);
-
-void free_packs();
+void load_packs_info();
+void free_packs_info();
 
 void save();
 void load_save();

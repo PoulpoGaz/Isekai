@@ -35,6 +35,12 @@ public class Converter {
         int var_size = size + VARB_SIZE_LEN;
         int varb_size = size;
 
+        System.out.printf("file_size: %d\n", file_size);
+        System.out.printf("data_size: %d\n", data_size);
+        System.out.printf("var_size: %d\n", var_size);
+        System.out.printf("varb_size: %d\n", varb_size);
+        System.out.printf("size: %d\n", size);
+
         byte[] output = new byte[file_size];
 
         // Write header
@@ -45,9 +51,11 @@ public class Converter {
         byte[] name = varName.getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(name, 0, output, offset, Math.min(name.length, 8));
 
+        System.out.printf("name_size: %d\n", Math.min(name.length, 8));
+
         // data
         offset = DATA;
-        System.arraycopy(data, 0, output, offset, data.length);
+        System.arraycopy(data, 0, output, offset, size);
 
         output[VAR_HEADER] = MAGIC;
         output[TYPE] = TYPE_APPVAR;
@@ -78,6 +86,8 @@ public class Converter {
         for (int i = 0; i < size; i++) {
             checksum += Byte.toUnsignedInt(data[VAR_HEADER + i]);
             checksum &= 0xFFFF;
+
+            System.out.printf("checksum: %d, arr: %d\n", checksum, Byte.toUnsignedInt(data[VAR_HEADER + i]));
         }
 
         return checksum;
