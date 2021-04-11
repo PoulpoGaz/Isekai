@@ -4,7 +4,6 @@
 #include "loader.h"
 
 void show_main_menu();
-
-void show_pack_list_menu();
+void show_pack_info();
 
 #endif

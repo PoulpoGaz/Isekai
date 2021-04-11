@@ -1,7 +1,7 @@
 NAME ?= ISEKAI
 ICON ?= icon.png
 DESCRIPTION ?= "Isekai"
-COMPRESSED ?= NO
+COMPRESSED ?= YES
 ARCHIVED ?= YES
 
 CFLAGS ?= -Wall -Wextra -Oz

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <graphx.h>
+#include <debug.h>
 
 #include "menus.h"
 #include "utils.h"
@@ -10,70 +11,17 @@
 
 #define MAX_PACK 7
 
-// common variable for all menus
-// in main menu, value is between 0 and 3
-// in pack list menu, value is between 0 and MAX_PACK (= 7)
+void draw_main_menu(uint8_t offset);
+bool update_main_menu();
+void show_danger_zone();
+
 uint8_t selected = 0;
-
-/*******************
- **** MAIN MENU ****
- ******************/
-const char *menus[] = {"Nouvelle partie", "Continuer", "Stats", "Quitter"};
-const char *selected_menus[] = {"> Nouvelle partie <", "> Continuer <", "> Stats <", "> Quitter <"};
-
-void draw_main_menu(uint8_t offset) {
-	draw_menu_background(true, true, offset);
-
-	uint8_t y = 140;
-	for (uint8_t i = 0; i < 4; i++) {
-		if (selected == i) {
-			print_string_centered(selected_menus[i], y);
-		} else {
-			print_string_centered(menus[i], y);
-		}
-
-		y += 20;
-	}
-}
-
-bool update_main_menu() {
-	if (key_released(key_Down)) {
-		if (selected == 3) {
-			selected = 0;
-		} else {
-			selected++;
-		}
-
-	} else if (key_released(key_Up)) {
-		if (selected == 0) {
-			selected = 3;
-		} else {
-			selected--;
-		}
-	}
-
-	if (key_released(key_2nd)) {
-		switch (selected) {
-			case 0:
-				break;
-			case 1:
-				break;
-			case 2:
-				break;
-			case 3:
-				state = EXIT;
-				break;
-		}
-
-		return true;
-	}
-
-	return false;
-}
+uint8_t scroll = 0;
+uint8_t offset = 0;
 
 void show_main_menu() {
 	uint8_t wait = 0;
-	uint8_t offset = 0;
+	offset = 0;
 
 	selected = 0;
 
@@ -95,12 +43,7 @@ void show_main_menu() {
 	}
 }
 
-/*******************
- **** PACK LIST ****
- ******************/
- uint8_t scroll = 0;
-
-void draw_pack_list_menu(uint8_t offset) {
+void draw_main_menu(uint8_t offset) {
 	draw_menu_background(true, true, offset);
 
 	if (num_packs == 0) {
@@ -129,12 +72,20 @@ void draw_pack_list_menu(uint8_t offset) {
 	}
 
 	gfx_PrintStringXY("Controls", 10, 180);
-	gfx_PrintStringXY("[Del] Back/Quit", 15, 190);
-	gfx_PrintStringXY("[Arrow] Move", 15, 200);
-	gfx_PrintStringXY("[2nd] Restart level/Enter", 15, 210);
+	gfx_PrintStringXY("[Del]", 15, 190);
+	gfx_PrintStringXY("[Arrow]", 15, 200);
+	gfx_PrintStringXY("[2nd]", 15, 210);
+	gfx_PrintStringXY("[Mode]", 15, 220);
+	gfx_PrintStringXY("[Stats]", 15, 230);
+
+	gfx_PrintStringXY("Back/Quit", 80, 190);
+	gfx_PrintStringXY("Move", 80, 200);
+	gfx_PrintStringXY("Restart level/Enter", 80, 210);
+    gfx_PrintStringXY("Pack info", 80, 220);
+    gfx_PrintStringXY("Pack stats", 80, 230);
 }
 
-bool update_pack_list_menu() {
+bool update_main_menu() {
 	if (key_released(key_Up) && selected + scroll != 0) {
 		if (selected == 0) {
 			scroll--;
@@ -143,7 +94,7 @@ bool update_pack_list_menu() {
 		}
 	}
 
-	if (key_released(key_Down) && selected + scroll < MAX_PACK) {
+	if (key_released(key_Down) && selected + scroll + 1 < num_packs) {
 		if (selected == MAX_PACK - 1) {
 			scroll++;
 		} else {
@@ -157,18 +108,44 @@ bool update_pack_list_menu() {
 		return true;
 	}
 
+	if (key_released(key_2nd)) {
+		current_pack = &packs[scroll + selected];
+        state = IN_GAME;
+
+		return true;
+	}
+
+
+	if (key_released(key_Mode)) {
+		current_pack = &packs[scroll + selected];
+        state = PACK_INFO;
+
+		return true;
+	}
+
 	return false;
 }
 
-void show_pack_list_menu() {
+
+void show_pack_info() {
 	uint8_t wait = 0;
-	uint8_t offset = 0;
+	offset = 0;
 
 	selected = 0;
 
 	while (true) {
 		if (wait == 0) {
-			draw_pack_list_menu(offset);
+			draw_menu_background(false, true, offset);
+
+			print_string_centered(current_pack->name, 50);
+			print_string_centered("By", 70);
+			print_string_centered(current_pack->author, 80);
+			print_string_centered("Version:", 100);
+			print_string_centered(current_pack->version, 110);
+
+			print_string_centered("Press [Del] to return", 180);
+			print_string_centered("Press [2nd] to reset progression", 190);
+
 			gfx_SwapDraw();
 
 			wait = 10;
@@ -176,10 +153,68 @@ void show_pack_list_menu() {
 		}
 
 		scan();
-		if (update_pack_list_menu()) {
+		if (key_released(key_Del)) {
+			state = MAIN_MENU;
 			return;
 		}
 
+		if (key_released(key_2nd)) {
+			show_danger_zone();
+		}
+
 		wait--;
+	}
+}
+
+void show_danger_zone() {
+	uint8_t selected = 1;
+
+DRAW:
+	gfx_FillScreen(BLACK);
+
+	print_string_centered("Danger zone", 50);
+
+	gfx_SetColor(RED);
+	draw_triangle(160, 70, 210, 140, 110, 140);
+
+	gfx_SetColor(WHITE);
+	gfx_FillRectangle(157, 85, 6, 40);
+	gfx_FillRectangle(157, 130, 6, 6);
+
+	print_string_centered("Are you sure you want", 160);
+	print_string_centered("to delete your progression?", 170);
+
+	gfx_PrintStringXY("Yes", 93, 190); // width = 24
+	gfx_PrintStringXY("No no no", 188, 190); // width = 54
+
+	if (selected == 0) {
+		gfx_Rectangle(90, 187, 28, 13);
+	} else {
+		gfx_Rectangle(185, 187, 58, 13);
+	}
+
+	gfx_SwapDraw();
+
+	while (true) {
+		scan();
+
+		if (key_released(key_Left)) {
+			selected = 0;
+			goto DRAW;
+		}
+		if (key_released(key_Right)) {
+			selected = 1;
+			goto DRAW;
+		}
+		if (key_released(key_2nd)) {
+			if (selected == 0) {
+				// delete progression
+			}
+
+			break;
+		}
+		if (key_released(key_Del)) {
+			break;
+		}
 	}
 }

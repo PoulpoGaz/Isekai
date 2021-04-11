@@ -81,7 +81,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         int curr = editor.getSelectedLevelIndex();
         int index = curr + 1;
 
-        if (index < pack.getNumberOfLevels() + 1) {
+        if (index < pack.getNumberOfLevels()) {
             pack.swapLevels(curr, index);
         }
     }
