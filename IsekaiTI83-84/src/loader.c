@@ -198,6 +198,8 @@ void load_save() {
                     ti_Read(pack->moves, sizeof(uint16_t), pack->n_levels, slot);
                     ti_Read(pack->pushs, sizeof(uint16_t), pack->n_levels, slot);
 
+                    pack->current_level = pack->max_level_reached;
+
                     break;
                 }
             }

@@ -59,11 +59,12 @@ void draw_main_menu() {
 
 		uint8_t y = 100;
 		for (uint8_t i = 0; i < max; i++) {
-			pack_info_t pack = packs[i + scroll];
+			pack_info_t *pack = &packs[i + scroll];
 
-			gfx_PrintStringXY(pack.name, 50, y);
-			gfx_PrintStringXY(pack.author, 100, y);
-			gfx_PrintStringXY(pack.version, 200, y);
+			gfx_PrintStringXY(pack->name, 50, y);
+
+			gfx_SetTextXY(298, y);
+			gfx_PrintUInt(pack->current_level + 1, 2);
 
 			if (i == selected) {
 				gfx_FillRectangle(35, y + 2, 10, 4);
@@ -88,46 +89,54 @@ void draw_main_menu() {
 }
 
 bool update_main_menu() {
-	if (key_released(key_Up) && selected + scroll != 0) {
-		if (selected == 0) {
-			scroll--;
-		} else {
-			selected--;
+	if (num_packs > 0) {
+		if (key_released(key_Up) && selected + scroll != 0) {
+			if (selected == 0) {
+				scroll--;
+			} else {
+				selected--;
+			}
 		}
-	}
 
-	if (key_released(key_Down) && selected + scroll + 1 < num_packs) {
-		if (selected == MAX_PACK - 1) {
-			scroll++;
-		} else {
-			selected++;
+		if (key_released(key_Down) && selected + scroll + 1 < num_packs) {
+			if (selected == MAX_PACK - 1) {
+				scroll++;
+			} else {
+				selected++;
+			}
+		}
+
+		current_pack = &packs[scroll + selected];
+
+		if (key_released(key_Right) && current_pack->current_level + 1 <= current_pack->max_level_reached) {
+			current_pack->current_level++;
+		}
+
+		if (key_released(key_Left) && current_pack->current_level > 0) {
+			current_pack->current_level--;
+		}
+
+		if (key_released(key_2nd)) {
+	        state = IN_GAME;
+
+			return true;
+		}
+
+		if (key_released(key_Mode)) {
+	        state = PACK_INFO;
+
+			return true;
+		}
+
+		if (key_released(key_Stat)) {
+			state = STATS;
+
+			return true;
 		}
 	}
 
 	if (key_released(key_Del)) {
 		state = EXIT;
-
-		return true;
-	}
-
-	if (key_released(key_2nd)) {
-		current_pack = &packs[scroll + selected];
-        state = IN_GAME;
-
-		return true;
-	}
-
-
-	if (key_released(key_Mode)) {
-		current_pack = &packs[scroll + selected];
-        state = PACK_INFO;
-
-		return true;
-	}
-
-	if (key_released(key_Stat)) {
-		current_pack = &packs[scroll + selected];
-		state = STATS;
 
 		return true;
 	}
@@ -138,7 +147,6 @@ bool update_main_menu() {
 /*************
  * PACK INFO *
  *************/
-
 void show_pack_info() {
 	uint8_t wait = 0;
 
