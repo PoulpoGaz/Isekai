@@ -11,27 +11,29 @@
 
 #define MAX_PACK 7
 
-void draw_main_menu(uint8_t offset);
+void draw_main_menu();
 bool update_main_menu();
 void show_danger_zone();
 
+void draw_stats_menu();
+bool update_stats_menu();
+
+/*************
+ * MAIN MENU *
+ *************/
+
 uint8_t selected = 0;
 uint8_t scroll = 0;
-uint8_t offset = 0;
 
 void show_main_menu() {
 	uint8_t wait = 0;
-	offset = 0;
-
-	selected = 0;
 
 	while (true) {
 		if (wait == 0) {
-			draw_main_menu(offset);
+			draw_main_menu();
 			gfx_SwapDraw();
 
 			wait = 10;
-			offset++;
 		}
 
 		scan();
@@ -43,8 +45,8 @@ void show_main_menu() {
 	}
 }
 
-void draw_main_menu(uint8_t offset) {
-	draw_menu_background(true, true, offset);
+void draw_main_menu() {
+	draw_menu_background(true, true);
 
 	if (num_packs == 0) {
 		print_string_centered("No pack found ;(", 100);
@@ -123,25 +125,40 @@ bool update_main_menu() {
 		return true;
 	}
 
+	if (key_released(key_Stat)) {
+		current_pack = &packs[scroll + selected];
+		state = STATS;
+
+		return true;
+	}
+
 	return false;
 }
 
+/*************
+ * PACK INFO *
+ *************/
 
 void show_pack_info() {
 	uint8_t wait = 0;
-	offset = 0;
-
-	selected = 0;
 
 	while (true) {
 		if (wait == 0) {
-			draw_menu_background(false, true, offset);
+			draw_menu_background(false, true);
 
 			print_string_centered(current_pack->name, 50);
 			print_string_centered("By", 70);
 			print_string_centered(current_pack->author, 80);
 			print_string_centered("Version:", 100);
 			print_string_centered(current_pack->version, 110);
+			print_string_centered("Progression:", 130);
+
+			gfx_PrintStringXY("/", 156, 140);
+			gfx_SetTextXY(140, 140);
+			gfx_PrintUInt(current_pack->max_level_reached + 1, 2);
+
+			gfx_SetTextXY(164, 140);
+			gfx_PrintUInt(current_pack->n_levels, 2);
 
 			print_string_centered("Press [Del] to return", 180);
 			print_string_centered("Press [2nd] to reset progression", 190);
@@ -149,7 +166,6 @@ void show_pack_info() {
 			gfx_SwapDraw();
 
 			wait = 10;
-			offset++;
 		}
 
 		scan();
@@ -165,6 +181,10 @@ void show_pack_info() {
 		wait--;
 	}
 }
+
+/***************
+ * DANGER ZONE * sub menu of pack info
+ ***************/
 
 void show_danger_zone() {
 	uint8_t selected = 1;
@@ -207,8 +227,14 @@ DRAW:
 			goto DRAW;
 		}
 		if (key_released(key_2nd)) {
-			if (selected == 0) {
-				// delete progression
+			if (selected == 0) { // delete progression
+				current_pack->current_level = 0;
+				current_pack->max_level_reached = 0;
+
+				for (uint8_t i = 0; i < current_pack->n_levels; i++) {
+					current_pack->moves[i] = 0;
+					current_pack->pushs[i] = 0;
+				}
 			}
 
 			break;
@@ -217,4 +243,81 @@ DRAW:
 			break;
 		}
 	}
+}
+
+/*********
+ * STATS *
+ *********/
+uint8_t page;
+
+void show_stats_menu() {
+	uint8_t wait = 0;
+
+	page = 0;
+
+	while (true) {
+		if (wait == 0) {
+			draw_stats_menu();
+			gfx_SwapDraw();
+
+			wait = 10;
+		}
+
+		scan();
+		if (update_stats_menu()) {
+			return;
+		}
+
+		wait--;
+	}
+}
+
+void draw_stats_menu() {
+	gfx_ZeroScreen();
+	draw_menu_background(false, true);
+
+	gfx_PrintStringXY("Statistics of", 10, 10);
+	gfx_PrintStringXY(current_pack->name, 108, 10);
+
+	gfx_PrintStringXY("Level", 15, 24);
+	gfx_PrintStringXY("Moves", 88, 24);
+	gfx_PrintStringXY("Pushs", 224, 24);
+
+	uint8_t start = page * 20;
+	uint8_t max = min(start + 20, current_pack->n_levels);
+
+	uint8_t y = 34;
+	for (uint8_t i = start; i < max; i++) {
+		gfx_SetTextXY(16, y);
+		gfx_PrintUInt(i + 1, 2);
+
+		uint16_t moves = current_pack->moves[i];
+		if (moves > 0) {
+			gfx_SetTextXY(88, y);
+			gfx_PrintUInt(moves, 5);
+
+			gfx_SetTextXY(224, y);
+			gfx_PrintUInt(current_pack->pushs[i], 5);
+		}
+
+		y += 10;
+	}
+}
+
+bool update_stats_menu() {
+	if (key_released(key_Del)) {
+		state = MAIN_MENU;
+
+		return true;
+	}
+
+	if (key_released(key_Right) && page != 0) {
+		page--;
+	}
+
+	if (key_released(key_Left) && (page + 1) * 20  < current_pack->n_levels) {
+		page++;
+	}
+
+	return false;
 }

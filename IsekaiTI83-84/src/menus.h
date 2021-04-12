@@ -5,5 +5,6 @@
 
 void show_main_menu();
 void show_pack_info();
+void show_stats_menu();
 
 #endif

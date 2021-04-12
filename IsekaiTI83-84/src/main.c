@@ -26,6 +26,7 @@ void main(void) {
 	generate_stars();
 
 	load_packs_info();
+	load_save();
 	init_game();
 
  	gfx_Begin(gfx_8bpp);
@@ -36,6 +37,7 @@ void main(void) {
 
     run();
 
+	save();
 	free_packs_info();
 
  	gfx_End();
@@ -55,6 +57,7 @@ void run() {
 				run_game();
                 break;
             case STATS:
+				show_stats_menu();
                 break;
 			default:
 				return;

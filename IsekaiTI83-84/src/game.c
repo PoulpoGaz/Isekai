@@ -273,10 +273,18 @@ bool update() {
 			game.player_dir = RIGHT;
 			repaint = true;
 		}
+		if (key_released(key_2nd)) {
+			change_level(NULL, NULL);
+			repaint = true;
+		}
 
 		if (repaint) {
 			if (game.nb_targets == game.nb_crates_on_target) { // win check
-				if (current_pack->current_level + 1 >= current_pack->n_levels) {
+				uint8_t level = current_pack->current_level;
+				current_pack->pushs[level] = game.pushs;
+				current_pack->moves[level] = game.moves;
+
+				if (level + 1 >= current_pack->n_levels) {
 					gfx_FillScreen(BLACK);
 					print_string_centered("You win!", 124);
 					gfx_SwapDraw();
@@ -288,6 +296,10 @@ bool update() {
 					return false;
 				} else {
 					current_pack->current_level++;
+
+					if (current_pack->current_level > current_pack->max_level_reached) {
+						current_pack->max_level_reached = current_pack->current_level;
+					}
 
 					change_level(&draw, &draw);
 				}

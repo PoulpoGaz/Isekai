@@ -58,7 +58,9 @@ void generate_stars() {
     }
 }
 
-void draw_menu_background(bool draw_title, bool draw_chicken, uint8_t offset) {
+void draw_menu_background(bool draw_title, bool draw_chicken) {
+    static uint8_t offset = 0;
+
     // Draw background
     gfx_FillScreen(BACKGROUND_1);
 
@@ -125,6 +127,8 @@ void draw_menu_background(bool draw_title, bool draw_chicken, uint8_t offset) {
 
     		rotate(&x, &y, DEG);
     	}
+
+        offset++;
     }
 
     // Draw title

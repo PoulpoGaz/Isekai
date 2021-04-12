@@ -9,6 +9,7 @@ uint8_t read_string(uint8_t* data, char **out);
 void decompress(uint8_t *data, uint8_t *out);
 void init_level();
 
+static const char save_var[] = "IskSave";
 static const char search_string[] = {0xFE, 0xDC, 0xBA, 0x00};
 
 pack_info_t packs[256];
@@ -26,7 +27,7 @@ uint8_t read_string(uint8_t* data, char **out) {
 	uint8_t length = strlen(string);
 
 	*out = malloc(length);
-	memcpy(*out, string, length);
+	strcpy(*out, string);
 
 	return length + 1;
 }
@@ -44,12 +45,17 @@ void load_packs_info() {
 		ti_var_t slot = ti_Open(var_name, "r");
 		uint8_t *data = get_pack_pointer(slot);
 
+        memset(pack->app_var, '\0', 9);
 		strcpy(pack->app_var, var_name);
+
 		data += read_string(data, &pack->name);
 		data += read_string(data, &pack->author);
 		data += read_string(data, &pack->version);
 
 		pack->n_levels = *data;
+
+        pack->moves = calloc(pack->n_levels, sizeof(uint16_t));
+        pack->pushs = calloc(pack->n_levels, sizeof(uint16_t));
 
 		dbg_sprintf(dbgout, "New pack\n-name:%s\n-author:%s\n-version:%s\n-levels:%i\n", pack->name, pack->author, pack->version, pack->n_levels);
 
@@ -70,6 +76,8 @@ void free_packs_info() {
 		free(pack->name);
 		free(pack->author);
 		free(pack->version);
+        free(pack->moves);
+        free(pack->pushs);
 	}
 }
 
@@ -123,6 +131,7 @@ void load_level_data(pack_info_t pack, uint8_t level) {
     } else {
         exit(0);
     }
+    ti_CloseAll();
 }
 
 void decompress(uint8_t *in, uint8_t *out) {
@@ -149,9 +158,51 @@ void decompress(uint8_t *in, uint8_t *out) {
 }
 
 void save() {
+    ti_var_t slot;
 
+    ti_CloseAll();
+    if ((slot = ti_Open(save_var, "w"))) {
+        ti_PutC(num_packs, slot);
+
+        for (uint8_t i = 0; i < num_packs; i++) {
+            pack_info_t *pack = &packs[i];
+
+            ti_Write(&pack->app_var, sizeof(char), 8, slot);
+            ti_Write(&pack->max_level_reached, sizeof(uint8_t), 1, slot);
+            ti_Write(pack->moves, sizeof(uint16_t), pack->n_levels, slot);
+            ti_Write(pack->pushs, sizeof(uint16_t), pack->n_levels, slot);
+        }
+
+        ti_SetArchiveStatus(true, slot);
+    }
+    ti_CloseAll();
 }
 
 void load_save() {
+    static char app_var[9];
+    ti_var_t slot;
 
+    ti_CloseAll();
+    if ((slot = ti_Open(save_var, "r"))) {
+        uint8_t n = ti_GetC(slot);
+
+        for (uint8_t i = 0; i < n; i++) {
+            memset(app_var, '\0', 9);
+            ti_Read(&app_var, sizeof(char), 8, slot);
+
+            for (uint8_t j = 0; j < num_packs; j++) {
+                pack_info_t *pack = &packs[j];
+
+                if (strcmp(app_var, pack->app_var) == 0) {
+                    ti_Read(&pack->max_level_reached, sizeof(uint8_t), 1, slot);
+                    ti_Read(pack->moves, sizeof(uint16_t), pack->n_levels, slot);
+                    ti_Read(pack->pushs, sizeof(uint16_t), pack->n_levels, slot);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    ti_CloseAll();
 }

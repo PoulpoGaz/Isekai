@@ -11,7 +11,7 @@
 #define key_Enter  2
 #define key_Clear  3
 #define key_Mode   4
-#define key_Stats  5
+#define key_Stat   5
 
 #define key_Down   6
 #define key_Left   7

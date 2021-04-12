@@ -33,7 +33,7 @@ uint24_t get_x_centered_between(const char *str, uint24_t min_x, uint24_t width)
 #define get_x_centered(str) get_x_centered_between(str, 0, LCD_WIDTH)
 
 void generate_stars();
-void draw_menu_background(bool draw_title, bool draw_chicken, uint8_t offset);
+void draw_menu_background(bool draw_title, bool draw_chicken);
 
 void rotate(float *x, float *y, uint8_t theta);
 
