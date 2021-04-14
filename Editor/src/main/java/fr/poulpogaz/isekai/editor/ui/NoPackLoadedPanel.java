@@ -12,11 +12,10 @@ public class NoPackLoadedPanel extends JPanel {
 
         JPanel inside = new JPanel();
 
-        inside.setLayout(new VerticalLayout(10));
+        inside.setLayout(new VerticalLayout(25));
 
         inside.add(createLabel("Create a new pack in file/new"));
         inside.add(createLabel("Open pack in file/open"));
-        inside.add(createLabel("Import pack in file/import"));
 
         add(inside);
     }

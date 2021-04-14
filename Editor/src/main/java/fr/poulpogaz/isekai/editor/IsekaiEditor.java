@@ -11,9 +11,11 @@ import java.util.Objects;
 
 public class IsekaiEditor extends JFrame {
 
+    private static final IsekaiEditor INSTANCE = new IsekaiEditor();
+
     private Pack pack;
 
-    public IsekaiEditor() {
+    private IsekaiEditor() {
         super("Editor");
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -70,5 +72,9 @@ public class IsekaiEditor extends JFrame {
 
     public Pack getPack() {
         return pack;
+    }
+
+    public static IsekaiEditor getInstance() {
+        return INSTANCE;
     }
 }

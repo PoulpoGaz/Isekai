@@ -4,18 +4,20 @@ import java.awt.image.BufferedImage;
 
 public enum Tile {
 
-    FLOOR(PackSprites.getFloor(), false),
-    WALL(PackSprites.getWall(), true),
-    CRATE(PackSprites.getCrate(), true),
-    CRATE_ON_TARGET(PackSprites.getCrateOnTarget(), true),
-    TARGET(PackSprites.getTarget(), false);
+    FLOOR(PackSprites.getFloor(), false, false),
+    WALL(PackSprites.getWall(), true, false),
+    CRATE(PackSprites.getCrate(), true, true),
+    CRATE_ON_TARGET(PackSprites.getCrateOnTarget(), true, true),
+    TARGET(PackSprites.getTarget(), false, false);
 
     private final BufferedImage sprite;
     private final boolean solid;
+    private final boolean crate;
 
-    Tile(BufferedImage sprite, boolean solid) {
+    Tile(BufferedImage sprite, boolean solid, boolean crate) {
         this.sprite = sprite;
         this.solid = solid;
+        this.crate = crate;
     }
 
     public BufferedImage getSprite() {
@@ -24,5 +26,9 @@ public enum Tile {
 
     public boolean isSolid() {
         return solid;
+    }
+
+    public boolean isCrate() {
+        return crate;
     }
 }

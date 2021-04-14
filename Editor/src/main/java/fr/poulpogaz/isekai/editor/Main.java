@@ -18,7 +18,7 @@ public class Main {
         try {
             PackSprites.initialize();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Failed to load tileset:\n" + e.toString(), "FATAL", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Failed to load tileset:\n" + e, "FATAL", JOptionPane.ERROR_MESSAGE);
 
             e.printStackTrace();
             return;
@@ -33,7 +33,7 @@ public class Main {
         Settings.read();
 
         EventQueue.invokeLater(() -> {
-            IsekaiEditor editor = new IsekaiEditor();
+            IsekaiEditor editor = IsekaiEditor.getInstance();
             editor.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {

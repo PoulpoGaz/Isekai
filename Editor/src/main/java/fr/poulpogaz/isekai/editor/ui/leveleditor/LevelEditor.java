@@ -4,17 +4,19 @@ import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.tools.LevelFillTool;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
+import fr.poulpogaz.isekai.editor.ui.CheckLevelDialog;
 import fr.poulpogaz.isekai.editor.ui.editorbase.EditorPanelBase;
-import fr.poulpogaz.isekai.editor.ui.editorbase.MapPanelBase;
+import fr.poulpogaz.isekai.editor.ui.editorbase.EditableMapPanelBase;
 import fr.poulpogaz.isekai.editor.ui.editorbase.ToolBar;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
+import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 
 public class LevelEditor extends EditorPanelBase<LevelEditorModel> {
 
-    private TileMapPanel tileMapPanel;
+    private EditableTileMapPanel tileMapPanel;
     private TilesetPanel tilesetPanel;
     private PackPropertiesPanel packPropertiesPanel;
     private LevelPanel levelPanel;
@@ -34,12 +36,17 @@ public class LevelEditor extends EditorPanelBase<LevelEditorModel> {
         toolBar.addTool(LevelFillTool.getInstance());
         toolBar.addTool(PlayerTool.getInstance(pack));
 
+        JButton check = new JButton();
+        check.setIcon(IconLoader.loadSVGIcon("/icons/check.svg"));
+        check.addActionListener((e) -> CheckLevelDialog.showDialog());
+        toolBar.add(check);
+
         return toolBar;
     }
 
     @Override
-    protected MapPanelBase<LevelEditorModel, ?, ?> createMapPanel() {
-        tileMapPanel = new TileMapPanel(pack, editor);
+    protected EditableMapPanelBase<LevelEditorModel, ?, ?> createMapPanel() {
+        tileMapPanel = new EditableTileMapPanel(pack, editor);
 
         return tileMapPanel;
     }

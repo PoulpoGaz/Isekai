@@ -13,7 +13,7 @@ public abstract class EditorPanelBase<E extends EditorModel<? extends Map<?, ?>,
     protected final E editor;
 
     protected ToolBar<E> toolbar;
-    protected MapPanelBase<E, ?, ?> mapPanel;
+    protected EditableMapPanelBase<E, ?, ?> mapPanel;
     protected JPanel eastPanel;
 
     public EditorPanelBase(Pack pack, E editor) {
@@ -39,7 +39,7 @@ public abstract class EditorPanelBase<E extends EditorModel<? extends Map<?, ?>,
 
     protected abstract ToolBar<E> createToolBar();
 
-    protected abstract MapPanelBase<E, ?, ?> createMapPanel();
+    protected abstract EditableMapPanelBase<E, ?, ?> createMapPanel();
 
     protected abstract JPanel createEastPanel();
 

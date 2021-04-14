@@ -10,14 +10,10 @@ import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
 import java.awt.*;
 
-public class TileMapPanel extends MapPanelBase<LevelEditorModel, Level, Tile> {
+public class UneditableTileMapPanel extends MapPanelBase<Level, Tile> {
 
-    public TileMapPanel(Pack pack, LevelEditorModel editor) {
-        super(pack, editor);
-
-        pixelSize = 32;
-        canZoom(false);
-        setPreferredSize();
+    public UneditableTileMapPanel(Pack pack, Level map) {
+        super(pack, map);
     }
 
     @Override
@@ -38,18 +34,5 @@ public class TileMapPanel extends MapPanelBase<LevelEditorModel, Level, Tile> {
                 }
             }
         }
-    }
-
-    @Override
-    protected void paintCursor(Graphics2D g2d, Point offset, Rectangle visibleRect, Bounds bounds) {
-        Composite old = g2d.getComposite();
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.75f));
-
-        int x = offset.x + hoverX * pixelSize;
-        int y = offset.y + hoverY * pixelSize;
-
-        g2d.drawImage(editor.getToolSprite(), x, y, pixelSize, pixelSize, null);
-
-        g2d.setComposite(old);
     }
 }
