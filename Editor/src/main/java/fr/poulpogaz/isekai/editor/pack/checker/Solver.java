@@ -109,6 +109,9 @@ public class Solver {
         visited.add(defaultState);
 
         Tile[] mapWithCrates = map.clone();
+
+        int stateNumber = 0;
+        loop:
         while (!states.isEmpty()) {
             State state = states.poll();
 
@@ -120,12 +123,35 @@ public class Solver {
             getReachableTiles(state, mapWithCrates, reachableTiles);
 
             System.out.println("-".repeat(Math.max(height, 16)));
-            System.out.println("State: \n" + asString(state));
+            System.out.printf("State number: %d%n", stateNumber);
+            System.out.printf("Map:%n%s%n", asString(state));
+
+            System.out.println("Checking deadlock(s)");
+            for (int cratePos : state.cratesIndex) {
+                if (map[cratePos] == TARGET) {
+                    continue;
+                }
+
+                boolean xDeadlock = xAxisDeadlock(mapWithCrates, cratePos);
+                boolean yDeadlock = yAxisDeadlock(mapWithCrates, cratePos);
+
+                System.out.printf("Crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
+                System.out.printf("X axis deadlock: %s, Y axis deadlock: %s%n", xDeadlock, yDeadlock);
+
+                if (xDeadlock && yDeadlock) {
+                    System.out.println("Deadlock");
+                    writeImage(state, 0, 0, stateNumber, true);
+                    stateNumber++;
+
+                    continue loop;
+                }
+            }
 
             for (int i = 0; i < state.cratesIndex.length; i++) {
                 int cratePos = state.cratesIndex[i];
 
                 System.out.printf("Processing crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
+
                 for (int[] move : MOVES) {
                     System.out.printf("Direction: %d %d%n", move[0], move[1]);
 
@@ -133,8 +159,10 @@ public class Solver {
                         State child = createChildState(mapWithCrates, state, cratePos, i, move[0], move[1]);
 
                         if (child != null && visited.add(child)) {
+                            System.out.println(this.i);
                             System.out.println(asString(child));
-                            writeImage(child, move[0], move[1]);
+                            writeImage(child, move[0], move[1], stateNumber, false);
+
 
                             if (isSolution(child)) {
                                 return true;
@@ -151,8 +179,8 @@ public class Solver {
             }
 
             unfillMapWithCrates(state, mapWithCrates);
+            stateNumber++;
         }
-
 
         return false;
     }
@@ -311,7 +339,7 @@ public class Solver {
 
     private int i = 0;
 
-    protected void writeImage(State state, int dirX, int dirY) {
+    protected void writeImage(State state, int dirX, int dirY, int fromState, boolean deadlock) {
         BufferedImage image = new BufferedImage(width * 16, height * 16, BufferedImage.TYPE_INT_ARGB);
 
         Tile[] map = this.map.clone();
@@ -339,28 +367,38 @@ public class Solver {
 
         g2d.drawImage(PackSprites.getPlayer(), x, y, null);
 
-        if (dirX == 1) {
-            g2d.rotate(Math.PI / 2, x + 8, y + 8);
-        } else if (dirX == - 1) {
-            g2d.rotate(-Math.PI / 2, x + 8, y + 8);
-        } else if (dirY == 1) {
-            g2d.rotate(Math.PI, x + 8, y + 8);
+        if (!deadlock) {
+            if (dirX == 1) {
+                g2d.rotate(Math.PI / 2, x + 8, y + 8);
+            } else if (dirX == -1) {
+                g2d.rotate(-Math.PI / 2, x + 8, y + 8);
+            } else if (dirY == 1) {
+                g2d.rotate(Math.PI, x + 8, y + 8);
+            }
+
+            int[] xPoints = new int[]{
+                    x + 6, x + 10, x + 10, x + 13, x + 8, x + 3, x + 6
+            };
+
+            int[] yPoints = new int[]{
+                    y + 7, y + 7, y - 1, y - 1, y - 6, y - 1, y - 1
+            };
+            g2d.setColor(Color.RED);
+            g2d.fillPolygon(xPoints, yPoints, 7);
         }
-
-        int[] xPoints = new int[] {
-            x + 6, x + 10, x + 10, x + 13, x + 8, x + 3, x + 6
-        };
-
-        int[] yPoints = new int[] {
-            y + 7, y + 7, y - 1, y - 1, y - 6, y - 1, y - 1
-        };
-        g2d.setColor(Color.RED);
-        g2d.fillPolygon(xPoints, yPoints, 7);
 
         g2d.dispose();
 
         try {
-            ImageIO.write(image, "png", new File("img/%d_dir_x=%d,dir_y=%d.png".formatted(i, dirX, dirY)));
+            String str = "img/%d, state=%d dir_x=%d dir_y=%d".formatted(i, fromState, dirX, dirY);
+
+            if (deadlock) {
+                str += " deadlock.png";
+            } else {
+                str += ".png";
+            }
+
+            ImageIO.write(image, "png", new File(str));
         } catch (IOException e) {
             e.printStackTrace();
         }
