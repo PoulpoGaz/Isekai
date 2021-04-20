@@ -25,6 +25,8 @@ public class IsekaiEditor extends JFrame {
     private JPanel bottomPanel;
     private JMemoryBar memoryBar;
 
+    private JTabbedPane tab;
+
     private IsekaiEditor() {
         super("Editor");
 
@@ -39,6 +41,8 @@ public class IsekaiEditor extends JFrame {
     }
 
     private void initComponents() {
+        tab = new JTabbedPane();
+
         memoryBar = new JMemoryBar();
         memoryBar.showMaximum(true);
 
@@ -62,11 +66,15 @@ public class IsekaiEditor extends JFrame {
     public void setPack(Pack pack) {
         this.pack = Objects.requireNonNull(pack);
 
-        JTabbedPane pane = new JTabbedPane();
-        pane.addTab("Map editor", new LevelEditor(pack));
+        if (tab.getTabCount() == 0) {
+            tab.addTab("Map editor", new LevelEditor(pack));
 
-        content.remove(noPackLoadedPanel);
-        content.add(pane, BorderLayout.CENTER);
+            content.remove(noPackLoadedPanel);
+            content.add(tab, BorderLayout.CENTER);
+        } else {
+            tab.removeAll();
+            tab.addTab("Map editor", new LevelEditor(pack));
+        }
 
         if (getExtendedState() != MAXIMIZED_BOTH) {
             Dimension screen = getScreenDimension();
