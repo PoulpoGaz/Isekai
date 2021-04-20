@@ -1,25 +1,20 @@
 package fr.poulpogaz.isekai.editor.ui.check;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import fr.poulpogaz.isekai.editor.pack.checker.Solver;
+import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
 import fr.poulpogaz.isekai.editor.pack.checker.State;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.concurrent.Alarm;
-import org.apache.commons.collections4.set.ListOrderedSet;
-import org.apache.xpath.operations.Number;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Map;
 
 public class Analyser extends JPanel {
 
-    private static final int MAX_SIZE = 100;
-
-    private final Solver solver;
-    private final Alarm alarm;
+    private ISolver solver;
+    private Alarm alarm;
 
     private JLabel status;
     private StateView stateView;
@@ -27,11 +22,7 @@ public class Analyser extends JPanel {
     private JFormattedTextField searchState;
     private JLabel numberOfState;
 
-    public Analyser(Solver solver) {
-        this.solver = solver;
-        this.alarm = new Alarm();
-        alarm.schedule(this::update, 500, 500);
-
+    public Analyser() {
         setLayout(new BorderLayout());
         initComponents();
     }
@@ -45,7 +36,7 @@ public class Analyser extends JPanel {
         searchState = new JFormattedTextField(NumberFormat.getIntegerInstance());
         searchState.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search state by number");
         searchState.addPropertyChangeListener("value", (e) -> {
-            ListOrderedSet<State> states = solver.getVisited();
+            List<State> states = solver.visited();
             Object value = searchState.getValue();
 
             if (value == null) {
@@ -58,20 +49,17 @@ public class Analyser extends JPanel {
             }
         });
 
-        stateView = new StateView(solver, this);
-
         JPanel left = new JPanel();
         left.setLayout(new VerticalLayout(5, 5));
         left.add(numberOfState);
         left.add(searchState);
 
         add(left, BorderLayout.EAST);
-        add(stateView, BorderLayout.CENTER);
         add(status, BorderLayout.NORTH);
     }
 
     protected void update() {
-        ListOrderedSet<State> states = solver.getVisited();
+        List<State> states = solver.visited();
 
         if (states.size() == 0) {
             return;
@@ -84,21 +72,48 @@ public class Analyser extends JPanel {
         }
     }
 
+    public void setSolver(ISolver solver) {
+        if (solver != null) {
+            this.solver = solver;
+
+            stateView = new StateView(solver, this);
+            add(stateView, BorderLayout.CENTER);
+
+            alarm = new Alarm();
+            alarm.schedule(this::update, 500, 500);
+        } else if (this.solver != null) {
+            if (alarm != null) {
+                alarm.shutdown();
+                alarm = null;
+            }
+            removeAll();
+            stateView = null;
+            this.solver = null;
+
+            // for garbage collect
+        }
+    }
+
     public void notifyEnd() {
         EventQueue.invokeLater(() -> {
-            if (solver.check()) {
-                status.setText("This sokoban has a solution!");
-            } else {
-                status.setText("This sokoban has no solution.");
-            }
+            if (solver != null) {
+                if (solver.check()) {
+                    status.setText("This sokoban has a solution!");
+                } else {
+                    status.setText("This sokoban has no solution.");
+                }
 
-            update();
+                update();
+            }
         });
 
-        alarm.shutdown();
+        if (alarm != null) {
+            alarm.shutdown();
+            alarm = null;
+        }
     }
 
     public State getStateAt(int index) {
-        return solver.getVisited().get(index);
+        return solver.visited().get(index);
     }
 }

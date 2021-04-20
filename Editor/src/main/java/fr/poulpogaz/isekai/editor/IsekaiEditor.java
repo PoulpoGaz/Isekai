@@ -3,7 +3,11 @@ package fr.poulpogaz.isekai.editor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
+import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
+import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
+import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
+import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +18,12 @@ public class IsekaiEditor extends JFrame {
     private static final IsekaiEditor INSTANCE = new IsekaiEditor();
 
     private Pack pack;
+
+    private JPanel content;
+
+    private final NoPackLoadedPanel noPackLoadedPanel = new NoPackLoadedPanel();
+    private JPanel bottomPanel;
+    private JMemoryBar memoryBar;
 
     private IsekaiEditor() {
         super("Editor");
@@ -29,7 +39,24 @@ public class IsekaiEditor extends JFrame {
     }
 
     private void initComponents() {
-        setContentPane(new NoPackLoadedPanel());
+        memoryBar = new JMemoryBar();
+        memoryBar.showMaximum(true);
+
+        bottomPanel = new JPanel();
+        bottomPanel.setLayout(new HorizontalLayout());
+
+        HorizontalConstraint constraint = new HorizontalConstraint();
+        constraint.orientation = HCOrientation.RIGHT;
+
+        bottomPanel.add(memoryBar, constraint);
+
+        content = new JPanel();
+        content.setLayout(new BorderLayout());
+
+        content.add(noPackLoadedPanel, BorderLayout.CENTER);
+        content.add(bottomPanel, BorderLayout.SOUTH);
+
+        setContentPane(content);
     }
 
     public void setPack(Pack pack) {
@@ -38,7 +65,8 @@ public class IsekaiEditor extends JFrame {
         JTabbedPane pane = new JTabbedPane();
         pane.addTab("Map editor", new LevelEditor(pack));
 
-        setContentPane(pane);
+        content.remove(noPackLoadedPanel);
+        content.add(pane, BorderLayout.CENTER);
 
         if (getExtendedState() != MAXIMIZED_BOTH) {
             Dimension screen = getScreenDimension();

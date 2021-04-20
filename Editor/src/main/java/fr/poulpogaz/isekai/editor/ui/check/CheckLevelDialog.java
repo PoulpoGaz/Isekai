@@ -2,17 +2,21 @@ package fr.poulpogaz.isekai.editor.ui.check;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.checker.Solver;
+import fr.poulpogaz.isekai.editor.pack.checker.BFSSolver;
+import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
+import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
-import fr.poulpogaz.isekai.editor.utils.concurrent.AppExecutor;
 import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.editor.utils.concurrent.NamedThreadFactory;
+import net.miginfocom.layout.Grid;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadFactory;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class CheckLevelDialog extends JDialog {
@@ -27,10 +31,21 @@ public class CheckLevelDialog extends JDialog {
     private static final CheckLevelDialog INSTANCE = new CheckLevelDialog();
 
     public static void showDialog() {
+        INSTANCE.setupChooseLayout();
         INSTANCE.setVisible(true);
     }
 
+    private static final String BFS = "BFS";
+
     private JPanel content;
+
+    private JPanel choosePanel;
+    private JLabel choose;
+    private JComboBox<String> solvers;
+    private JButton run;
+    private Analyser analyser;
+
+    private ISolver solver;
 
     private CheckLevelDialog() {
         super(IsekaiEditor.getInstance(), "Checking level", true);
@@ -38,6 +53,19 @@ public class CheckLevelDialog extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         initComponents();
+        setupChooseLayout();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (solver != null) {
+                    solver.cancel();
+                }
+
+                solver = null;
+                analyser.setSolver(null);
+            }
+        });
 
         pack();
         setLocationRelativeTo(null);
@@ -45,18 +73,50 @@ public class CheckLevelDialog extends JDialog {
 
     private void initComponents() {
         content = new JPanel();
+        choosePanel = new JPanel();
+
+        choose = new JLabel("Choose a solver");
+
+        solvers = new JComboBox<>();
+        solvers.addItem(BFS);
+        solvers.setSelectedItem(BFS);
+
+        run = new JButton("Run");
+        run.addActionListener(this::run);
+
+        analyser = new Analyser();
+    }
+
+    private void setupChooseLayout() {
+        choosePanel.setLayout(new HorizontalLayout(5, 5));
+        choosePanel.add(choose);
+        choosePanel.add(solvers);
+
+        content.setLayout(new VerticalLayout(5, 5));
+        content.add(choosePanel);
+        content.add(run);
+
+        setContentPane(content);
+    }
+
+    private void setupAnalyserLayout() {
+        content.removeAll();
         content.setLayout(new BorderLayout());
+        content.add(analyser, BorderLayout.CENTER);
 
-        IsekaiEditor editor = IsekaiEditor.getInstance();
+        Pack pack = IsekaiEditor.getInstance().getPack();
 
-        Solver solver = new Solver(editor.getPack().getLevel(0));
-        Analyser analyser = new Analyser(solver);
-        add(analyser, BorderLayout.CENTER);
+        solver = new BFSSolver(pack.getLevel(0));
+        analyser.setSolver(solver);
 
         executor.submit(() -> {
             System.out.println(solver.check());
 
             analyser.notifyEnd();
         });
+    }
+
+    private void run(ActionEvent e) {
+        setupAnalyserLayout();
     }
 }

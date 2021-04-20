@@ -18,7 +18,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import static fr.poulpogaz.isekai.editor.pack.Tile.*;
 
-public class Solver {
+public class BFSSolver implements ISolver {
 
     public static final int CHECKING = 0;
     public static final int TRUE = 1;
@@ -30,7 +30,6 @@ public class Solver {
     private final Tile[] map;
     private final int width;
     private final int height;
-
 
     private final ListOrderedSet<State> visited = new ListOrderedSet<>();
     private final State defaultState;
@@ -45,9 +44,9 @@ public class Solver {
 
     private final boolean[] reachableTiles;
 
-    private int result;
+    private int status;
 
-    public Solver(Level level) {
+    public BFSSolver(Level level) {
         this.level = level;
         this.width = level.getWidth();
         this.height = level.getHeight();
@@ -114,11 +113,11 @@ public class Solver {
         }
     }
 
-    // BFS algorithm
+    @Override
     public boolean check() {
-        if (result == TRUE) {
+        if (status == TRUE) {
             return true;
-        } else if (result == FALSE) {
+        } else if (status == FALSE || status == CANCELED) {
             return false;
         }
 
@@ -131,7 +130,7 @@ public class Solver {
         Tile[] mapWithCrates = map.clone();
 
         int stateNumber = 0;
-        while (!states.isEmpty()) {
+        while (!states.isEmpty() && status != CANCELED) {
             State state = states.poll();
 
             if (isSolution(state)) {
@@ -169,13 +168,14 @@ public class Solver {
                         if (child != null && !visited.contains(child)) {
                             //writeImage(child, move[0], move[1], stateNumber, false);
                             stateNumber++;
+                            child.number = stateNumber;
 
                             visited.add(child);
 
                             if (isSolution(child)) {
                                 state.childrenEnd = stateNumber;
 
-                                result = TRUE;
+                                status = TRUE;
 
                                 return true;
                             }
@@ -196,7 +196,9 @@ public class Solver {
             //System.out.println("unfill:\n" + Arrays.toString(mapWithCrates));
         }
 
-        result = FALSE;
+        if (status == CHECKING) {
+            status = FALSE;
+        }
 
         return false;
     }
@@ -445,15 +447,27 @@ public class Solver {
         i++;
     }
 
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            if (status == CHECKING) {
+                status = CANCELED;
+            }
+        }
+    }
+
+    @Override
     public Level getLevel() {
         return level;
     }
 
-    public ListOrderedSet<State> getVisited() {
-        return visited;
+    @Override
+    public List<State> visited() {
+        return visited.asList();
     }
 
-    public int getResult() {
-        return result;
+    @Override
+    public int status() {
+        return status;
     }
 }

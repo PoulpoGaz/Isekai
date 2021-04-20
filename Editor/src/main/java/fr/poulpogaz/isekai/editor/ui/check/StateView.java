@@ -3,7 +3,8 @@ package fr.poulpogaz.isekai.editor.ui.check;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.checker.Solver;
+import fr.poulpogaz.isekai.editor.pack.checker.BFSSolver;
+import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
 import fr.poulpogaz.isekai.editor.pack.checker.State;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -18,7 +19,7 @@ import static fr.poulpogaz.isekai.editor.pack.Tile.TARGET;
 public class StateView extends JPanel {
 
     private final Analyser analyser;
-    private final Solver solver;
+    private final ISolver solver;
 
     private final int width;
     private final int height;
@@ -35,7 +36,7 @@ public class StateView extends JPanel {
 
     private boolean adjusting = true;
 
-    public StateView(Solver solver, Analyser analyser) {
+    public StateView(ISolver solver, Analyser analyser) {
         this.solver = solver;
         this.analyser = analyser;
         this.width = solver.getLevel().getWidth();
