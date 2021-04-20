@@ -4,20 +4,25 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
-import org.apache.xpath.objects.XBoolean;
+import org.apache.commons.collections4.set.ListOrderedSet;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static fr.poulpogaz.isekai.editor.pack.Tile.*;
 
 public class Solver {
+
+    public static final int CHECKING = 0;
+    public static final int TRUE = 1;
+    public static final int FALSE = 2;
 
     private static final int[][] MOVES = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
@@ -26,6 +31,8 @@ public class Solver {
     private final int width;
     private final int height;
 
+
+    private final ListOrderedSet<State> visited = new ListOrderedSet<>();
     private final State defaultState;
 
     private int numberOfWalls;
@@ -37,6 +44,8 @@ public class Solver {
     private final Queue<Integer> tileToVisit;
 
     private final boolean[] reachableTiles;
+
+    private int result;
 
     public Solver(Level level) {
         this.level = level;
@@ -83,6 +92,11 @@ public class Solver {
                 }
             }
         }
+
+        //System.out.println("Number of floors: " + numberOfFloors);
+        //System.out.println("Number of crates: " + numberOfCrates);
+        //System.out.println("Number of targets: "+ numberOfTargets);
+        //System.out.println("Number of walls: "+ numberOfWalls);
     }
 
     protected void initializeState() {
@@ -102,7 +116,13 @@ public class Solver {
 
     // BFS algorithm
     public boolean check() {
-        Set<State> visited = new HashSet<>();
+        if (result == TRUE) {
+            return true;
+        } else if (result == FALSE) {
+            return false;
+        }
+
+        visited.clear();
         Queue<State> states = new ArrayDeque<>();
 
         states.offer(defaultState);
@@ -111,7 +131,6 @@ public class Solver {
         Tile[] mapWithCrates = map.clone();
 
         int stateNumber = 0;
-        loop:
         while (!states.isEmpty()) {
             State state = states.poll();
 
@@ -119,67 +138,86 @@ public class Solver {
                 return true;
             }
 
+            //System.out.println("Base:\n" + Arrays.toString(mapWithCrates));
             fillMapWithCrates(state, mapWithCrates);
+            //System.out.println("fill:\n" + Arrays.toString(mapWithCrates));
             getReachableTiles(state, mapWithCrates, reachableTiles);
 
-            System.out.println("-".repeat(Math.max(height, 16)));
-            System.out.printf("State number: %d%n", stateNumber);
-            System.out.printf("Map:%n%s%n", asString(state));
+            //System.out.println("-".repeat(Math.max(width, 16)));
+            //System.out.printf("State number: %d%n", state.number);
+            //System.out.printf("Map:%n%s%n", asString(state));
 
-            System.out.println("Checking deadlock(s)");
-            for (int cratePos : state.cratesIndex) {
-                if (map[cratePos] == TARGET) {
-                    continue;
-                }
+            if (checkDeadlock(state, mapWithCrates)) {
+                unfillMapWithCrates(state, mapWithCrates);
 
-                boolean xDeadlock = xAxisDeadlock(mapWithCrates, cratePos);
-                boolean yDeadlock = yAxisDeadlock(mapWithCrates, cratePos);
-
-                System.out.printf("Crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
-                System.out.printf("X axis deadlock: %s, Y axis deadlock: %s%n", xDeadlock, yDeadlock);
-
-                if (xDeadlock && yDeadlock) {
-                    System.out.println("Deadlock");
-                    writeImage(state, 0, 0, stateNumber, true);
-                    stateNumber++;
-
-                    continue loop;
-                }
+                continue;
             }
+
+            state.childrenStart = stateNumber + 1;
 
             for (int i = 0; i < state.cratesIndex.length; i++) {
                 int cratePos = state.cratesIndex[i];
 
-                System.out.printf("Processing crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
+                //System.out.printf("Processing crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
 
                 for (int[] move : MOVES) {
-                    System.out.printf("Direction: %d %d%n", move[0], move[1]);
+                    //System.out.printf("Direction: %d %d%n", move[0], move[1]);
 
                     if (isCrateReachableFrom(cratePos, -move[0], -move[1])) {
                         State child = createChildState(mapWithCrates, state, cratePos, i, move[0], move[1]);
 
-                        if (child != null && visited.add(child)) {
-                            System.out.println(this.i);
-                            System.out.println(asString(child));
-                            writeImage(child, move[0], move[1], stateNumber, false);
+                        if (child != null && !visited.contains(child)) {
+                            //writeImage(child, move[0], move[1], stateNumber, false);
+                            stateNumber++;
 
+                            visited.add(child);
 
                             if (isSolution(child)) {
+                                state.childrenEnd = stateNumber;
+
+                                result = TRUE;
+
                                 return true;
                             }
 
                             states.offer(child);
                         }
                     } else {
-                        System.out.println("Not reachable");
+                        //System.out.println("Not reachable");
                     }
-                    System.out.println();
+                    //System.out.println();
                 }
-                System.out.println();
+                //System.out.println();
             }
 
+            state.childrenEnd = stateNumber;
+
             unfillMapWithCrates(state, mapWithCrates);
-            stateNumber++;
+            //System.out.println("unfill:\n" + Arrays.toString(mapWithCrates));
+        }
+
+        result = FALSE;
+
+        return false;
+    }
+
+    protected boolean checkDeadlock(State state, Tile[] mapWithCrates) {
+        //System.out.println("Checking deadlock(s)");
+        for (int cratePos : state.cratesIndex) {
+            if (map[cratePos] == TARGET) {
+                continue;
+            }
+
+            boolean xDeadlock = xAxisDeadlock(mapWithCrates, cratePos);
+            boolean yDeadlock = yAxisDeadlock(mapWithCrates, cratePos);
+
+            //System.out.printf("Crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
+            //System.out.printf("X axis deadlock: %s, Y axis deadlock: %s%n", xDeadlock, yDeadlock);
+
+            if (xDeadlock && yDeadlock) {
+                //System.out.println("Deadlock");
+                return true;
+            }
         }
 
         return false;
@@ -276,15 +314,17 @@ public class Solver {
         int newPos = adjacentPos(crateToMove, dirX, dirY);
         int backwardPos = adjacentPos(crateToMove, -dirX, -dirY); // dirX = 0 or dirY = 0
 
-        System.out.printf("New pos: %d %d (%d), Backward pos: %d %d (%d)%n", newPos % width, newPos / width, newPos, backwardPos % width, backwardPos / width, backwardPos);
-        System.out.printf("Outside: %s, %s%n", outside(newPos), outside(backwardPos));
-        System.out.printf("Tile: %s, %s%n", map[newPos], map[backwardPos]);
+        //System.out.printf("New pos: %d %d (%d), Backward pos: %d %d (%d)%n", newPos % width, newPos / width, newPos, backwardPos % width, backwardPos / width, backwardPos);
+        //System.out.printf("Outside: %s, %s%n", outside(newPos), outside(backwardPos));
+        //System.out.printf("Tile: %s, %s%n", map[newPos], map[backwardPos]);
 
         if (outside(newPos) || outside(backwardPos) || map[backwardPos].isSolid() || map[newPos].isSolid()) {
+            //System.out.println("No");
             return null;
         }
 
         State newState = new State();
+        newState.parent = state;
         newState.playerIndex = crateToMove;
         newState.cratesIndex = state.cratesIndex.clone();
         newState.cratesIndex[crateIndex] = newPos;
@@ -403,5 +443,17 @@ public class Solver {
             e.printStackTrace();
         }
         i++;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public ListOrderedSet<State> getVisited() {
+        return visited;
+    }
+
+    public int getResult() {
+        return result;
     }
 }

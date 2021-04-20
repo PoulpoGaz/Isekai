@@ -4,7 +4,7 @@ import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.tools.LevelFillTool;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
-import fr.poulpogaz.isekai.editor.ui.CheckLevelDialog;
+import fr.poulpogaz.isekai.editor.ui.check.CheckLevelDialog;
 import fr.poulpogaz.isekai.editor.ui.editorbase.EditorPanelBase;
 import fr.poulpogaz.isekai.editor.ui.editorbase.EditableMapPanelBase;
 import fr.poulpogaz.isekai.editor.ui.editorbase.ToolBar;
