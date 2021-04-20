@@ -1,8 +1,10 @@
 package fr.poulpogaz.isekai.editor.ui.check;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.checker.BFSSolver;
+import fr.poulpogaz.isekai.editor.pack.checker.DFSSolver;
 import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
@@ -36,6 +38,7 @@ public class CheckLevelDialog extends JDialog {
     }
 
     private static final String BFS = "BFS";
+    private static final String DFS = "DFS";
 
     private JPanel content;
 
@@ -79,6 +82,7 @@ public class CheckLevelDialog extends JDialog {
 
         solvers = new JComboBox<>();
         solvers.addItem(BFS);
+        solvers.addItem(DFS);
         solvers.setSelectedItem(BFS);
 
         run = new JButton("Run");
@@ -106,7 +110,11 @@ public class CheckLevelDialog extends JDialog {
 
         Pack pack = IsekaiEditor.getInstance().getPack();
 
-        solver = new BFSSolver(pack.getLevel(0));
+        solver = createSolver(pack.getLevel(0));
+        if (solver == null) {
+            JOptionPane.showMessageDialog(this, "You didn't select a solver");
+        }
+
         analyser.setSolver(solver);
 
         executor.submit(() -> {
@@ -118,5 +126,19 @@ public class CheckLevelDialog extends JDialog {
 
     private void run(ActionEvent e) {
         setupAnalyserLayout();
+    }
+
+    private ISolver createSolver(Level level) {
+        Object obj =  solvers.getSelectedItem();
+
+        if (obj == null) {
+            return null;
+        }
+
+        return switch ((String) obj) {
+            case BFS -> new BFSSolver(level);
+            case DFS -> new DFSSolver(level);
+            default -> null;
+        };
     }
 }

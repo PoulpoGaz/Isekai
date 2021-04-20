@@ -1,28 +1,19 @@
 package fr.poulpogaz.isekai.editor.pack.checker;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Stack;
 
-import static fr.poulpogaz.isekai.editor.pack.Tile.*;
-
-public class BFSSolver extends AbstractSolver {
+public class DFSSolver extends AbstractSolver {
 
     private final ListOrderedSet<State> visited = new ListOrderedSet<>();
 
-    public BFSSolver(Level level) {
+    public DFSSolver(Level level) {
         super(level);
     }
 
@@ -35,16 +26,16 @@ public class BFSSolver extends AbstractSolver {
         }
 
         visited.clear();
-        Queue<State> states = new ArrayDeque<>();
+        Stack<State> states = new Stack<>();
 
-        states.offer(defaultState);
+        states.push(defaultState);
         visited.add(defaultState);
 
         Tile[] mapWithCrates = map.clone();
 
         int stateNumber = 0;
         while (!states.isEmpty() && status != CANCELED) {
-            State state = states.poll();
+            State state = states.pop();
 
             if (isSolution(state)) {
                 return true;
@@ -93,7 +84,7 @@ public class BFSSolver extends AbstractSolver {
                                 return true;
                             }
 
-                            states.offer(child);
+                            states.push(child);
                         }
                     } /*else {
                         //System.out.println("Not reachable");
