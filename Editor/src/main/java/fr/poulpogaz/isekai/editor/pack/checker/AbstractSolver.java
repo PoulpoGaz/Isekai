@@ -2,17 +2,18 @@ package fr.poulpogaz.isekai.editor.pack.checker;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static fr.poulpogaz.isekai.editor.pack.Tile.*;
 
 public abstract class AbstractSolver implements ISolver {
+
+    protected static final int X_AXIS = 0;
+    protected static final int Y_AXIS = 1;
 
     protected static final int[][] MOVES = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
@@ -30,10 +31,11 @@ public abstract class AbstractSolver implements ISolver {
 
     protected int status = CHECKING;
 
-    protected final List<Integer> tileVisitedByPlayer;
+    protected final Set<Integer> tileVisitedByPlayer;
     protected final Queue<Integer> tileToVisit;
 
     protected final boolean[] reachableTiles;
+    protected final boolean[] deadlockTiles;
 
     public AbstractSolver(Level level) {
         this.level = level;
@@ -41,16 +43,16 @@ public abstract class AbstractSolver implements ISolver {
         this.height = level.getHeight();
 
         map = new Tile[width * height];
-
         initializeMap();
 
         defaultState = new State();
         initializeState();
 
-        tileVisitedByPlayer = new ArrayList<>(numberOfFloors + numberOfTargets);
+        tileVisitedByPlayer = new HashSet<>(numberOfFloors + numberOfTargets);
         tileToVisit = new ArrayBlockingQueue<>(numberOfFloors + numberOfTargets);
 
         reachableTiles = new boolean[map.length];
+        deadlockTiles = new boolean[map.length];
     }
 
     protected void initializeMap() {
@@ -100,26 +102,67 @@ public abstract class AbstractSolver implements ISolver {
     @Override
     public abstract boolean check();
 
-    protected boolean checkDeadlock(State state, Tile[] mapWithCrates) {
-        //System.out.println("Checking deadlock(s)");
-        for (int cratePos : state.cratesIndex) {
-            if (map[cratePos] == TARGET) {
+    /**
+     * We simulate a crate pushed by a player from
+     * a target to all possible tiles.
+     * All tiles where the crate can't go are deadlocks.
+     * And we are repeating this for each crates.
+     */
+    protected void findDeadlockTiles() {
+        Arrays.fill(deadlockTiles, true);
+
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> toVisit = new ArrayDeque<>();
+
+        for (int target = 0; target < map.length; target++) {
+            if (map[target] != TARGET) {
                 continue;
             }
 
-            boolean xDeadlock = xAxisDeadlock(mapWithCrates, cratePos);
-            boolean yDeadlock = yAxisDeadlock(mapWithCrates, cratePos);
+            visited.clear();
 
-            //System.out.printf("Crate at %d %d (%d)%n", cratePos % width, cratePos / width, cratePos);
-            //System.out.printf("X axis deadlock: %s, Y axis deadlock: %s%n", xDeadlock, yDeadlock);
+            visited.add(target);
+            toVisit.offer(target);
 
-            if (xDeadlock && yDeadlock) {
-                //System.out.println("Deadlock");
-                return true;
+            deadlockTiles[target] = false;
+
+            while (!toVisit.isEmpty()) {
+                int cratePos = toVisit.poll();
+
+                for (int[] move : MOVES) {
+                    int player = adjacentPos(cratePos, move[0], move[1]);
+                    if (outside(player)) {
+                        continue;
+                    }
+
+                    int newPlayerPos = adjacentPos(player, move[0], move[1]);
+                    if (outside(newPlayerPos)) {
+                        continue;
+                    }
+
+                    if (!map[player].isSolid()) {
+                        if (!map[newPlayerPos].isSolid()) {
+                            deadlockTiles[player] = false;
+                        }
+
+                        if (visited.add(player)) {
+                            toVisit.offer(player);
+                        }
+                    }
+                }
             }
         }
 
-        return false;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (deadlockTiles[y * width + x]) {
+                    System.out.print("D");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
     }
 
     protected void fillMapWithCrates(State state, Tile[] map) {
@@ -159,13 +202,11 @@ public abstract class AbstractSolver implements ISolver {
                     continue;
                 }
 
-                if (!tileVisitedByPlayer.contains(i)) {
+                if (tileVisitedByPlayer.add(i)) {
                     if (!mapWithCrates[i].isSolid()) {
                         tileToVisit.offer(i);
                         reachableTiles[i] = true;
                     }
-
-                    tileVisitedByPlayer.add(i);
                 }
             }
         }
@@ -177,27 +218,85 @@ public abstract class AbstractSolver implements ISolver {
         return reachableTiles[adjacent];
     }
 
-    // http://sokobano.de/wiki/index.php?title=How_to_detect_deadlocks#Detecting_freeze_deadlocks
-    protected boolean xAxisDeadlock(Tile[] map, int cratePos) {
-        if (isWall(map, cratePos, 1, 0) || isWall(map, cratePos, -1, 0)) {
-            return true;
+    // http://www.sokobano.de/wiki/index.php?title=How_to_detect_deadlocks
+    protected boolean checkDeadlock(State state, Tile[] mapWithCrates) {
+        for (int cratePos : state.cratesIndex) { // 8, 14, 26, 27, 33
+            if (map[cratePos] == TARGET) {
+                continue;
+            }
+
+            if (deadlockTiles[cratePos]) {
+                return true;
+            }
+
+            if (checkBoxDeadlock(mapWithCrates, cratePos)) {
+                return true;
+            }
         }
 
         return false;
+    }
+
+    protected boolean checkBoxDeadlock(Tile[] map, int crate) {
+        if (!xAxisDeadlock(map, crate)) {
+            if (!(checkCrateBlockedByCrate(map, crate, -1, 0) || checkCrateBlockedByCrate(map, crate, 1, 0))) {
+                return false;
+            }
+        }
+
+        if (!yAxisDeadlock(map, crate)) {
+            return checkCrateBlockedByCrate(map, crate, 0, -1) || checkCrateBlockedByCrate(map, crate, 0, 1);
+        }
+
+        return true;
+    }
+
+    protected boolean checkCrateBlockedByCrate(Tile[] map, int crate, int dirX, int dirY) {
+        int adjacent = adjacentPos(crate, dirX, dirY);
+
+        if (outside(adjacent) || map[adjacent] == WALL) {
+            return true;
+        } else if (!map[adjacent].isCrate()) {
+            return false;
+        } else {
+            Tile old = map[crate];
+            map[crate] = WALL;
+
+            boolean returnValue = checkBoxDeadlock(map, adjacent);
+
+            map[crate] = old;
+
+            return returnValue;
+        }
+    }
+
+    // http://sokobano.de/wiki/index.php?title=How_to_detect_deadlocks#Detecting_freeze_deadlocks
+    protected boolean xAxisDeadlock(Tile[] map, int cratePos) {
+        int left  = adjacentPos(cratePos, -1,  0);
+        int right = adjacentPos(cratePos,  1,  0);
+
+        if (outside(left) || map[left] == WALL) {
+            return true;
+        }
+        if (outside(right) || map[right] == WALL) {
+            return true;
+        }
+
+        return deadlockTiles[left] && deadlockTiles[right];
     }
 
     protected boolean yAxisDeadlock(Tile[] map, int cratePos) {
-        if (isWall(map, cratePos, 0, 1) || isWall(map, cratePos, 0, -1)) {
+        int up    = adjacentPos(cratePos,  0, -1);
+        int down  = adjacentPos(cratePos,  0,  1);
+
+        if (outside(up) || map[up] == WALL) {
+            return true;
+        }
+        if (outside(down) || map[down] == WALL) {
             return true;
         }
 
-        return false;
-    }
-
-    protected boolean isWall(Tile[] map, int index, int dirX, int dirY) {
-        int i = adjacentPos(index, dirX, dirY);
-
-        return outside(i) || map[i] == WALL;
+        return deadlockTiles[up] && deadlockTiles[down];
     }
 
     protected int adjacentPos(int index, int dirX, int dirY) {
@@ -208,15 +307,9 @@ public abstract class AbstractSolver implements ISolver {
     }
 
     protected State createChildState(Tile[] map, State state, int crateToMove, int crateIndex, int dirX, int dirY) {
-        int newPos = adjacentPos(crateToMove, dirX, dirY);
-        int backwardPos = adjacentPos(crateToMove, -dirX, -dirY); // dirX = 0 or dirY = 0
+        int newPos = moveCrate(map, crateToMove, dirX, dirY);
 
-        //System.out.printf("New pos: %d %d (%d), Backward pos: %d %d (%d)%n", newPos % width, newPos / width, newPos, backwardPos % width, backwardPos / width, backwardPos);
-        //System.out.printf("Outside: %s, %s%n", outside(newPos), outside(backwardPos));
-        //System.out.printf("Tile: %s, %s%n", map[newPos], map[backwardPos]);
-
-        if (outside(newPos) || outside(backwardPos) || map[backwardPos].isSolid() || map[newPos].isSolid()) {
-            //System.out.println("No");
+        if (newPos < 0) {
             return null;
         }
 
@@ -227,6 +320,21 @@ public abstract class AbstractSolver implements ISolver {
         newState.cratesIndex[crateIndex] = newPos;
 
         return newState;
+    }
+
+    /**
+     * @return the new position of the crate or -1 if the crate can't be moved
+     *          in the specified direction
+     */
+    protected int moveCrate(Tile[] map, int crateToMove, int dirX, int dirY) {
+        int newPos = adjacentPos(crateToMove, dirX, dirY);
+        int backwardPos = adjacentPos(crateToMove, -dirX, -dirY); // dirX = 0 or dirY = 0
+
+        if (outside(newPos) || outside(backwardPos) || map[backwardPos].isSolid() || map[newPos].isSolid()) {
+            return -1;
+        }
+
+        return newPos;
     }
 
     protected boolean outside(int index) {
@@ -243,35 +351,6 @@ public abstract class AbstractSolver implements ISolver {
         }
 
         return true;
-    }
-
-    // For debug
-    protected String asString(State state) {
-        Tile[] map = this.map.clone();
-        fillMapWithCrates(state, map);
-
-        StringBuilder builder = new StringBuilder();
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int i = y * width + x;
-
-                boolean player = i == state.playerIndex;
-
-                char c = switch (map[i]) {
-                    case WALL -> '#';
-                    case CRATE -> '$';
-                    case TARGET -> player ? '+' : '.';
-                    case CRATE_ON_TARGET -> '*';
-                    case FLOOR -> player ? '@' : ' ';
-                };
-
-                builder.append(c);
-            }
-            builder.append("\n");
-        }
-
-        return builder.toString();
     }
 
     @Override

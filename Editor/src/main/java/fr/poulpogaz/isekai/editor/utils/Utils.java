@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class Utils {
 
@@ -124,6 +125,12 @@ public class Utils {
             }
 
             return BLANK_CURSOR;
+        }
+    }
+
+    public static void fill(boolean[][] array, boolean object) {
+        for (boolean[] booleans : array) {
+            Arrays.fill(booleans, object);
         }
     }
 }
