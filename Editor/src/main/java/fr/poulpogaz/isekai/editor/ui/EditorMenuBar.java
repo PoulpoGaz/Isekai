@@ -5,12 +5,11 @@ import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.TIPackIO;
 import fr.poulpogaz.isekai.editor.pack.TIPackIOException;
+import fr.poulpogaz.isekai.editor.ui.importer.LevelImporter;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
 
 public class EditorMenuBar extends JMenuBar {
@@ -51,6 +50,23 @@ public class EditorMenuBar extends JMenuBar {
 
         JMenuItem saveAs = new JMenuItem("Save as");
 
+        JMenu importMI = new JMenu("Import");
+        JMenuItem fromSokobanInfo = new JMenuItem("From sokoban.info");
+        fromSokobanInfo.addActionListener((e) -> {
+            if (editor.getPack() == null) {
+                Pack pack = new Pack();
+                LevelImporter.showDialog(pack);
+                editor.setPack(pack);
+            } else {
+                LevelImporter.showDialog(editor.getPack());
+            }
+        });
+
+        JMenuItem local = new JMenuItem("From your computer");
+
+        importMI.add(fromSokobanInfo);
+        importMI.add(local);
+
         JMenuItem settings = new JMenuItem("Settings");
         settings.addActionListener((e) -> settingsDialog.setVisible(true));
 
@@ -62,6 +78,7 @@ public class EditorMenuBar extends JMenuBar {
         file.add(openTemplate);
         file.add(save);
         file.add(saveAs);
+        file.add(importMI);
         file.addSeparator();
         file.add(settings);
         file.addSeparator();

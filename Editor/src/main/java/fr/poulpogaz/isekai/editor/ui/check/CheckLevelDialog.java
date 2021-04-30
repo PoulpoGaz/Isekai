@@ -71,7 +71,6 @@ public class CheckLevelDialog extends JDialog {
         });
 
         pack();
-        setLocationRelativeTo(null);
     }
 
     private void initComponents() {
