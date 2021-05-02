@@ -151,15 +151,19 @@ public record SIPack(String name, String author, int nLevels, int id) {
         return true;
     }
 
+    public static final int NOT_LOADED = 0;
+    public static final int OK = 1;
+    public static final int ERROR = 2;
+
     /**
      * STATIC PART
      */
-
     private static List<SIPack> packs;
-    private static boolean packLoaded = false;
+    private static int packLoaded = NOT_LOADED;
+    private static Exception exception;
 
     public static void loadPacks() {
-        if (packLoaded) {
+        if (packLoaded != NOT_LOADED) {
             return;
         }
 
@@ -183,31 +187,40 @@ public record SIPack(String name, String author, int nLevels, int id) {
 
                     String name = text.substring(0, parenthesis - 1);
 
-                    SIPack pack = new SIPack(author, name, nLevels);
+                    SIPack pack = new SIPack(name, author, nLevels);
                     LOGGER.info("New pack loaded: {}", pack);
                     packs.add(pack);
                 }
             }
 
+            packLoaded = OK;
         } catch (IOException | NumberFormatException e) {
+            exception = e;
             LOGGER.warn("Failed to load packs", e);
 
             packs = null;
+            packLoaded = ERROR;
         }
-
-        packLoaded = true;
     }
 
     public static boolean arePacksLoaded() {
-        return packLoaded;
+        return packLoaded == OK;
     }
 
     public static List<SIPack> getPacks() {
-        if (!packLoaded) {
+        if (!arePacksLoaded()) {
             throw new IllegalStateException("Packs aren't loaded");
         }
 
         return packs;
+    }
+
+    public static boolean isError() {
+        return packLoaded == ERROR;
+    }
+
+    public static Exception getException() {
+        return exception;
     }
 
     public static void main(String[] args) throws IOException {

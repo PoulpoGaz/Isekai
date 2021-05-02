@@ -23,9 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 public class CheckLevelDialog extends JDialog {
 
-    private static final ExecutorWithException executor = (ExecutorWithException) ExecutorWithException.newFixedThreadPool(1, new NamedThreadFactory("Solver"));
+    private static final ExecutorWithException executor;
 
     static {
+        executor = (ExecutorWithException) ExecutorWithException.newFixedThreadPool(1, new NamedThreadFactory("Solver"));
         executor.setKeepAliveTime(1, TimeUnit.SECONDS);
         executor.allowCoreThreadTimeOut(true);
     }
