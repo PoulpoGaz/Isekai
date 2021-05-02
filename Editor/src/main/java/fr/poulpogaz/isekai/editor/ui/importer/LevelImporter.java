@@ -2,6 +2,9 @@ package fr.poulpogaz.isekai.editor.ui.importer;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
+import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
+import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.editor.utils.concurrent.NamedThreadFactory;
 
@@ -33,7 +36,6 @@ public class LevelImporter extends JDialog {
 
     private Pack pack;
     private JPanel content;
-    private JComboBox<Object> packs;
 
     private LevelImporter() {
         super(IsekaiEditor.getInstance(), "Import", true);
@@ -50,26 +52,7 @@ public class LevelImporter extends JDialog {
 
     protected void setupForImport() {
         if (SIPack.arePacksLoaded()) {
-            content.removeAll();
-            content.setLayout(new GridBagLayout());
-
-            packs = new JComboBox<>();
-            packs.setRenderer(new PackCellRenderer());
-            packs.setModel(new PackComboModel());
-
-            String author = null;
-            for (SIPack pack : SIPack.getPacks()) {
-                if (!pack.author().equals(author)) {
-                    packs.addItem(pack.author());
-                    author = pack.author();
-                }
-
-                packs.addItem(pack);
-            }
-
-            packs.setSelectedItem(SIPack.getPacks().get(0));
-
-            content.add(packs);
+            showPacks();
         } else if (SIPack.isError()) {
             showError();
         } else {
@@ -127,42 +110,17 @@ public class LevelImporter extends JDialog {
         content.add(bottom, BorderLayout.SOUTH);
     }
 
+    protected void showPacks() {
+        content.removeAll();
+        content.setLayout(new VerticalLayout());
+
+        VerticalConstraint constraint = new VerticalConstraint();
+        constraint.fillXAxis = true;
+
+        content.add(new PackPanel(), constraint);
+    }
+
     public void setPack(Pack pack) {
         this.pack = pack;
-    }
-
-    private static class PackCellRenderer extends DefaultListCellRenderer  {
-
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            if (value instanceof SIPack pack) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-                String text = "%s (%d)".formatted(pack.name(), pack.nLevels());
-
-                if (index != -1) {
-                    text = "  ↪ " + text;
-                }
-
-                setText(text);
-            } else if (value instanceof String) {
-                super.getListCellRendererComponent(list, value, index, false, false);
-
-                setText((String) value);
-                setFont(getFont().deriveFont(Font.BOLD));
-            }
-
-            return this;
-        }
-    }
-
-    private static class PackComboModel extends DefaultComboBoxModel<Object> {
-
-        @Override
-        public void setSelectedItem(Object anObject) {
-            if (anObject instanceof SIPack) {
-                super.setSelectedItem(anObject);
-            }
-        }
     }
 }
