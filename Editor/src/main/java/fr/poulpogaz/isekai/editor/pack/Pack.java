@@ -3,6 +3,7 @@ package fr.poulpogaz.isekai.editor.pack;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 public class Pack extends Model {
@@ -73,7 +74,7 @@ public class Pack extends Model {
         level.index = levels.size();
         levels.add(level);
 
-        fireLevelInserted(getNumberOfLevels() - 1);
+        fireLevelInserted(level.index, level.index);
     }
 
     public void addLevel(Level level, int index) {
@@ -84,7 +85,21 @@ public class Pack extends Model {
             levels.get(i).index = i;
         }
 
-        fireLevelInserted(index);
+        fireLevelInserted(index, index);
+    }
+
+    public void addAll(Collection<Level> newLevels) {
+        int oldSize = levels.size();
+
+        int index = levels.size();
+        for (Level level : newLevels) {
+            level.index = index;
+            index++;
+
+            levels.add(level);
+        }
+
+        fireLevelInserted(oldSize, levels.size() - 1);
     }
 
     public void setLevel(Level level, int index) {
@@ -157,8 +172,8 @@ public class Pack extends Model {
         listenerList.remove(LevelsOrganisationListener.class, listener);
     }
 
-    private void fireLevelInserted(int index) {
-        fireListener(LevelsOrganisationListener.class, (t) -> t.levelInserted(index));
+    private void fireLevelInserted(int start, int end) {
+        fireListener(LevelsOrganisationListener.class, (t) -> t.levelInserted(start, end));
     }
 
     private void fireLevelRemoved(int index) {

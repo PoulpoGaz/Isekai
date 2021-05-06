@@ -2,15 +2,17 @@ package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.TIPackIO;
 import fr.poulpogaz.isekai.editor.pack.TIPackIOException;
-import fr.poulpogaz.isekai.editor.ui.importer.LevelImporter;
+import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.List;
 
 public class EditorMenuBar extends JMenuBar {
 
@@ -53,13 +55,7 @@ public class EditorMenuBar extends JMenuBar {
         JMenu importMI = new JMenu("Import");
         JMenuItem fromSokobanInfo = new JMenuItem("From sokoban.info");
         fromSokobanInfo.addActionListener((e) -> {
-            if (editor.getPack() == null) {
-                Pack pack = new Pack();
-                LevelImporter.showDialog(pack);
-                editor.setPack(pack);
-            } else {
-                LevelImporter.showDialog(editor.getPack());
-            }
+            importLevels();
         });
 
         JMenuItem local = new JMenuItem("From your computer");
@@ -121,6 +117,30 @@ public class EditorMenuBar extends JMenuBar {
             } catch (TIPackIOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nError(s):\n" + e, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void importLevels() {
+        List<Level> levels = LevelImporterDialog.showDialog();
+
+        if (editor.getPack() == null) {
+            if (levels != null && levels.size() > 0) {
+                Pack pack = new Pack();
+
+                pack.setLevel(levels.get(0), 0);
+
+                if (levels.size() > 1) {
+                    pack.addAll(levels.subList(1, levels.size()));
+                }
+
+                editor.setPack(pack);
+            }
+        } else {
+            Pack pack = editor.getPack();
+
+            if (levels != null && levels.size() > 0) {
+                pack.addAll(levels);
             }
         }
     }

@@ -96,8 +96,10 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
     }
     
     @Override
-    public void levelInserted(int index) {
-        levelsComboBox.addItem(pack.getNumberOfLevels());
+    public void levelInserted(int start, int end) {
+        for (int i = levelsComboBox.getItemCount() + 1; i <= pack.getNumberOfLevels(); i++) {
+            levelsComboBox.addItem(i);
+        }
     }
 
     @Override

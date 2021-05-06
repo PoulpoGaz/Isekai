@@ -7,9 +7,10 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
-public class PackPanel extends JPanel {
+public class LevelImporterPanel extends JPanel {
+
+    private final LevelImporterDialog dialog;
 
     private JComboBox<Object> packs;
     private JTextField range;
@@ -18,7 +19,9 @@ public class PackPanel extends JPanel {
 
     private JButton importLevels;
 
-    public PackPanel() {
+    public LevelImporterPanel(LevelImporterDialog dialog) {
+        this.dialog = dialog;
+
         setLayout(new GridBagLayout());
         initComponents();
         setupLayout();
@@ -79,7 +82,19 @@ public class PackPanel extends JPanel {
         });
 
         importLevels = new JButton("Import");
-        importLevels.addActionListener(this::importLevels);
+        importLevels.addActionListener((e) -> {
+            SIPack pack = (SIPack) packs.getSelectedItem();
+
+            if (isValidRange(pack, range.getText())) {
+                dialog.importLevels(pack, range.getText());
+
+                setEnabled(false);
+            } else {
+                Window parent = SwingUtilities.getWindowAncestor(this);
+
+                JOptionPane.showMessageDialog(parent, "The range is incorrect", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     protected void setupLayout() {
@@ -170,9 +185,6 @@ public class PackPanel extends JPanel {
                 if (min < 1 || min > pack.nLevels() || max < 1 || max > pack.nLevels() || max < min) {
                     return false;
                 }
-
-            } else {
-                return false;
             }
         }
 
@@ -187,8 +199,13 @@ public class PackPanel extends JPanel {
         }
     }
 
-    protected void importLevels(ActionEvent e) {
+    @Override
+    public void setEnabled(boolean enabled) {
+        packs.setEnabled(enabled);
+        range.setEditable(enabled);
+        importLevels.setEnabled(enabled);
 
+        super.setEnabled(enabled);
     }
 
     private static class PackCellRenderer extends DefaultListCellRenderer  {

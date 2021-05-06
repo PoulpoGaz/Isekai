@@ -21,19 +21,22 @@ public record SIPack(String name, String author, int nLevels, int id) {
 
     private static final Logger LOGGER = LogManager.getLogger(SIPack.class);
 
-    private static int ID = 0;
+    private static int ID = 1;
 
     public SIPack(String name, String author, int nLevels) {
         this(name, author, nLevels, ID++);
     }
 
+    /**
+     * @param index a value between 1 and nLevels inclusive
+     */
     public Level importLevel(int index) {
-        if (index < 0 || index >= nLevels) {
+        if (index <= 0 || index > nLevels) {
             throw new IndexOutOfBoundsException();
         }
 
         try {
-            String link = "https://sokoban.info/?%d_%d".formatted(id + 1, index + 1);
+            String link = "https://sokoban.info/?%d_%d".formatted(id, index);
             LOGGER.info("Importing level from {}", link);
 
             Document document = Jsoup.connect(link).get();
@@ -46,8 +49,6 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     String board = getValue(js, "Board");
                     String xMax = getValue(js, "BoardXMax");
                     String yMax = getValue(js, "BoardYMax");
-
-                    LOGGER.info("{}end\n{}end\n{}end", board, xMax, yMax);
 
                     if (board == null || xMax == null || yMax == null) {
                         return null;
@@ -117,19 +118,14 @@ public record SIPack(String name, String author, int nLevels, int id) {
     }
 
     private boolean decode(Level level, String data) {
-        int x = 0;
+        int x = -1;
         int y = 0;
         for (char c : data.toCharArray()) {
             x++;
 
-            if (x >= level.getWidth()) {
-                x = 0;
-                y++;
-            }
-
             switch (c) {
-                case 'x', ' ' -> level.set(Tile.FLOOR, x, y);
-                case '#' -> level.set(Tile.WALL, x, y);
+                case ' ' -> level.set(Tile.FLOOR, x, y);
+                case '#', 'x' -> level.set(Tile.WALL, x, y);
                 case '$' -> level.set(Tile.CRATE, x, y);
                 case '.' -> level.set(Tile.TARGET, x, y);
                 case '*' -> level.set(Tile.CRATE_ON_TARGET, x, y);
@@ -141,7 +137,10 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     level.set(Tile.TARGET, x, y);
                     level.setPlayerPos(new Vector2i(x, y));
                 }
-                case '!' -> {}
+                case '!' -> {
+                    x = -1;
+                    y++;
+                }
                 default -> {
                     return false;
                 }

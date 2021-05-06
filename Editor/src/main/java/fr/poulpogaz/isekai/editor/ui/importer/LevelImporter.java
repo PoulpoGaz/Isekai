@@ -1,126 +1,122 @@
 package fr.poulpogaz.isekai.editor.ui.importer;
 
-import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
-import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
-import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
-import fr.poulpogaz.isekai.editor.utils.concurrent.NamedThreadFactory;
+import fr.poulpogaz.isekai.editor.pack.Level;
 
 import javax.swing.*;
-import java.awt.*;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
-public class LevelImporter extends JDialog {
+public class LevelImporter extends SwingWorker<List<Level>, Integer> {
 
-    private static final ExecutorWithException executor;
+    private final SIPack pack;
+    private final int[] levels;
+    private final LevelImporterDialog dialog;
 
-    static {
-        int nproc = Runtime.getRuntime().availableProcessors();
-
-        executor = (ExecutorWithException) ExecutorWithException.newFixedThreadPool(nproc, new NamedThreadFactory("Importer"));
-        executor.setKeepAliveTime(1, TimeUnit.SECONDS);
-        executor.allowCoreThreadTimeOut(true);
+    public LevelImporter(SIPack pack, String range, LevelImporterDialog dialog) {
+        this.pack = Objects.requireNonNull(pack);
+        this.levels = getLevels(range);
+        this.dialog = Objects.requireNonNull(dialog);
     }
 
-    public static void showDialog(Pack pack) {
-        INSTANCE.setPack(pack);
-        INSTANCE.setupForImport();
-        INSTANCE.setVisible(true);
+    @Override
+    protected void done() {
+        if (!isCancelled()) {
+            try {
+                dialog.dispose(get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    private static final LevelImporter INSTANCE = new LevelImporter();
-
-    private Pack pack;
-    private JPanel content;
-
-    private LevelImporter() {
-        super(IsekaiEditor.getInstance(), "Import", true);
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        initComponents();
+    @Override
+    protected void process(List<Integer> chunks) {
+        for (Integer chunk : chunks) {
+            if (chunk < 0) {
+                dialog.increase();
+            } else {
+                dialog.fail(chunk);
+            }
+        }
     }
 
-    protected void initComponents() {
-        content = new JPanel();
+    @Override
+    protected List<Level> doInBackground() {
+        List<Level> levels = Collections.synchronizedList(new ArrayList<>());
+        for (int index : this.levels) {
+            Level level = pack.importLevel(index);
 
-        setContentPane(content);
-    }
+            if (isCancelled()) {
+                return null;
+            }
 
-    protected void setupForImport() {
-        if (SIPack.arePacksLoaded()) {
-            showPacks();
-        } else if (SIPack.isError()) {
-            showError();
-        } else {
-            loadPacks();
+            if (level == null) {
+                publish(index);
+            } else {
+                levels.add(level);
+                publish(-1);
+            }
         }
 
-        pack();
-        setLocationRelativeTo(getParent());
+        return levels;
     }
 
-    protected void loadPacks() {
-        content.removeAll();
-        content.setLayout(new GridBagLayout());
-        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        JLabel loading = new JLabel("Loading packs");
-        loading.setFont(loading.getFont().deriveFont(20f));
+    protected int[] getLevels(String range) {
+        if (range == null || range.isEmpty()) {
+            throw new IllegalStateException("Range is null");
+        }
 
-        content.add(loading);
+        String[] ranges = range.split(",");
 
-        executor.submit(() -> {
-            SIPack.loadPacks();
+        int nColon = (int) range.chars().filter((c) -> c == ',').count();
 
-            setupForImport();
-        });
+        if (nColon + 1 != ranges.length) { // the number of ranges is the number of colon plus one
+            throw new IllegalStateException("Colon problem");
+        }
+
+        Set<Integer> levels = new LinkedHashSet<>();
+
+        for (String r : ranges) {
+            if (r.indexOf('-') != r.lastIndexOf('-')) { // multiple hyphen
+                throw new IllegalStateException("Duplicate hyphen");
+            }
+
+            String[] limits = r.split("-");
+
+            if (limits.length == 1) {
+                int val = Integer.parseInt(limits[0]);
+
+                if (val < 1 || val > pack.nLevels()) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                levels.add(val);
+            } else if (limits.length == 2) {
+                int min = Integer.parseInt(limits[0]);
+                int max = Integer.parseInt(limits[1]);
+
+                if (min < 1 || min > pack.nLevels() || max < 1 || max > pack.nLevels() || max < min) {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                for (; min <= max; min++) {
+                    levels.add(min);
+                }
+            }
+        }
+
+        int[] array = new int[levels.size()];
+
+        int i = 0;
+        for (Integer v : levels) {
+            array[i] = v;
+            i++;
+        }
+
+        return array;
     }
 
-    protected void showError() {
-        content.removeAll();
-        content.setLayout(new BorderLayout());
-        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JTextArea area = new JTextArea();
-        area.setBackground(content.getBackground());
-        area.setLineWrap(true);
-        area.setEditable(false);
-
-        Exception exception = SIPack.getException();
-
-        area.setText("Failed to fetch packs\nError: " + exception);
-
-        JButton showDetailedError = new JButton("Show detailed error");
-        showDetailedError.addActionListener((l) -> {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-
-            exception.printStackTrace(pw);
-
-            area.setText("Failed to fetch packs\nError: " + sw.getBuffer().toString());
-        });
-
-        JPanel bottom = new JPanel(new GridBagLayout());
-        bottom.add(showDetailedError);
-
-        content.add(area, BorderLayout.CENTER);
-        content.add(bottom, BorderLayout.SOUTH);
-    }
-
-    protected void showPacks() {
-        content.removeAll();
-        content.setLayout(new VerticalLayout());
-
-        VerticalConstraint constraint = new VerticalConstraint();
-        constraint.fillXAxis = true;
-
-        content.add(new PackPanel(), constraint);
-    }
-
-    public void setPack(Pack pack) {
-        this.pack = pack;
+    public int getNumberOfLevels() {
+        return levels.length;
     }
 }

@@ -4,7 +4,7 @@ import java.util.EventListener;
 
 public interface LevelsOrganisationListener extends EventListener {
 
-    void levelInserted(int index);
+    void levelInserted(int start, int end);
 
     void levelRemoved(int index);
 
