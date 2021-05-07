@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.importer;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.SIPack;
 
 import javax.swing.*;
 import java.util.*;

@@ -27,6 +27,7 @@ public class Converter {
 
     private static final byte[] header = new byte[]{0x2A, 0x2A, 0x54, 0x49, 0x38, 0x33, 0x46, 0x2A, 0x1A, 0x0A, 0x00};
 
+    @SuppressWarnings({"UnnecessaryLocalVariable", "PointlessArithmeticExpression", "PointlessBitwiseExpression"})
     public static byte[] convert(byte[] data, String varName) {
         int size = data.length;
 
@@ -35,11 +36,12 @@ public class Converter {
         int var_size = size + VARB_SIZE_LEN;
         int varb_size = size;
 
-        System.out.printf("file_size: %d\n", file_size);
-        System.out.printf("data_size: %d\n", data_size);
-        System.out.printf("var_size: %d\n", var_size);
-        System.out.printf("varb_size: %d\n", varb_size);
-        System.out.printf("size: %d\n", size);
+        // System.out.printf("file_size: %d\n", file_size);
+        // System.out.printf("data_size: %d\n", data_size);
+        // System.out.printf("var_size: %d\n", var_size);
+        // System.out.printf("varb_size: %d\n", varb_size);
+        // System.out.printf("size: %d\n", size);
+
 
         byte[] output = new byte[file_size];
 
@@ -51,7 +53,7 @@ public class Converter {
         byte[] name = varName.getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(name, 0, output, offset, Math.min(name.length, 8));
 
-        System.out.printf("name_size: %d\n", Math.min(name.length, 8));
+        // System.out.printf("name_size: %d\n", Math.min(name.length, 8));
 
         // data
         offset = DATA;
@@ -87,7 +89,7 @@ public class Converter {
             checksum += Byte.toUnsignedInt(data[VAR_HEADER + i]);
             checksum &= 0xFFFF;
 
-            System.out.printf("checksum: %d, arr: %d\n", checksum, Byte.toUnsignedInt(data[VAR_HEADER + i]));
+            // System.out.printf("checksum: %d, arr: %d\n", checksum, Byte.toUnsignedInt(data[VAR_HEADER + i]));
         }
 
         return checksum;

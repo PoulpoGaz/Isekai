@@ -10,15 +10,12 @@ import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.editor.utils.concurrent.NamedThreadFactory;
-import net.miginfocom.layout.Grid;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class CheckLevelDialog extends JDialog {

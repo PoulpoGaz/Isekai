@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.pack.checker;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
 import java.util.*;
@@ -151,17 +150,6 @@ public abstract class AbstractSolver implements ISolver {
                     }
                 }
             }
-        }
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (deadlockTiles[y * width + x]) {
-                    System.out.print("D");
-                } else {
-                    System.out.print(" ");
-                }
-            }
-            System.out.println();
         }
     }
 

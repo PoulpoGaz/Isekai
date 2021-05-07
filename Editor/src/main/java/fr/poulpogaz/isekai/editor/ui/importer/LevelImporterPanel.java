@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.importer;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import fr.poulpogaz.isekai.editor.pack.SIPack;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

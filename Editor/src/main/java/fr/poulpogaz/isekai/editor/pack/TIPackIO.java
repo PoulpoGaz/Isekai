@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TIPackIO {
 
@@ -65,7 +64,7 @@ public class TIPackIO {
 
         byte[] data = Converter.convert(baos.toByteArray(), varName);
         Files.write(out, data, StandardOpenOption.CREATE);
-        Files.write(Path.of(out.toString() + ".bin"), baos.toByteArray(), StandardOpenOption.CREATE);
+        Files.write(Path.of(out + ".bin"), baos.toByteArray(), StandardOpenOption.CREATE);
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {

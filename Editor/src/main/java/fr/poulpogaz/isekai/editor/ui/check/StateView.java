@@ -3,7 +3,6 @@ package fr.poulpogaz.isekai.editor.ui.check;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.checker.BFSSolver;
 import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
 import fr.poulpogaz.isekai.editor.pack.checker.State;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;

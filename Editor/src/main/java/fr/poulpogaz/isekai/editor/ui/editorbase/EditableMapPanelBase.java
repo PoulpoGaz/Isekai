@@ -1,15 +1,10 @@
 package fr.poulpogaz.isekai.editor.ui.editorbase;
 
 import fr.poulpogaz.isekai.editor.Map;
-import fr.poulpogaz.isekai.editor.MapSizeListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Math2;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

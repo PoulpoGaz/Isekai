@@ -1,8 +1,5 @@
-package fr.poulpogaz.isekai.editor.ui.importer;
+package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -124,18 +121,18 @@ public record SIPack(String name, String author, int nLevels, int id) {
             x++;
 
             switch (c) {
-                case ' ' -> level.set(Tile.FLOOR, x, y);
-                case '#', 'x' -> level.set(Tile.WALL, x, y);
-                case '$' -> level.set(Tile.CRATE, x, y);
-                case '.' -> level.set(Tile.TARGET, x, y);
-                case '*' -> level.set(Tile.CRATE_ON_TARGET, x, y);
+                case ' ' -> level.setTile(Tile.FLOOR, x, y);
+                case '#', 'x' -> level.setTile(Tile.WALL, x, y);
+                case '$' -> level.setTile(Tile.CRATE, x, y);
+                case '.' -> level.setTile(Tile.TARGET, x, y);
+                case '*' -> level.setTile(Tile.CRATE_ON_TARGET, x, y);
                 case '@' -> {
-                    level.set(Tile.FLOOR, x, y);
-                    level.setPlayerPos(new Vector2i(x, y));
+                    level.setTile(Tile.FLOOR, x, y);
+                    level.setPlayerPos(x, y);
                 }
                 case '+' -> {
-                    level.set(Tile.TARGET, x, y);
-                    level.setPlayerPos(new Vector2i(x, y));
+                    level.setTile(Tile.TARGET, x, y);
+                    level.setPlayerPos(x, y);
                 }
                 case '!' -> {
                     x = -1;

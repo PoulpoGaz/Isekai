@@ -44,7 +44,6 @@ public class IsekaiEditor extends JFrame {
         tab = new JTabbedPane();
 
         memoryBar = new JMemoryBar();
-        memoryBar.showMaximum(true);
 
         bottomPanel = new JPanel();
         bottomPanel.setLayout(new HorizontalLayout());

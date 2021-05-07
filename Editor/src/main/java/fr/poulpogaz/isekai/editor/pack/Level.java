@@ -143,6 +143,17 @@ public class Level extends Map<Level, Tile> {
         }
     }
 
+    /**
+     * Methods used by reader
+     */
+    void setTile(Tile tile, int x, int y) {
+        tiles[y][x] = tile;
+    }
+
+    void setPlayerPos(int x, int y) {
+        playerPos = new Vector2i(x, y);
+    }
+
     public int getIndex() {
         return index;
     }
@@ -150,9 +161,7 @@ public class Level extends Map<Level, Tile> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Level)) return false;
-
-        Level level = (Level) o;
+        if (!(o instanceof Level level)) return false;
 
         if (index != level.index) return false;
         if (width != level.width) return false;
