@@ -2,6 +2,7 @@ package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.ui.Model;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -17,6 +18,8 @@ public class Pack extends Model {
     private String version;
 
     private ArrayList<Level> levels;
+
+    private Path saveLocation;
 
     public Pack() {
         this.levels = new ArrayList<>();
@@ -159,6 +162,14 @@ public class Pack extends Model {
 
             fireNewLevels();
         }
+    }
+
+    public void setSaveLocation(Path saveLocation) {
+        this.saveLocation = saveLocation;
+    }
+
+    public Path getSaveLocation() {
+        return saveLocation;
     }
 
     /**

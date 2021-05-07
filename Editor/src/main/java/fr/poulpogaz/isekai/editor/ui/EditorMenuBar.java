@@ -10,7 +10,10 @@ import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -39,26 +42,33 @@ public class EditorMenuBar extends JMenuBar {
         JMenu file = new JMenu("File");
 
         JMenuItem newItem = new JMenuItem("New");
+        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
         newItem.setIcon(IconLoader.loadSVGIcon("/icons/new.svg"));
         newItem.addActionListener((e) -> editor.setPack(new Pack()));
 
         JMenuItem open = new JMenuItem("Open");
+        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         open.setIcon(new FlatTreeOpenIcon());
         open.addActionListener((e) -> open());
 
         JMenuItem save = new JMenuItem("Save");
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         save.setIcon(IconLoader.loadSVGIcon("/icons/save.svg"));
         save.addActionListener((e) -> save());
 
         JMenuItem saveAs = new JMenuItem("Save as");
+        saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        saveAs.addActionListener((e) -> saveAs());
 
         JMenu importMI = new JMenu("Import");
         JMenuItem fromSokobanInfo = new JMenuItem("From sokoban.info");
+        fromSokobanInfo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
         fromSokobanInfo.addActionListener((e) -> {
             importLevels();
         });
 
         JMenuItem local = new JMenuItem("From your computer");
+        local.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.SHIFT_DOWN_MASK));
         local.addActionListener((e) -> {
             importLevelsLocal();
         });
@@ -70,6 +80,7 @@ public class EditorMenuBar extends JMenuBar {
         settings.addActionListener((e) -> settingsDialog.setVisible(true));
 
         JMenuItem quit = new JMenuItem("Quit");
+        quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
         quit.addActionListener((e) -> editor.dispose());
 
         file.add(newItem);
@@ -104,19 +115,74 @@ public class EditorMenuBar extends JMenuBar {
     }
 
     private void save() {
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        Pack pack = editor.getPack();
 
-        int result = chooser.showSaveDialog(editor);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            Path directory = chooser.getSelectedFile().toPath();
+        if (pack != null) {
+            if (isPackValid(pack)) {
+                Path save = pack.getSaveLocation();
 
-            try {
-                TIPackIO.serialize(editor.getPack(), directory);
-            } catch (TIPackIOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(editor, "Failed to save the pack.\nError(s):\n" + e, "Error", JOptionPane.ERROR_MESSAGE);
+                if (save == null) {
+                    saveAs();
+                } else {
+                    save(pack, save);
+                }
             }
         }
+    }
+
+    private void saveAs() {
+        Pack pack = editor.getPack();
+
+        if (pack != null) {
+            if (isPackValid(pack)) {
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int result = chooser.showSaveDialog(editor);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    Path directory = chooser.getSelectedFile().toPath();
+
+                    save(pack, directory);
+
+                    pack.setSaveLocation(directory);
+                }
+            }
+        }
+    }
+
+    private void save(Pack pack, Path out) {
+        try {
+            TIPackIO.serialize(pack, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Failed to save the pack.\nError(s):\n" + e);
+        }
+    }
+
+    private boolean isPackValid(Pack pack) {
+        if (pack.getName() == null || pack.getName().isEmpty()) {
+            showError("The pack doesn't have a name");
+            return false;
+        }
+
+        if (pack.getAuthor() == null || pack.getAuthor().isEmpty()) {
+            showError("The pack doesn't have an author");
+            return false;
+        }
+
+        if (pack.getNumberOfLevels() >= 65_536) {
+            showError("Too many levels!");
+            return false;
+        }
+
+        if (pack.getVersion() == null || pack.getVersion().isEmpty()) {
+            pack.setVersion("1.0");
+        }
+
+        return true;
+    }
+
+    protected void showError(String message) {
+        JOptionPane.showMessageDialog(editor, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     private void importLevels() {

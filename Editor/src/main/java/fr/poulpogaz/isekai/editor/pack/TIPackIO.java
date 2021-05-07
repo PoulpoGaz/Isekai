@@ -34,7 +34,7 @@ public class TIPackIO {
      *  data                     n byte compressed or not with RLE
      *  OxFF                     marks end
      */
-    public static void serialize(Pack pack, Path out) throws TIPackIOException {
+    public static void serialize(Pack pack, Path out) throws IOException {
         if (!Files.isDirectory(out)) {
             throw new TIPackIOException("Output path isn't a directory");
         }
@@ -44,11 +44,7 @@ public class TIPackIO {
         String packName = pack.getName();
         String varName = packName.substring(0, Math.min(packName.length(), 8));
 
-        try {
-            writePack(pack, varName, out.resolve(varName + ".8xv"));
-        } catch (IOException e) {
-            LOGGER.warn("Failed to export pack", e);
-        }
+        writePack(pack, varName, out.resolve(varName + ".8xv"));
 
         LOGGER.info("Pack exported!");
     }
@@ -190,6 +186,7 @@ public class TIPackIO {
         }
 
         Pack pack = new Pack();
+        pack.setSaveLocation(in);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
 

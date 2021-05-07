@@ -79,9 +79,8 @@ public class SOKReader {
 
         Level level = new Level(width, height);
 
-        System.out.println(width + " " + height);
-
         int y = 0;
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < lines.size(); i++) {
             line = lines.get(i);
 

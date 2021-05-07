@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class Converter {
 
+    private static final int TI8X_MAXDATA_SIZE = (0x10000 - 0x130);
+
     private static final byte CHECKSUM_LEN = 2;
     private static final byte VARB_SIZE_LEN = 2;
     private static final byte VAR_HEADER_LEN = 17;
@@ -28,8 +30,12 @@ public class Converter {
     private static final byte[] header = new byte[]{0x2A, 0x2A, 0x54, 0x49, 0x38, 0x33, 0x46, 0x2A, 0x1A, 0x0A, 0x00};
 
     @SuppressWarnings({"UnnecessaryLocalVariable", "PointlessArithmeticExpression", "PointlessBitwiseExpression"})
-    public static byte[] convert(byte[] data, String varName) {
+    public static byte[] convert(byte[] data, String varName) throws TIPackIOException {
         int size = data.length;
+
+        if (size > TI8X_MAXDATA_SIZE) {
+            throw new TIPackIOException("Max size reached");
+        }
 
         int file_size = size + DATA + CHECKSUM_LEN;
         int data_size = size + VAR_HEADER_LEN + VARB_SIZE_LEN;
