@@ -1,12 +1,12 @@
 package fr.poulpogaz.isekai.editor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
+import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
 
 import javax.swing.*;
@@ -33,7 +33,7 @@ public class IsekaiEditor extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initComponents();
 
-        setJMenuBar(new EditorMenuBar(this));
+        setJMenuBar(createMenuBar());
 
         pack();
 
@@ -60,6 +60,28 @@ public class IsekaiEditor extends JFrame {
         content.add(bottomPanel, BorderLayout.SOUTH);
 
         setContentPane(content);
+    }
+
+    private JMenuBar createMenuBar() {
+        JMenuBar bar = new JMenuBar();
+
+        JMenu file = new JMenu("File");
+        file.add(new JMenuItem(Actions.NEW));
+        file.add(new JMenuItem(Actions.OPEN));
+        file.add(new JMenuItem(Actions.SAVE));
+        file.add(new JMenuItem(Actions.SAVE_AS));
+
+        JMenu importMenu = new JMenu("Import");
+        importMenu.add(new JMenuItem(Actions.IMPORT_SOKO_INFO));
+        importMenu.add(new JMenuItem(Actions.IMPORT_LOCAL));
+
+        file.add(importMenu);
+        file.addSeparator();
+        file.add(Actions.QUIT);
+
+        bar.add(file);
+
+        return bar;
     }
 
     public void setPack(Pack pack) {

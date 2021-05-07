@@ -36,7 +36,7 @@ public class TIPackIO {
      */
     public static void serialize(Pack pack, Path out) throws IOException {
         if (!Files.isDirectory(out)) {
-            throw new TIPackIOException("Output path isn't a directory");
+            throw new TIPackIOException("Path isn't a directory: " + out);
         }
 
         LOGGER.info("Exporting pack to {}", out);
@@ -186,7 +186,7 @@ public class TIPackIO {
         }
 
         Pack pack = new Pack();
-        pack.setSaveLocation(in);
+        pack.setSaveLocation(in.getParent());
 
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
 

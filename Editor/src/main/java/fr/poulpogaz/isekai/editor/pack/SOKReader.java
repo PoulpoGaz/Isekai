@@ -2,7 +2,6 @@ package fr.poulpogaz.isekai.editor.pack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class SOKReader {
 
     public static List<Level> read(Path file) {
         try {
-            BufferedReader br = Files.newBufferedReader(file, StandardCharsets.UTF_8);
+            BufferedReader br = Files.newBufferedReader(file);
 
             List<Level> levels = null;
 
