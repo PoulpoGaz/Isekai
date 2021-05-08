@@ -30,7 +30,11 @@ public class Dialogs {
         return null;
     }
 
-    public static void showError(Frame parent, String message) {
+    public static void showError(Component parent, String message) {
         JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void showError(Component parent, String message, Throwable throwable) {
+        JOptionPane.showMessageDialog(parent, message + "\n\n" + throwable, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

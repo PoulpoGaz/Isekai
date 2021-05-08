@@ -1,12 +1,12 @@
 package fr.poulpogaz.isekai.editor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
-import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
 
 import javax.swing.*;
@@ -76,6 +76,8 @@ public class IsekaiEditor extends JFrame {
         importMenu.add(new JMenuItem(Actions.IMPORT_LOCAL));
 
         file.add(importMenu);
+        file.addSeparator();
+        file.add(Actions.THEME);
         file.addSeparator();
         file.add(Actions.QUIT);
 

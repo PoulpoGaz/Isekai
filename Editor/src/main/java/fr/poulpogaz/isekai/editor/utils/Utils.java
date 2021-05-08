@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.utils;
 
-import fr.poulpogaz.isekai.editor.ui.EditorMenuBar;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
@@ -108,7 +107,7 @@ public class Utils {
 
     public static File getJARLocation() {
         try {
-            return new File(EditorMenuBar.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return new File(Utils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;

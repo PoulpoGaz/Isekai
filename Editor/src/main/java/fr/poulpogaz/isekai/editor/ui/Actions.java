@@ -4,6 +4,7 @@ import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
+import fr.poulpogaz.isekai.editor.ui.theme.ThemePanel;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
@@ -117,6 +118,9 @@ public class Actions {
         }
     });
 
+    public static final Action THEME = newAction("Theme", IconLoader.loadSVGIcon("/icons/theme.svg"), ctrlKey(VK_T), e -> {
+        ThemePanel.showDialog();
+    });
 
     public static void open(IsekaiEditor editor) {
         Path result = showFileChooser(editor, JFileChooser.FILES_ONLY, _8XV);
@@ -131,7 +135,7 @@ public class Actions {
                     savePackDialog(editor, () -> editor.setPack(pack));
                 }
             } catch (TIPackIOException e) {
-                showError(editor, "Can't open file.\nError: " + e);
+                showError(editor, "Can't open file.", e);
             }
         }
     }
@@ -154,7 +158,7 @@ public class Actions {
                 pack.setSaveLocation(out);
             } catch (IOException e) {
                 e.printStackTrace();
-                showError(editor, "Failed to save the pack.\nError(s):\n" + e);
+                showError(editor, "Failed to save the pack.", e);
 
                 return;
             }
