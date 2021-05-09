@@ -122,6 +122,14 @@ public class ThemePanel extends JPanel {
             Theme theme = (Theme) value;
             setText(theme.name());
 
+            String tooltip = "Name: %s\nDark: %s".formatted(theme.name(), theme.dark());
+
+            if (theme instanceof IntelliJIDEATheme iTheme) {
+                tooltip += "\nLicense: %s\nSource code: %s".formatted(iTheme.license(), iTheme.sourceCodeUrl());
+            }
+
+            setToolTipText(tooltip);
+
             return this;
         }
     }
