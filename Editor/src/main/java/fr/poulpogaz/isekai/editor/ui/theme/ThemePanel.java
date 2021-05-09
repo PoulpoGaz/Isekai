@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.ui.FlatBorder;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.Prefs;
 import fr.poulpogaz.isekai.editor.ui.Dialogs;
@@ -19,6 +20,9 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class ThemePanel extends JPanel {
 
@@ -37,7 +41,10 @@ public class ThemePanel extends JPanel {
         dialog.setVisible(true);
     }
 
+    private final List<Theme> themesList;
+
     private JPanel top;
+    private JComboBox<String> filter;
     private JButton github;
 
     private JList<Theme> themes;
@@ -50,25 +57,34 @@ public class ThemePanel extends JPanel {
         setLayout(new BorderLayout());
 
         ThemeManager.loadThemes();
+        themesList = createThemesList();
 
         initComponents();
     }
 
+    protected List<Theme> createThemesList() {
+        Comparator<Theme> comparator = (a, b) -> a.name().compareToIgnoreCase(b.name());
+
+        ArrayList<Theme> toAdd = new ArrayList<>(ThemeManager.getCoreThemes());
+        toAdd.sort(comparator);
+
+        ArrayList<Theme> themes = new ArrayList<>(toAdd);
+
+        toAdd.clear();
+        toAdd.addAll(ThemeManager.getThemes());
+        toAdd.sort(comparator);
+
+        themes.addAll(toAdd);
+
+        return themes;
+    }
+
     protected void initComponents() {
         // center
-        DefaultListModel<Theme> model = new DefaultListModel<>();
-
-        for (Theme theme : ThemeManager.getCoreThemes()) {
-            model.addElement(theme);
-        }
-
-        for (Theme theme : ThemeManager.getThemes()) {
-            model.addElement(theme);
-        }
-
-        themes = new JList<>(model);
+        themes = new JList<>(new DefaultListModel<>());
         themes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         themes.setCellRenderer(new CellRenderer());
+        addThemesToList();
 
         selectTheme();
         themes.addListSelectionListener(this::changeLaf);
@@ -83,6 +99,12 @@ public class ThemePanel extends JPanel {
         github.addActionListener(this::browse);
         setGithubIconSelected();
 
+        filter = new JComboBox<>();
+        filter.addItem("All");
+        filter.addItem("Light");
+        filter.addItem("Dark");
+        filter.addActionListener((e) -> addThemesToList());
+
         top = new JPanel();
         top.setLayout(new HorizontalLayout());
 
@@ -94,11 +116,61 @@ public class ThemePanel extends JPanel {
         constraint.endComponent = false;
         constraint.orientation = HCOrientation.RIGHT;
 
+        top.add(filter, constraint);
         top.add(github, constraint);
 
         // add components to panel
         add(top, BorderLayout.NORTH);
         add(pane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+
+        themes.ensureIndexIsVisible(themes.getSelectedIndex());
+    }
+
+    protected void addThemesToList() {
+        isAdjusting = true;
+
+        Theme oldSelected = themes.getSelectedValue();
+
+        DefaultListModel<Theme> model = (DefaultListModel<Theme>) themes.getModel();
+        model.removeAllElements();
+
+        String filter = this.filter == null ? "All" : (String) this.filter.getSelectedItem();
+
+        if (filter == null) {
+            return;
+        }
+
+        if (filter.equals("Light")) {
+            for (Theme theme : themesList) {
+                if (!theme.dark()) {
+                    model.addElement(theme);
+                }
+            }
+        } else if (filter.equals("Dark")) {
+            for (Theme theme : themesList) {
+                if (theme.dark()) {
+                    model.addElement(theme);
+                }
+            }
+        } else {
+            model.addAll(themesList);
+        }
+
+        if (oldSelected != null) {
+            if (model.contains(oldSelected)) {
+                themes.setSelectedValue(oldSelected, true); // don't change theme
+            } else {
+                isAdjusting = false;
+                themes.setSelectedValue(model.get(0), true); // change theme
+            }
+        }
+
+        isAdjusting = false;
     }
 
     protected void changeLaf(ListSelectionEvent event) {
@@ -126,9 +198,11 @@ public class ThemePanel extends JPanel {
             Theme theme = model.getElementAt(i);
 
             if (theme.name().equals(themeName)) {
+                boolean old = this.isAdjusting;
+
                 isAdjusting = true;
                 themes.setSelectedValue(theme, true);
-                isAdjusting = false;
+                isAdjusting = old;
 
                 break;
             }
@@ -148,7 +222,6 @@ public class ThemePanel extends JPanel {
             URI uri = new URI(theme.sourceCodeUrl());
 
             Desktop.getDesktop().browse(uri);
-
         } catch (URISyntaxException | IOException e) {
             LOGGER.warn("Failed to browse", e);
 
