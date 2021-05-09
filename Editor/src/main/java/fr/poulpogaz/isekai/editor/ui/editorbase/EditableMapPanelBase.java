@@ -11,7 +11,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 
-// TODO: Make a better zoom
 public abstract class EditableMapPanelBase<E extends EditorModel<M, T>, M extends Map<M, T>, T> extends MapPanelBase<M, T> {
 
     protected final E editor;
@@ -67,11 +66,6 @@ public abstract class EditableMapPanelBase<E extends EditorModel<M, T>, M extend
             public void mouseMoved(MouseEvent e) {
                 move(e);
             }
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                zoom(e);
-            }
         };
     }
 
@@ -126,17 +120,6 @@ public abstract class EditableMapPanelBase<E extends EditorModel<M, T>, M extend
         repaint();
     }
 
-    protected void zoom(MouseWheelEvent e) {
-        if (canZoom() && e.isControlDown()) {
-            pixelSize = Math2.clamp(pixelSize - e.getWheelRotation(), minZoom, maxZoom);
-
-            move(e); // update cursor
-
-            setPreferredSize();
-            repaint();
-        }
-    }
-
     protected void applyTool() {
         if (isCursorInsideMap()) {
             map.setModifyingMap(true);
@@ -158,6 +141,8 @@ public abstract class EditableMapPanelBase<E extends EditorModel<M, T>, M extend
         map.addSizeListener(mapSizeListener);
         map.addChangeListener(mapChangedListener);
 
+        setPreferredSize();
+        revalidate();
         repaint();
     }
 }

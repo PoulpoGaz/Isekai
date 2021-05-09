@@ -16,7 +16,6 @@ public class EditableTileMapPanel extends EditableMapPanelBase<LevelEditorModel,
         super(pack, editor);
 
         pixelSize = 32;
-        canZoom(false);
         setPreferredSize();
     }
 

@@ -16,10 +16,6 @@ import java.awt.event.MouseWheelEvent;
 
 public abstract class MapPanelBase<M extends Map<M, T>, T> extends JPanel {
 
-    public static final String ZOOM_PROPERTY = "ZoomProperty";
-    public static final String MIN_ZOOM_PROPERTY = "MinZoomProperty";
-    public static final String MAX_ZOOM_PROPERTY = "MaxZoomProperty";
-
     protected final Pack pack;
 
     protected M map;
@@ -27,10 +23,6 @@ public abstract class MapPanelBase<M extends Map<M, T>, T> extends JPanel {
     protected ChangeListener mapChangedListener;
 
     protected int pixelSize = 4;
-
-    protected boolean zoom = true;
-    protected int minZoom = 1;
-    protected int maxZoom = 64; // one map element -> 64 pixels
 
     public MapPanelBase(Pack pack, M map) {
         this.pack = pack;
@@ -58,14 +50,7 @@ public abstract class MapPanelBase<M extends Map<M, T>, T> extends JPanel {
         return this::mapChanged;
     }
 
-    protected MouseAdapter createMouseAdapter() {
-        return new MouseAdapter() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                zoom(e);
-            }
-        };
-    }
+    protected abstract MouseAdapter createMouseAdapter();
 
     protected void setPreferredSize() {
         setPreferredSize(new Dimension(map.getWidth() * pixelSize, map.getHeight() * pixelSize));
@@ -129,73 +114,13 @@ public abstract class MapPanelBase<M extends Map<M, T>, T> extends JPanel {
         return offset;
     }
 
-    protected void zoom(MouseWheelEvent e) {
-        if (canZoom() && e.isControlDown()) {
-            pixelSize = Math2.clamp(pixelSize - e.getWheelRotation(), minZoom, maxZoom);
-
-            setPreferredSize();
-            repaint();
-        }
-    }
-
     protected void mapChanged(ChangeEvent e) {
         repaint();
     }
 
     protected void mapSizeChanged(M map, int newWidth, int newHeight) {
         setPreferredSize();
+        revalidate();
         repaint();
-    }
-
-    public boolean canZoom() {
-        return zoom;
-    }
-
-    public void canZoom(boolean zoom) {
-        if (this.zoom != zoom) {
-            boolean old = this.zoom;
-
-            this.zoom = zoom;
-
-            firePropertyChange(ZOOM_PROPERTY, old, zoom);
-        }
-    }
-
-    public int getMinZoom() {
-        return minZoom;
-    }
-
-    public void setMinZoom(int minZoom) {
-        if (this.minZoom != minZoom && minZoom > 0) {
-            int old = this.minZoom;
-
-            if (maxZoom < minZoom) {
-                this.minZoom = maxZoom;
-                setMaxZoom(minZoom);
-            } else {
-                this.minZoom = minZoom;
-            }
-
-            firePropertyChange(MIN_ZOOM_PROPERTY, old, minZoom);
-        }
-    }
-
-    public int getMaxZoom() {
-        return maxZoom;
-    }
-
-    public void setMaxZoom(int maxZoom) {
-        if (this.maxZoom != maxZoom && maxZoom > 0) {
-            int old = this.maxZoom;
-
-            if (maxZoom < minZoom) {
-                this.maxZoom = minZoom;
-                setMinZoom(maxZoom);
-            } else {
-                this.maxZoom = maxZoom;
-            }
-
-            firePropertyChange(MAX_ZOOM_PROPERTY, old, maxZoom);
-        }
     }
 }
