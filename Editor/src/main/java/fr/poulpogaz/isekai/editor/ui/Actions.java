@@ -115,6 +115,8 @@ public class Actions {
 
         if (pack != null) {
             savePackDialog(editor, editor::dispose);
+        } else {
+            editor.dispose();
         }
     });
 
