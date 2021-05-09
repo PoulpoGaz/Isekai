@@ -1,19 +1,28 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
+import com.formdev.flatlaf.FlatClientProperties;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.Prefs;
 import fr.poulpogaz.isekai.editor.ui.Dialogs;
+import fr.poulpogaz.isekai.editor.ui.Icons;
 import fr.poulpogaz.isekai.editor.ui.WrapBorder;
+import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ThemePanel extends JPanel {
+
+    private static final Logger LOGGER = LogManager.getLogger(ThemePanel.class);
 
     public static void showDialog() {
         IsekaiEditor parent = IsekaiEditor.getInstance();
@@ -29,6 +38,7 @@ public class ThemePanel extends JPanel {
     }
 
     private JPanel top;
+    private JButton github;
 
     private JList<Theme> themes;
     private JScrollPane pane;
@@ -68,13 +78,23 @@ public class ThemePanel extends JPanel {
         pane.setBorder(new WrapBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), pane.getBorder()));
 
         // top
+        github = new JButton(Icons.get("icons/github.svg"));
+        github.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
+        github.addActionListener(this::browse);
+        setGithubIconSelected();
+
         top = new JPanel();
         top.setLayout(new HorizontalLayout());
 
         HorizontalConstraint constraint = new HorizontalConstraint();
         constraint.endComponent = true;
 
-        top.add(new JLabel("Themes:"));
+        top.add(new JLabel("Themes:"), constraint);
+
+        constraint.endComponent = false;
+        constraint.orientation = HCOrientation.RIGHT;
+
+        top.add(github, constraint);
 
         // add components to panel
         add(top, BorderLayout.NORTH);
@@ -85,6 +105,8 @@ public class ThemePanel extends JPanel {
         if (event.getValueIsAdjusting() || isAdjusting) {
             return;
         }
+
+        setGithubIconSelected();
 
         EventQueue.invokeLater(() -> {
             Theme theme = themes.getSelectedValue();
@@ -110,6 +132,27 @@ public class ThemePanel extends JPanel {
 
                 break;
             }
+        }
+    }
+
+    protected void setGithubIconSelected() {
+        Theme theme = themes.getSelectedValue();
+
+        github.setEnabled(theme.isIntellijTheme());
+    }
+
+    protected void browse(ActionEvent evt) {
+        IntelliJIDEATheme theme = (IntelliJIDEATheme) themes.getSelectedValue();
+
+        try {
+            URI uri = new URI(theme.sourceCodeUrl());
+
+            Desktop.getDesktop().browse(uri);
+
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.warn("Failed to browse", e);
+
+            Dialogs.showError(this, "Failed to open your browser", e);
         }
     }
 

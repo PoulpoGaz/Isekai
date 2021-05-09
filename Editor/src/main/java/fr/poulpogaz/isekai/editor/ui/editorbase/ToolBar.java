@@ -2,8 +2,8 @@ package fr.poulpogaz.isekai.editor.ui.editorbase;
 
 import fr.poulpogaz.isekai.editor.Map;
 import fr.poulpogaz.isekai.editor.tools.Tool;
+import fr.poulpogaz.isekai.editor.ui.Icons;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditorModel;
-import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;
@@ -37,7 +37,7 @@ public class ToolBar<E extends EditorModel<? extends Map<?, ?>, ?>> extends JToo
     }
 
     protected void initOtherButtons() {
-        JToggleButton showGridButton = new JToggleButton(IconLoader.loadSVGIcon("/icons/grid.svg"));
+        JToggleButton showGridButton = new JToggleButton(Icons.get("icons/grid.svg"));
         showGridButton.addActionListener((e) -> {
             editor.setShowGrid(showGridButton.getModel().isSelected());
         });

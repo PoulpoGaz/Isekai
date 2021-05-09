@@ -6,7 +6,6 @@ import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
 import fr.poulpogaz.isekai.editor.ui.theme.ThemePanel;
 import fr.poulpogaz.isekai.editor.utils.Utils;
-import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -52,7 +51,7 @@ public class Actions {
         return KeyStroke.getKeyStroke(c, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
     }
 
-    public static final Action NEW = newAction("New", IconLoader.loadSVGIcon("/icons/new.svg"), ctrlKey(VK_N), e -> {
+    public static final Action NEW = newAction("New", Icons.get("icons/new.svg"), ctrlKey(VK_N), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
 
@@ -67,7 +66,7 @@ public class Actions {
         open(IsekaiEditor.getInstance());
     });
 
-    public static final Action SAVE = newAction("Save", IconLoader.loadSVGIcon("/icons/save.svg"), ctrlKey(VK_S), e -> {
+    public static final Action SAVE = newAction("Save", Icons.get("icons/save.svg"), ctrlKey(VK_S), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
 
@@ -120,7 +119,7 @@ public class Actions {
         }
     });
 
-    public static final Action THEME = newAction("Theme", IconLoader.loadSVGIcon("/icons/theme.svg"), ctrlKey(VK_T), e -> {
+    public static final Action THEME = newAction("Theme", Icons.get("icons/theme.svg"), ctrlKey(VK_T), e -> {
         ThemePanel.showDialog();
     });
 

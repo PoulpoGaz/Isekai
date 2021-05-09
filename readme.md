@@ -2,3 +2,7 @@
 
 A sokoban game for TI-83 Premium CE and TI-84 Plus CE.
 Pack can be created with the editor.
+
+## Github icon usage
+
+See: https://github.com/logos

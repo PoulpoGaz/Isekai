@@ -37,11 +37,11 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 
-        JButton insertLevel = Utils.createButton("/icons/add.svg", "Insert level", this::insertLevel);
-        JButton deleteLevel = Utils.createButton("/icons/delete.svg", "Delete level", this::deleteLevel);
+        JButton insertLevel = Utils.createButton("icons/add.svg", "Insert level", this::insertLevel);
+        JButton deleteLevel = Utils.createButton("icons/delete.svg", "Delete level", this::deleteLevel);
 
-        JButton moveUp = Utils.createButton("/icons/move_up.svg", "Move up", this::moveUp);
-        JButton moveDown = Utils.createButton("/icons/move_down.svg", "Move down", this::moveDown);
+        JButton moveUp = Utils.createButton("icons/move_up.svg", "Move up", this::moveUp);
+        JButton moveDown = Utils.createButton("icons/move_down.svg", "Move down", this::moveDown);
 
         levelsComboBox = new JComboBox<>();
         levelsComboBox.addItemListener((e) -> {

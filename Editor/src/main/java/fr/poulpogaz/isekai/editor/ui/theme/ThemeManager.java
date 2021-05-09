@@ -4,7 +4,6 @@ import com.formdev.flatlaf.*;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import fr.poulpogaz.isekai.editor.Prefs;
 import fr.poulpogaz.isekai.editor.ui.Dialogs;
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import fr.poulpogaz.json.JsonException;
 import fr.poulpogaz.json.tree.JsonElement;
 import fr.poulpogaz.json.tree.JsonObject;

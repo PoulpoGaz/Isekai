@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.utils;
 
+import fr.poulpogaz.isekai.editor.ui.Icons;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
-import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,11 +40,11 @@ public class Utils {
         return panel;
     }
 
-    public static JButton createButton(String resource, String text, ActionListener listener) {
+    public static JButton createButton(String icon, String text, ActionListener listener) {
         JButton button = new JButton();
         button.addActionListener(listener);
         button.setText(text);
-        button.setIcon(IconLoader.loadSVGIcon(resource));
+        button.setIcon(Icons.get(icon));
 
         return button;
     }

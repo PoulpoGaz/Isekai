@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.tools;
 
 import fr.poulpogaz.isekai.editor.Map;
-import fr.poulpogaz.isekai.editor.utils.icons.IconLoader;
+import fr.poulpogaz.isekai.editor.ui.Icons;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,6 +57,6 @@ public abstract class FillTool implements Tool {
 
     @Override
     public Icon getIcon() {
-        return IconLoader.loadSVGIcon("/icons/fill.svg");
+        return Icons.get("icons/fill.svg");
     }
 }
