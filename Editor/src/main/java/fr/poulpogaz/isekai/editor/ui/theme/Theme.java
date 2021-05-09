@@ -1,27 +1,16 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
-import com.formdev.flatlaf.FlatLaf;
-import fr.poulpogaz.isekai.editor.utils.LazyValue;
+import javax.swing.*;
 
-public abstract class Theme {
+public interface Theme {
 
-    private final LazyValue<? extends FlatLaf> laf;
+    LookAndFeel createLaf() throws Exception;
 
-    public Theme() {
-        laf = createLaf();
-    }
+    boolean isIntellijTheme();
 
-    protected abstract LazyValue<? extends FlatLaf> createLaf();
+    boolean isCoreTheme();
 
-    public abstract boolean isIntellijTheme();
+    String name();
 
-    public abstract boolean isCoreTheme();
-
-    public abstract String getName();
-
-    public abstract boolean isDark();
-
-    public FlatLaf getLaf() {
-        return laf.get();
-    }
+    boolean dark();
 }

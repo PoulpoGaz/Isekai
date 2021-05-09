@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLaf;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
+import fr.poulpogaz.isekai.editor.ui.theme.ThemeManager;
 import fr.poulpogaz.isekai.editor.utils.Cache;
 
 import javax.swing.*;
@@ -23,19 +23,14 @@ public class Main {
 
         Cache.setRoot(System.getProperty("user.home"), ".PoulpoGaz/Isekai/editor");
 
-        FlatLaf.registerCustomDefaultsSource("themes");
-        FlatDarculaLaf.install();
-
         Prefs.init();
 
         EventQueue.invokeLater(() -> {
+            FlatLaf.registerCustomDefaultsSource("themes");
+            ThemeManager.loadThemes();
+            ThemeManager.setTheme(false);
+
             IsekaiEditor editor = IsekaiEditor.getInstance();
-            /*editor.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    Settings.write();
-                }
-            });*/
             editor.setVisible(true);
         });
     }

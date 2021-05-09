@@ -18,9 +18,9 @@ public class ThemeDownloader {
         ThemeManager.loadThemes();
 
         for (IntelliJIDEATheme theme : ThemeManager.getThemes()) {
-            LOGGER.info("Downloading theme: {} at {} ", theme.getName(), theme.getDownloadUrl());
+            LOGGER.info("Downloading theme: {} at {} ", theme.name(), theme.getDownloadUrl());
 
-            download(theme.getDownloadUrl(), "src/main/resources/themes/" + theme.getFileName());
+            download(theme.getDownloadUrl(), "src/main/resources/themes/" + theme.fileName());
         }
     }
 

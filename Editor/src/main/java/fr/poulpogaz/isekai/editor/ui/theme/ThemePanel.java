@@ -3,7 +3,9 @@ package fr.poulpogaz.isekai.editor.ui.theme;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
+import fr.poulpogaz.isekai.editor.Prefs;
 import fr.poulpogaz.isekai.editor.ui.Dialogs;
+import fr.poulpogaz.isekai.editor.ui.WrapBorder;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 
@@ -16,7 +18,7 @@ public class ThemePanel extends JPanel {
     public static void showDialog() {
         IsekaiEditor parent = IsekaiEditor.getInstance();
 
-        JDialog dialog = new JDialog(parent, "Themes", false);
+        JDialog dialog = new JDialog(parent, "Themes", true);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         dialog.setContentPane(new ThemePanel());
@@ -31,7 +33,10 @@ public class ThemePanel extends JPanel {
     private JList<Theme> themes;
     private JScrollPane pane;
 
+    private boolean isAdjusting = false;
+
     public ThemePanel() {
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setLayout(new BorderLayout());
 
         ThemeManager.loadThemes();
@@ -41,9 +46,7 @@ public class ThemePanel extends JPanel {
 
     protected void initComponents() {
         // center
-        themes = new JList<>(new DefaultListModel<>());
-        themes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        DefaultListModel<Theme> model = (DefaultListModel<Theme>) themes.getModel();
+        DefaultListModel<Theme> model = new DefaultListModel<>();
 
         for (Theme theme : ThemeManager.getCoreThemes()) {
             model.addElement(theme);
@@ -53,10 +56,16 @@ public class ThemePanel extends JPanel {
             model.addElement(theme);
         }
 
+        themes = new JList<>(model);
+        themes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        themes.setCellRenderer(new CellRenderer());
+
+        selectTheme();
         themes.addListSelectionListener(this::changeLaf);
 
         pane = new JScrollPane();
         pane.setViewportView(themes);
+        pane.setBorder(new WrapBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), pane.getBorder()));
 
         // top
         top = new JPanel();
@@ -67,32 +76,53 @@ public class ThemePanel extends JPanel {
 
         top.add(new JLabel("Themes:"));
 
-
         // add components to panel
         add(top, BorderLayout.NORTH);
         add(pane, BorderLayout.CENTER);
     }
 
     protected void changeLaf(ListSelectionEvent event) {
-        Theme theme = themes.getSelectedValue();
+        if (event.getValueIsAdjusting() || isAdjusting) {
+            return;
+        }
 
-        FlatLaf laf = theme.getLaf();
+        EventQueue.invokeLater(() -> {
+            Theme theme = themes.getSelectedValue();
+            ThemeManager.setTheme(theme, true, this, true);
+        });
+    }
 
-        if (laf == null) {
-            Dialogs.showError(SwingUtilities.getWindowAncestor(this), "Failed to change theme to " + theme.getName());
-        } else {
-            FlatAnimatedLafChange.showSnapshot();
+    protected void selectTheme() {
+        String themeName = Prefs.getPrefs().get(Prefs.THEME, null);
+        if (themeName == null) {
+            return;
+        }
 
-            try {
-                UIManager.setLookAndFeel(laf);
-            } catch (UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
+        ListModel<Theme> model = themes.getModel();
 
-                Dialogs.showError(SwingUtilities.getWindowAncestor(this), "Failed to change them to " + theme.getName());
+        for (int i = 0; i < model.getSize(); i++) {
+            Theme theme = model.getElementAt(i);
+
+            if (theme.name().equals(themeName)) {
+                isAdjusting = true;
+                themes.setSelectedValue(theme, true);
+                isAdjusting = false;
+
+                break;
             }
+        }
+    }
 
-            FlatLaf.updateUI();
-            FlatAnimatedLafChange.hideSnapshotWithAnimation();
+    private static class CellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            Theme theme = (Theme) value;
+            setText(theme.name());
+
+            return this;
         }
     }
 }

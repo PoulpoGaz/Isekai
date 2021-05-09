@@ -12,4 +12,8 @@ public class Prefs {
     public static void init() {
         prefs = Preferences.userRoot().node(ROOT);
     }
+
+    public static Preferences getPrefs() {
+        return prefs;
+    }
 }
