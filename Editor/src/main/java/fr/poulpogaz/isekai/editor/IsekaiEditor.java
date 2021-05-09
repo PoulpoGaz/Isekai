@@ -24,8 +24,7 @@ public class IsekaiEditor extends JFrame {
     private final NoPackLoadedPanel noPackLoadedPanel = new NoPackLoadedPanel();
     private JPanel bottomPanel;
     private JMemoryBar memoryBar;
-
-    private JTabbedPane tab;
+    private LevelEditor editor;
 
     private IsekaiEditor() {
         super("Editor");
@@ -41,8 +40,6 @@ public class IsekaiEditor extends JFrame {
     }
 
     private void initComponents() {
-        tab = new JTabbedPane();
-
         memoryBar = new JMemoryBar();
 
         bottomPanel = new JPanel();
@@ -66,14 +63,15 @@ public class IsekaiEditor extends JFrame {
         JMenuBar bar = new JMenuBar();
 
         JMenu file = new JMenu("File");
-        file.add(new JMenuItem(Actions.NEW));
-        file.add(new JMenuItem(Actions.OPEN));
-        file.add(new JMenuItem(Actions.SAVE));
-        file.add(new JMenuItem(Actions.SAVE_AS));
+        file.add(Actions.NEW);
+        file.add(Actions.OPEN);
+        file.add(Actions.SAVE);
+        file.add(Actions.SAVE_AS);
+        file.add(Actions.CLOSE_PROJECT);
 
         JMenu importMenu = new JMenu("Import");
-        importMenu.add(new JMenuItem(Actions.IMPORT_SOKO_INFO));
-        importMenu.add(new JMenuItem(Actions.IMPORT_LOCAL));
+        importMenu.add(Actions.IMPORT_SOKO_INFO);
+        importMenu.add(Actions.IMPORT_LOCAL);
 
         file.add(importMenu);
         file.addSeparator();
@@ -87,28 +85,32 @@ public class IsekaiEditor extends JFrame {
     }
 
     public void setPack(Pack pack) {
-        this.pack = Objects.requireNonNull(pack);
+        this.pack = pack;
 
-        if (tab.getTabCount() == 0) {
-            tab.addTab("Map editor", new LevelEditor(pack));
+        if (pack == null) {
+            if (editor != null) {
+                content.remove(editor);
+                editor = null;
+            }
 
-            content.remove(noPackLoadedPanel);
-            content.add(tab, BorderLayout.CENTER);
+            content.add(noPackLoadedPanel, BorderLayout.CENTER);
         } else {
-            tab.removeAll();
-            tab.addTab("Map editor", new LevelEditor(pack));
-        }
+            content.remove(noPackLoadedPanel);
 
-        if (getExtendedState() != MAXIMIZED_BOTH) {
-            Dimension screen = getScreenDimension();
+            editor = new LevelEditor(pack);
+            content.add(editor, BorderLayout.CENTER);
 
-            Dimension dimension = getPreferredSize();
+            if (getExtendedState() != MAXIMIZED_BOTH) {
+                Dimension screen = getScreenDimension();
 
-            if (dimension.width > screen.width || dimension.height > screen.height) {
-                setExtendedState(MAXIMIZED_BOTH);
-            } else {
-                pack();
-                setLocationRelativeTo(null);
+                Dimension dimension = getPreferredSize();
+
+                if (dimension.width > screen.width || dimension.height > screen.height) {
+                    setExtendedState(MAXIMIZED_BOTH);
+                } else {
+                    pack();
+                    setLocationRelativeTo(null);
+                }
             }
         }
 

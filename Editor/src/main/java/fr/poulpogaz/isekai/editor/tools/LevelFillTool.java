@@ -17,8 +17,7 @@ public class LevelFillTool extends FillTool {
 
     @Override
     protected <M extends Map<M, E>, E> boolean equals(M map, E currentElement, Point currentElementPos, E elementToBeReplaced) {
-        if (map instanceof Level) {
-            Level level = (Level) map;
+        if (map instanceof Level level) {
             Tile toBeReplaced = (Tile) elementToBeReplaced;
 
             if (toBeReplaced == currentElement) {

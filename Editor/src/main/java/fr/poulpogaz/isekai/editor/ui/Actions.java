@@ -108,6 +108,21 @@ public class Actions {
         }
     });
 
+    public static final Action THEME = newAction("Theme", Icons.get("icons/theme.svg"), ctrlKey(VK_T), e -> {
+        ThemePanel.showDialog();
+    });
+
+    public static final Action CLOSE_PROJECT = newAction("Close pack", null, null, e -> {
+        IsekaiEditor editor = IsekaiEditor.getInstance();
+        Pack pack = editor.getPack();
+
+        if (pack != null) {
+            savePackDialog(editor, () -> {
+                editor.setPack(null);
+            });
+        }
+    });
+
     public static final Action QUIT = newAction("Quit", null, ctrlKey(VK_Q), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
@@ -117,10 +132,6 @@ public class Actions {
         } else {
             editor.dispose();
         }
-    });
-
-    public static final Action THEME = newAction("Theme", Icons.get("icons/theme.svg"), ctrlKey(VK_T), e -> {
-        ThemePanel.showDialog();
     });
 
     public static void open(IsekaiEditor editor) {

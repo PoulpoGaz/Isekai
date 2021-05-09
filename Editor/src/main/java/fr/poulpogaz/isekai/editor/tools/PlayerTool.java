@@ -22,8 +22,7 @@ public class PlayerTool implements Tool {
 
     @Override
     public <M extends Map<M, E>, E> void apply(M map, E element, int x, int y) {
-        if (map instanceof Level) {
-            Level level = (Level) map;
+        if (map instanceof Level level) {
 
             Tile tile = (Tile) element;
             Tile current = level.get(x, y);
