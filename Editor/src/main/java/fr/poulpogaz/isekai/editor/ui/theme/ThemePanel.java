@@ -10,6 +10,7 @@ import fr.poulpogaz.isekai.editor.ui.WrapBorder;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
+import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -218,14 +219,8 @@ public class ThemePanel extends JPanel {
     protected void browse(ActionEvent evt) {
         IntelliJIDEATheme theme = (IntelliJIDEATheme) themes.getSelectedValue();
 
-        try {
-            URI uri = new URI(theme.sourceCodeUrl());
-
-            Desktop.getDesktop().browse(uri);
-        } catch (URISyntaxException | IOException e) {
-            LOGGER.warn("Failed to browse", e);
-
-            Dialogs.showError(this, "Failed to open your browser", e);
+        if (!Utils.browse(theme.sourceCodeUrl())) {
+            Dialogs.showError(this, "Failed to open your browser");
         }
     }
 

@@ -3,6 +3,8 @@ package fr.poulpogaz.isekai.editor.ui;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.*;
+import fr.poulpogaz.isekai.editor.ui.about.AboutPanel;
+import fr.poulpogaz.isekai.editor.ui.about.License;
 import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
 import fr.poulpogaz.isekai.editor.ui.theme.ThemePanel;
 import fr.poulpogaz.isekai.editor.utils.Utils;
@@ -132,6 +134,14 @@ public class Actions {
         } else {
             editor.dispose();
         }
+    });
+
+    public static final Action ABOUT = newAction("About", null, null, e -> {
+        AboutPanel.showDialog();
+    });
+
+    public static final Action LICENSE = newAction("Open source licenses", null, null, e -> {
+        License.showDialog();
     });
 
     public static void open(IsekaiEditor editor) {

@@ -7,7 +7,7 @@
 * undo (ctrl + Z), redo (ctrl + maj + Z)
 * shortcut for grid, player, fill, etc
 * bottom panel enhancement 
-* fix scroll pane in TileMapPanel
+* fix scroll pane in TileMapPanel        (done)
 
 ### Version 1.1
 

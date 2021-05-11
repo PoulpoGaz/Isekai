@@ -44,26 +44,53 @@ public class JLabelLink extends JLabel {
     }
 
     private void init() {
-        addMouseListener(new MouseAdapter() {
+        MouseAdapter adapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                fireActionListener();
+                if (getTextBounds().contains(e.getPoint())) {
+                    fireActionListener();
+                }
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                underlined = true;
-                repaint();
+                update(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                underlined = false;
-                repaint();
+                update(e);
             }
-        });
 
-        setCursor(new Cursor(Cursor.HAND_CURSOR));
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                update(e);
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                update(e);
+            }
+
+            protected void update(MouseEvent e) {
+                boolean old = underlined;
+                underlined = getTextBounds().contains(e.getPoint());
+
+                if (old != underlined) {
+                    repaint();
+                }
+
+                if (underlined) {
+                    setCursor(new Cursor(Cursor.HAND_CURSOR));
+                } else {
+                    setCursor(Cursor.getDefaultCursor());
+                }
+            }
+        };
+
+        addMouseListener(adapter);
+        addMouseMotionListener(adapter);
+
         setForeground(getTextColor());
     }
 

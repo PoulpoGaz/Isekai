@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.utils;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -41,21 +42,18 @@ public class GraphicsUtils {
                 color.getAlpha());
     }
 
-    public static BufferedImage makeRoundedCorner(Image in, int radius, Color background) {
-        int width = in.getWidth(null);
-        int height = in.getHeight(null);
+    public static BufferedImage makeRoundedCorner(BufferedImage in, int radius) {
+        int width = in.getWidth();
+        int height = in.getHeight();
 
         BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2d = (Graphics2D) out.getGraphics();
 
-        g2d.setComposite(AlphaComposite.Src);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(background == null ? Color.WHITE : background);
-        g2d.fill(new RoundRectangle2D.Float(0, 0, width, height, radius, radius));
+        g2d.setPaint(new TexturePaint(in, new Rectangle2D.Float(0, 0, in.getWidth(), in.getHeight())));
 
-        g2d.setComposite(AlphaComposite.SrcAtop);
-        g2d.drawImage(in, 0, 0, null);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.fill(new RoundRectangle2D.Float(0, 0, width, height, radius, radius));
 
         g2d.dispose();
 

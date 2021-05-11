@@ -1,6 +1,8 @@
 package fr.poulpogaz.isekai.editor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
+import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
@@ -11,6 +13,9 @@ import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class IsekaiEditor extends JFrame {
@@ -31,6 +36,8 @@ public class IsekaiEditor extends JFrame {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initComponents();
+
+        setIconImages(createImages());
 
         setJMenuBar(createMenuBar());
 
@@ -79,7 +86,12 @@ public class IsekaiEditor extends JFrame {
         file.addSeparator();
         file.add(Actions.QUIT);
 
+        JMenu help = new JMenu("Help");
+        help.add(Actions.LICENSE);
+        help.add(Actions.ABOUT);
+
         bar.add(file);
+        bar.add(help);
 
         return bar;
     }
@@ -129,6 +141,19 @@ public class IsekaiEditor extends JFrame {
         screen.height = screen.height - insets.top - insets.bottom;
 
         return screen;
+    }
+
+    private List<Image> createImages() {
+        BufferedImage player = PackSprites.getPlayer();
+
+        ArrayList<Image> images = new ArrayList<>();
+        images.add(player);
+
+        for (int size = 16; size <= 48; size += 16) {
+            images.add(player.getScaledInstance(size, size, Image.SCALE_FAST));
+        }
+
+        return images;
     }
 
     public Pack getPack() {

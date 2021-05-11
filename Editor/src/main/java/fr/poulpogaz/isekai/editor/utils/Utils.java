@@ -2,17 +2,23 @@ package fr.poulpogaz.isekai.editor.utils;
 
 import fr.poulpogaz.isekai.editor.ui.Icons;
 import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Utils {
+
+    private static final Logger LOGGER = LogManager.getLogger(Utils.class);
 
     private static final Object LOCK = new Object();
     private static Cursor BLANK_CURSOR;
@@ -103,6 +109,18 @@ public class Utils {
         if (value < minInclusive) {
             return minInclusive;
         } else return Math.min(value, maxInclusive);
+    }
+
+    public static boolean browse(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+
+            return true;
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.warn("Failed to browse", e);
+
+            return false;
+        }
     }
 
     public static File getJARLocation() {
