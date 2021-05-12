@@ -2,8 +2,8 @@
 
 ### Version 1.0
 
-* About menu
-* Pack.isModified() method
+* About menu                             (done)
+* Pack.isModified() method               (done)
 * undo (ctrl + Z), redo (ctrl + maj + Z)
 * shortcut for grid, player, fill, etc
 * bottom panel enhancement 

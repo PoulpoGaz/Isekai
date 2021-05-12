@@ -13,13 +13,15 @@ public class Pack extends Model {
     public static final String AUTHOR_PROPERTY = "AuthorProperty";
     public static final String VERSION_PROPERTY = "VersionProperty";
 
-    private String name;
-    private String author;
-    private String version;
+    protected String name;
+    protected String author;
+    protected String version;
 
-    private ArrayList<Level> levels;
+    protected ArrayList<Level> levels;
 
-    private Path saveLocation;
+    protected Path saveLocation;
+
+    protected boolean modified = true;
 
     public Pack() {
         this.levels = new ArrayList<>();
@@ -37,7 +39,8 @@ public class Pack extends Model {
 
             this.name = name;
 
-            changeSupport.firePropertyChange(NAME_PROPERTY, old, name);
+            modified = true;
+            firePropertyChange(NAME_PROPERTY, old, name);
         }
     }
 
@@ -51,6 +54,7 @@ public class Pack extends Model {
 
             this.author = author;
 
+            modified = true;
             firePropertyChange(AUTHOR_PROPERTY, old, author);
         }
     }
@@ -65,6 +69,7 @@ public class Pack extends Model {
 
             this.version = version;
 
+            modified = true;
             firePropertyChange(VERSION_PROPERTY, old, version);
         }
     }
@@ -77,6 +82,7 @@ public class Pack extends Model {
         level.index = levels.size();
         levels.add(level);
 
+        modified = true;
         fireLevelInserted(level.index, level.index);
     }
 
@@ -88,6 +94,7 @@ public class Pack extends Model {
             levels.get(i).index = i;
         }
 
+        modified = true;
         fireLevelInserted(index, index);
     }
 
@@ -102,6 +109,7 @@ public class Pack extends Model {
             levels.add(level);
         }
 
+        modified = true;
         fireLevelInserted(oldSize, levels.size() - 1);
     }
 
@@ -110,6 +118,7 @@ public class Pack extends Model {
         Level old = levels.set(index, level);
         old.index = -1;
 
+        modified = true;
         fireLevelChanged(index);
     }
 
@@ -121,6 +130,7 @@ public class Pack extends Model {
             levels.get(i).index = i;
         }
 
+        modified = true;
         fireLevelRemoved(index);
     }
 
@@ -138,6 +148,7 @@ public class Pack extends Model {
         levels.set(index1, level2);
         levels.set(index2, level1);
 
+        modified = true;
         fireLevelsSwapped(index1, index2);
     }
 
@@ -160,6 +171,7 @@ public class Pack extends Model {
                 levels.get(i).index = i;
             }
 
+            modified = true;
             fireNewLevels();
         }
     }
@@ -170,6 +182,14 @@ public class Pack extends Model {
 
     public Path getSaveLocation() {
         return saveLocation;
+    }
+
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
+
+    public boolean isModified() {
+        return modified;
     }
 
     /**

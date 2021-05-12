@@ -99,12 +99,12 @@ public class IsekaiEditor extends JFrame {
     public void setPack(Pack pack) {
         this.pack = pack;
 
-        if (pack == null) {
-            if (editor != null) {
-                content.remove(editor);
-                editor = null;
-            }
+        if (editor != null) {
+            content.remove(editor);
+            editor = null;
+        }
 
+        if (pack == null) {
             content.add(noPackLoadedPanel, BorderLayout.CENTER);
         } else {
             content.remove(noPackLoadedPanel);

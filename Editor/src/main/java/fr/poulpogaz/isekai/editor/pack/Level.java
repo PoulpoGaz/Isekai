@@ -21,14 +21,15 @@ public class Level extends Map<Level, Tile> {
     public static final int DEFAULT_MAP_WIDTH = 9;
     public static final int DEFAULT_MAP_HEIGHT = 9;
 
+    protected Pack pack;
     int index = -1;
     
     private Tile[][] tiles;
 
-    private int width;
-    private int height;
+    protected int width;
+    protected int height;
 
-    private Vector2i playerPos;
+    protected Vector2i playerPos;
 
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
@@ -70,6 +71,7 @@ public class Level extends Map<Level, Tile> {
             this.width = newWidth;
             this.height = newHeight;
 
+            setModified(true);
             fireSizeListener(width, height);
         }
     }
@@ -90,6 +92,7 @@ public class Level extends Map<Level, Tile> {
 
             tiles[y][x] = tile;
 
+            setModified(true);
             fireChangeListener();
         }
     }
@@ -139,7 +142,14 @@ public class Level extends Map<Level, Tile> {
                 this.playerPos = pos;
             }
 
+            setModified(true);
             fireChangeListener();
+        }
+    }
+
+    public void setModified(boolean modified) {
+        if (pack != null) {
+            pack.setModified(modified);
         }
     }
 
@@ -156,6 +166,10 @@ public class Level extends Map<Level, Tile> {
 
     public int getIndex() {
         return index;
+    }
+
+    public Pack getPack() {
+        return pack;
     }
 
     @Override

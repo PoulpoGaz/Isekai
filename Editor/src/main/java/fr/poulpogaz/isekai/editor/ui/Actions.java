@@ -57,7 +57,7 @@ public class Actions {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
 
-        if (pack == null) {
+        if (pack == null || !pack.isModified()) {
             editor.setPack(new Pack());
         } else {
             savePackDialog(editor, () -> editor.setPack(new Pack()));
@@ -118,7 +118,7 @@ public class Actions {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
 
-        if (pack != null) {
+        if (pack != null && pack.isModified()) {
             savePackDialog(editor, () -> {
                 editor.setPack(null);
             });
@@ -129,7 +129,7 @@ public class Actions {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
 
-        if (pack != null) {
+        if (pack != null && pack.isModified()) {
             savePackDialog(editor, editor::dispose);
         } else {
             editor.dispose();
@@ -151,7 +151,7 @@ public class Actions {
             try {
                 Pack pack = TIPackIO.deserialize(result);
 
-                if (editor.getPack() == null) {
+                if (editor.getPack() == null || !editor.getPack().isModified()) {
                     editor.setPack(pack);
                 } else {
                     savePackDialog(editor, () -> editor.setPack(pack));
@@ -177,6 +177,7 @@ public class Actions {
             try {
                 TIPackIO.serialize(pack, out);
 
+                pack.setModified(false);
                 pack.setSaveLocation(out);
             } catch (IOException e) {
                 e.printStackTrace();
