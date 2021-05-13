@@ -2,8 +2,9 @@ package fr.poulpogaz.isekai.editor.pack.checker;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.utils.Vector2i;
 
+import java.awt.*;
+import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -84,7 +85,7 @@ public abstract class AbstractSolver implements ISolver {
     }
 
     protected void initializeState() {
-        Vector2i player = level.getPlayerPos();
+        Point player = level.getPlayerPos();
 
         defaultState.playerIndex = player.y * width + player.x;
         defaultState.cratesIndex = new int[numberOfCrates];

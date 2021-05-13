@@ -1,7 +1,11 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
+import javax.swing.*;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;

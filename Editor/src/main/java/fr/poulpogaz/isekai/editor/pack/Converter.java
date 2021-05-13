@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.pack.TIPackIOException;
+
 import java.nio.charset.StandardCharsets;
 
 /**

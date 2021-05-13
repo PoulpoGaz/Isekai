@@ -1,14 +1,18 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.Map;
-import fr.poulpogaz.isekai.editor.MapSizeListener;
-import fr.poulpogaz.isekai.editor.utils.Vector2i;
+import fr.poulpogaz.isekai.editor.ui.Model;
+import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class Level extends Map<Level, Tile> {
+public class Level extends Model {
 
     private static final Logger LOGGER = LogManager.getLogger(Level.class);
 
@@ -21,6 +25,9 @@ public class Level extends Map<Level, Tile> {
     public static final int DEFAULT_MAP_WIDTH = 9;
     public static final int DEFAULT_MAP_HEIGHT = 9;
 
+    protected final List<LevelSizeListener> sizeListeners = new ArrayList<>();
+    protected boolean modifyingMap = false;
+
     protected Pack pack;
     int index = -1;
     
@@ -29,7 +36,7 @@ public class Level extends Map<Level, Tile> {
     protected int width;
     protected int height;
 
-    protected Vector2i playerPos;
+    protected Point playerPos;
 
     public Level() {
         this(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
@@ -47,7 +54,7 @@ public class Level extends Map<Level, Tile> {
             }
         }
 
-        playerPos = new Vector2i(0, 0);
+        playerPos = new Point(0, 0);
     }
 
     public void resize(int newWidth, int newHeight) {
@@ -77,42 +84,46 @@ public class Level extends Map<Level, Tile> {
     }
 
     protected void fireSizeListener(int width, int height) {
-        for (MapSizeListener<Level> listener : sizeListeners) {
-            listener.mapResized(this, width, height);
+        for (LevelSizeListener listener : sizeListeners) {
+            listener.levelResized(this, width, height);
         }
     }
 
-    @Override
-    public void set(Tile tile, int x, int y) {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
-
-            if (tile.isSolid() && playerPos.equals(x, y)) {
-                return;
+    public boolean set(Tile tile, int x, int y) {
+        if (isInside(x, y)) {
+            if (tile.isSolid() && Utils.equals(playerPos, x, y)) {
+                return false;
             }
 
             tiles[y][x] = tile;
 
             setModified(true);
             fireChangeListener();
+
+            return true;
         }
+
+        return false;
     }
 
-    @Override
     public Tile get(int x, int y) {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
+        if (isInside(x, y)) {
             return tiles[y][x];
         } else {
-            LOGGER.warn("x or y out of bounds (x = {}, y = {}, w = {}, h = {}", x, y, width, height);
+            LOGGER.warn("Coordinates out of bounds (x = {}, y = {}, w = {}, h = {})", x, y, width, height);
 
             return null;
         }
+    }
+
+    public boolean isInside(int x, int y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
     public Tile[][] getTiles() {
         return tiles;
     }
 
-    @Override
     public int getWidth() {
         return width;
     }
@@ -121,7 +132,6 @@ public class Level extends Map<Level, Tile> {
         resize(width, height);
     }
 
-    @Override
     public int getHeight() {
         return height;
     }
@@ -130,21 +140,25 @@ public class Level extends Map<Level, Tile> {
         resize(width, height);
     }
 
-    public Vector2i getPlayerPos() {
+    public Point getPlayerPos() {
         return playerPos;
     }
 
-    public void setPlayerPos(Vector2i pos) {
-        if (pos != null && pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height) {
+    public boolean setPlayerPos(Point pos) {
+        if (pos != null && isInside(pos.x, pos.y)) {
             Tile tile = tiles[pos.y][pos.x];
 
             if (!tile.isSolid()) {
                 this.playerPos = pos;
-            }
 
-            setModified(true);
-            fireChangeListener();
+                setModified(true);
+                fireChangeListener();
+
+                return true;
+            }
         }
+
+        return false;
     }
 
     public void setModified(boolean modified) {
@@ -161,7 +175,7 @@ public class Level extends Map<Level, Tile> {
     }
 
     void setPlayerPos(int x, int y) {
-        playerPos = new Vector2i(x, y);
+        playerPos = new Point(x, y);
     }
 
     public int getIndex() {
@@ -192,5 +206,41 @@ public class Level extends Map<Level, Tile> {
         result = 31 * result + height;
         result = 31 * result + playerPos.hashCode();
         return result;
+    }
+
+    protected void fireChangeListener() {
+        if (!modifyingMap) {
+            ChangeEvent event = new ChangeEvent(this);
+
+            fireListener(ChangeListener.class, (l) -> l.stateChanged(event));
+        }
+    }
+
+    public void addSizeListener(LevelSizeListener listener) {
+        sizeListeners.add(listener);
+    }
+
+    public void removeSizeListener(LevelSizeListener listener) {
+        sizeListeners.remove(listener);
+    }
+
+    public void addChangeListener(ChangeListener listener) {
+        listenerList.add(ChangeListener.class, listener);
+    }
+
+    public void removeChangeListener(ChangeListener listener) {
+        listenerList.remove(ChangeListener.class, listener);
+    }
+
+    public boolean isModifyingMap() {
+        return modifyingMap;
+    }
+
+    public void setModifyingMap(boolean modifyingMap) {
+        if (this.modifyingMap != modifyingMap) {
+            this.modifyingMap = modifyingMap;
+
+            fireChangeListener();
+        }
     }
 }

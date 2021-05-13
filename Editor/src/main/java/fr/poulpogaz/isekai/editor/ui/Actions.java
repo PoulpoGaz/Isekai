@@ -12,6 +12,7 @@ import fr.poulpogaz.isekai.editor.utils.Utils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoableEdit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -136,6 +137,10 @@ public class Actions {
         }
     });
 
+    public static final Action UNDO = newAction("Undo", Icons.get("icons/undo.svg"), ctrlKey(VK_Z), Actions::undo);
+
+    public static final Action REDO = newAction("Redo", Icons.get("icons/redo.svg"), ctrlShiftKey(VK_Z), Actions::redo);
+
     public static final Action ABOUT = newAction("About", null, null, e -> {
         AboutPanel.showDialog();
     });
@@ -150,6 +155,7 @@ public class Actions {
         if (result != null) {
             try {
                 Pack pack = TIPackIO.deserialize(result);
+                pack.setModified(false);
 
                 if (editor.getPack() == null || !editor.getPack().isModified()) {
                     editor.setPack(pack);
@@ -240,6 +246,28 @@ public class Actions {
             Pack pack = editor.getPack();
 
             pack.addAll(levels);
+        }
+    }
+
+    private static void undo(ActionEvent event) {
+        IsekaiEditor editor = IsekaiEditor.getInstance();
+
+        if (editor.canUndo()) {
+            editor.undo();
+
+            UNDO.setEnabled(editor.canUndo());
+            REDO.setEnabled(editor.canRedo());
+        }
+    }
+
+    private static void redo(ActionEvent event) {
+        IsekaiEditor editor = IsekaiEditor.getInstance();
+
+        if (editor.canRedo()) {
+            editor.redo();
+
+            UNDO.setEnabled(editor.canUndo());
+            REDO.setEnabled(editor.canRedo());
         }
     }
 

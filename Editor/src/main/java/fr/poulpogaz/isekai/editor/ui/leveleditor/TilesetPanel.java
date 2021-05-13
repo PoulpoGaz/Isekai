@@ -52,7 +52,7 @@ public class TilesetPanel extends JPanel {
 
             g2d.drawImage(tile.getSprite(), xDraw, yDraw, tileSize, tileSize, null);
 
-            if (editor.getSelectedElement() == tile) {
+            if (editor.getSelectedTile() == tile) {
                 g.setColor(new Color(0, 217, 255, 64));
                 g.fillRect(xDraw, yDraw, tileSize, tileSize);
             }
@@ -131,7 +131,7 @@ public class TilesetPanel extends JPanel {
                 return;
             }
 
-            editor.setSelectedElement(tiles[i]);
+            editor.setSelectedTile(tiles[i]);
 
             repaint();
         }

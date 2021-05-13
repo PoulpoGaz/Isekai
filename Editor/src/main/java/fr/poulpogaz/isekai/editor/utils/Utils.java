@@ -150,4 +150,8 @@ public class Utils {
             Arrays.fill(booleans, object);
         }
     }
+
+    public static boolean equals(Point point, int x, int y) {
+        return point.x == x && point.y == y;
+    }
 }

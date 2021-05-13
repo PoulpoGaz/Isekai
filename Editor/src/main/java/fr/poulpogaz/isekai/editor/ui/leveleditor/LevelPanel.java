@@ -3,7 +3,6 @@ package fr.poulpogaz.isekai.editor.ui.leveleditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.ui.editorbase.EditorModel;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.Utils;
@@ -25,7 +24,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         pack.addLevelsOrganisationListener(this);
 
         this.editor = Objects.requireNonNull(editor);
-        editor.addPropertyChangeListener(EditorModel.SELECTED_MAP_PROPERTY, this::switchLevel);
+        editor.addPropertyChangeListener(LevelEditorModel.SELECTED_MAP_PROPERTY, this::switchLevel);
 
         setLayout(new VerticalLayout(6));
         setBorder(BorderFactory.createTitledBorder("Level order"));
@@ -65,7 +64,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         Level level = new Level();
 
         pack.addLevel(level, index);
-        editor.setSelectedMap(level);
+        editor.setSelectedLevel(level);
     }
 
     private void deleteLevel(ActionEvent event) {

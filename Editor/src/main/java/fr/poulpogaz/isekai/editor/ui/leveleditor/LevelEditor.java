@@ -1,20 +1,18 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.tools.LevelFillTool;
+import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.tools.FillTool;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
 import fr.poulpogaz.isekai.editor.ui.Icons;
 import fr.poulpogaz.isekai.editor.ui.check.CheckLevelDialog;
-import fr.poulpogaz.isekai.editor.ui.editorbase.EditableMapPanelBase;
-import fr.poulpogaz.isekai.editor.ui.editorbase.EditorPanelBase;
-import fr.poulpogaz.isekai.editor.ui.editorbase.ToolBar;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 
 import javax.swing.*;
 
-public class LevelEditor extends EditorPanelBase<LevelEditorModel> {
+public class LevelEditor extends LevelEditorBase {
 
     private EditableTileMapPanel tileMapPanel;
     private TilesetPanel tilesetPanel;
@@ -22,19 +20,19 @@ public class LevelEditor extends EditorPanelBase<LevelEditorModel> {
     private LevelPanel levelPanel;
     private ResizePanel resizePanel;
 
-    private ToolBar<LevelEditorModel> toolBar;
+    private ToolBar toolBar;
 
     public LevelEditor(Pack pack) {
-        super(pack, new LevelEditorModel(pack.getLevel(0)));
+        super(pack, new LevelEditorModel(pack, Tile.FLOOR));
     }
 
     @Override
-    protected ToolBar<LevelEditorModel> createToolBar() {
-        toolBar = new ToolBar<>(editor);
+    protected ToolBar createToolBar() {
+        toolBar = new ToolBar(editor);
 
         toolBar.addTool(PaintTool.getInstance());
-        toolBar.addTool(LevelFillTool.getInstance());
-        toolBar.addTool(PlayerTool.getInstance(pack));
+        toolBar.addTool(FillTool.getInstance());
+        toolBar.addTool(PlayerTool.getInstance());
 
         JButton check = new JButton();
         check.setIcon(Icons.get("icons/check.svg"));
@@ -45,7 +43,7 @@ public class LevelEditor extends EditorPanelBase<LevelEditorModel> {
     }
 
     @Override
-    protected EditableMapPanelBase<LevelEditorModel, ?, ?> createMapPanel() {
+    protected EditableTileMapPanel createMapPanel() {
         tileMapPanel = new EditableTileMapPanel(pack, editor);
 
         return tileMapPanel;

@@ -1,22 +1,21 @@
-package fr.poulpogaz.isekai.editor.ui.editorbase;
+package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
-import fr.poulpogaz.isekai.editor.Map;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AdjustmentListener;
 
-public abstract class EditorPanelBase<E extends EditorModel<? extends Map<?, ?>, ?>> extends JPanel {
+public abstract class LevelEditorBase extends JPanel {
 
     protected final Pack pack;
-    protected final E editor;
+    protected final LevelEditorModel editor;
 
-    protected ToolBar<E> toolbar;
-    protected EditableMapPanelBase<E, ?, ?> mapPanel;
+    protected ToolBar toolbar;
+    protected EditableTileMapPanel mapPanel;
     protected JPanel eastPanel;
 
-    public EditorPanelBase(Pack pack, E editor) {
+    public LevelEditorBase(Pack pack, LevelEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
 
@@ -37,9 +36,9 @@ public abstract class EditorPanelBase<E extends EditorModel<? extends Map<?, ?>,
         add(eastPanel, BorderLayout.EAST);
     }
 
-    protected abstract ToolBar<E> createToolBar();
+    protected abstract ToolBar createToolBar();
 
-    protected abstract EditableMapPanelBase<E, ?, ?> createMapPanel();
+    protected abstract EditableTileMapPanel createMapPanel();
 
     protected abstract JPanel createEastPanel();
 

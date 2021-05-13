@@ -1,9 +1,9 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.utils.Vector2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -101,7 +101,7 @@ public class TIPackIO {
     private static byte[] toByte(Level level) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        Vector2i player = level.getPlayerPos();
+        Point player = level.getPlayerPos();
         baos.write(player.x);
         baos.write(player.y);
 
@@ -235,9 +235,9 @@ public class TIPackIO {
         for (int i = 0; i < nLevels; i++) {
             Level level = new Level();
 
-            Vector2i pos = level.getPlayerPos();
-            pos.setX(is.read());
-            pos.setY(is.read());
+            Point pos = level.getPlayerPos();
+            pos.x = is.read();
+            pos.y = is.read();
 
             level.resize(is.read(), is.read());
 

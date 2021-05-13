@@ -1,22 +1,20 @@
-package fr.poulpogaz.isekai.editor.ui.editorbase;
+package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
-import fr.poulpogaz.isekai.editor.Map;
 import fr.poulpogaz.isekai.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.ui.Icons;
-import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditorModel;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 
-public class ToolBar<E extends EditorModel<? extends Map<?, ?>, ?>> extends JToolBar {
+public class ToolBar extends JToolBar {
 
-    protected final E editor;
+    protected final LevelEditorModel editor;
 
     protected final HashMap<Tool, JToggleButton> tools;
     protected ButtonGroup group;
 
-    public ToolBar(E editor) {
+    public ToolBar(LevelEditorModel editor) {
         this.editor = editor;
 
         editor.addPropertyChangeListener(LevelEditorModel.TOOL_PROPERTY, this::switchTool);

@@ -12,6 +12,8 @@ import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
 import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
 
 import javax.swing.*;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ import java.util.Objects;
 public class IsekaiEditor extends JFrame {
 
     private static final IsekaiEditor INSTANCE = new IsekaiEditor();
+
+    private final UndoManager undoManager = new UndoManager();
 
     private Pack pack;
 
@@ -86,18 +90,27 @@ public class IsekaiEditor extends JFrame {
         file.addSeparator();
         file.add(Actions.QUIT);
 
+        JMenu edit = new JMenu("Edit");
+        edit.add(Actions.UNDO).setEnabled(false);
+        edit.add(Actions.REDO).setEnabled(false);
+
         JMenu help = new JMenu("Help");
         help.add(Actions.LICENSE);
         help.add(Actions.ABOUT);
 
         bar.add(file);
+        bar.add(edit);
         bar.add(help);
 
         return bar;
     }
 
     public void setPack(Pack pack) {
+        clear();
         this.pack = pack;
+
+        Actions.UNDO.setEnabled(false);
+        Actions.REDO.setEnabled(false);
 
         if (editor != null) {
             content.remove(editor);
@@ -154,6 +167,36 @@ public class IsekaiEditor extends JFrame {
         }
 
         return images;
+    }
+
+    public void addEdit(UndoableEdit edit) {
+        undoManager.addEdit(edit);
+
+        Actions.UNDO.setEnabled(true);
+        Actions.REDO.setEnabled(false);
+    }
+
+    public void undo() {
+        undoManager.undo();
+    }
+
+    public void redo() {
+        undoManager.redo();
+    }
+
+    public boolean canUndo() {
+        return undoManager.canUndo();
+    }
+
+    public boolean canRedo() {
+        return undoManager.canRedo();
+    }
+
+    public void clear() {
+        undoManager.discardAllEdits();
+
+        Actions.REDO.setEnabled(false);
+        Actions.UNDO.setEnabled(false);
     }
 
     public Pack getPack() {
