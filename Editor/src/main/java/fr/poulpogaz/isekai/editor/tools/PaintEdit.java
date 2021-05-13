@@ -35,6 +35,10 @@ public class PaintEdit extends AbstractUndoableEdit {
 
         LOGGER.info("Undo PaintEdit. Replacing {} by {}. Number of tiles affected: {}", newTile, old, affectedTiles.size());
 
+        /*if (model.getSelectedLevel() != level) {
+            model.setSelectedLevel(level);
+        }*/
+
         level.setModifyingMap(true);
         affectedTiles.forEach((i) -> {
             level.set(old, i % level.getWidth(), i / level.getHeight());
@@ -47,6 +51,10 @@ public class PaintEdit extends AbstractUndoableEdit {
         super.redo();
 
         LOGGER.info("Redo PaintEdit. Replacing {} by {}. Number of tiles affected: {}", newTile, old, affectedTiles.size());
+
+        /*if (model.getSelectedLevel() != level) {
+            model.setSelectedLevel(level);
+        }*/
 
         level.setModifyingMap(true);
         affectedTiles.forEach((i) -> {

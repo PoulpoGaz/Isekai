@@ -57,7 +57,7 @@ public class Level extends Model {
         playerPos = new Point(0, 0);
     }
 
-    public void resize(int newWidth, int newHeight) {
+    public boolean resize(int newWidth, int newHeight) {
         if (newWidth >= MINIMUM_MAP_WIDTH && newHeight >= MINIMUM_MAP_HEIGHT
                 && (newWidth != width || newHeight != height)) {
 
@@ -80,7 +80,11 @@ public class Level extends Model {
 
             setModified(true);
             fireSizeListener(width, height);
+
+            return true;
         }
+
+        return false;
     }
 
     protected void fireSizeListener(int width, int height) {
