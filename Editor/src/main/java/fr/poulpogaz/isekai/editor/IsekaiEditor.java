@@ -2,13 +2,13 @@ package fr.poulpogaz.isekai.editor;
 
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
+import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditorModel;
 import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
 
 import javax.swing.*;
@@ -18,7 +18,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class IsekaiEditor extends JFrame {
 
@@ -106,11 +105,11 @@ public class IsekaiEditor extends JFrame {
     }
 
     public void setPack(Pack pack) {
-        clear();
-        this.pack = pack;
-
+        clearEdits();
         Actions.UNDO.setEnabled(false);
         Actions.REDO.setEnabled(false);
+
+        this.pack = pack;
 
         if (editor != null) {
             content.remove(editor);
@@ -124,23 +123,52 @@ public class IsekaiEditor extends JFrame {
 
             editor = new LevelEditor(pack);
             content.add(editor, BorderLayout.CENTER);
+        }
 
-            if (getExtendedState() != MAXIMIZED_BOTH) {
-                Dimension screen = getScreenDimension();
-
-                Dimension dimension = getPreferredSize();
-
-                if (dimension.width > screen.width || dimension.height > screen.height) {
-                    setExtendedState(MAXIMIZED_BOTH);
-                } else {
-                    pack();
-                    setLocationRelativeTo(null);
-                }
-            }
+        if (getExtendedState() != MAXIMIZED_BOTH) {
+            resizeWindow();
         }
 
         revalidate();
         repaint();
+    }
+
+    private void resizeWindow() {
+        Dimension pref = getPreferredSize();
+        Dimension screen = getScreenDimension();
+
+        if (pref.width > screen.width || pref.height > screen.height) {
+            setExtendedState(MAXIMIZED_BOTH);
+        } else {
+            Dimension current = getSize();
+
+            boolean width = current.width >= pref.width;
+            boolean height = current.height >= pref.height;
+
+            if (!width && !height) {
+                Point point = getLocationOnScreen();
+
+                int x = point.x + (current.width - pref.width) / 2;
+                int y = point.y + (current.height - pref.height) / 2;
+
+                pack();
+                setLocation(x, y);
+            } else if (width && !height) {
+                Point point = getLocationOnScreen();
+
+                int y = point.y + (current.height - pref.height) / 2;
+
+                setSize(new Dimension(current.width, pref.height));
+                setLocation(point.x, y);
+            } else if (!width) {
+                Point point = getLocationOnScreen();
+
+                int x = point.x + (current.width - pref.width) / 2;
+
+                setSize(new Dimension(pref.width, current.height));
+                setLocation(x, point.y);
+            }
+        }
     }
 
     private Dimension getScreenDimension() {
@@ -192,7 +220,7 @@ public class IsekaiEditor extends JFrame {
         return undoManager.canRedo();
     }
 
-    public void clear() {
+    public void clearEdits() {
         undoManager.discardAllEdits();
 
         Actions.REDO.setEnabled(false);
@@ -201,6 +229,14 @@ public class IsekaiEditor extends JFrame {
 
     public Pack getPack() {
         return pack;
+    }
+
+    public LevelEditor getLevelEditor() {
+        return editor;
+    }
+
+    public LevelEditorModel getEditorModel() {
+        return null;
     }
 
     public static IsekaiEditor getInstance() {

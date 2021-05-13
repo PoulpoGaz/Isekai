@@ -12,7 +12,7 @@ public abstract class LevelEditorBase extends JPanel {
     protected final LevelEditorModel editor;
 
     protected ToolBar toolbar;
-    protected EditableTileMapPanel mapPanel;
+    protected TileMapPanel mapPanel;
     protected JPanel eastPanel;
 
     public LevelEditorBase(Pack pack, LevelEditorModel editor) {
@@ -38,7 +38,7 @@ public abstract class LevelEditorBase extends JPanel {
 
     protected abstract ToolBar createToolBar();
 
-    protected abstract EditableTileMapPanel createMapPanel();
+    protected abstract TileMapPanel createMapPanel();
 
     protected abstract JPanel createEastPanel();
 

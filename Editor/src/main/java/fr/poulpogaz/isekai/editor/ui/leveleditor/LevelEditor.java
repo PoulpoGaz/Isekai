@@ -14,7 +14,7 @@ import javax.swing.*;
 
 public class LevelEditor extends LevelEditorBase {
 
-    private EditableTileMapPanel tileMapPanel;
+    private TileMapPanel tileMapPanel;
     private TilesetPanel tilesetPanel;
     private PackPropertiesPanel packPropertiesPanel;
     private LevelPanel levelPanel;
@@ -43,8 +43,8 @@ public class LevelEditor extends LevelEditorBase {
     }
 
     @Override
-    protected EditableTileMapPanel createMapPanel() {
-        tileMapPanel = new EditableTileMapPanel(pack, editor);
+    protected TileMapPanel createMapPanel() {
+        tileMapPanel = new TileMapPanel(pack, editor);
 
         return tileMapPanel;
     }
@@ -57,7 +57,7 @@ public class LevelEditor extends LevelEditorBase {
         constraint.fillXAxis = true;
 
         packPropertiesPanel = new PackPropertiesPanel(pack);
-        tilesetPanel = new TilesetPanel(pack, editor);
+        tilesetPanel = new TilesetPanel(editor);
         resizePanel = new ResizePanel(editor);
         levelPanel = new LevelPanel(pack, editor);
 

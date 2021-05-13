@@ -14,8 +14,8 @@ import java.util.Objects;
 
 public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
-    private final Pack pack;
     private final LevelEditorModel editor;
+    private Pack pack;
 
     private JComboBox<Integer> levelsComboBox;
 

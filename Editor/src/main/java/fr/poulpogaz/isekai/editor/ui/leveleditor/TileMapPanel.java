@@ -1,7 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.pack.*;
-import fr.poulpogaz.isekai.editor.tools.Tool;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
@@ -13,7 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 
-public class EditableTileMapPanel extends JPanel {
+public class TileMapPanel extends JPanel {
 
     protected final Pack pack;
 
@@ -30,7 +29,7 @@ public class EditableTileMapPanel extends JPanel {
 
     protected boolean showCursor;
 
-    public EditableTileMapPanel(Pack pack, LevelEditorModel editor) {
+    public TileMapPanel(Pack pack, LevelEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
         this.map = editor.getSelectedLevel();

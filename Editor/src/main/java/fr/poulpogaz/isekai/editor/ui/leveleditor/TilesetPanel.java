@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 
 import javax.swing.*;
@@ -17,11 +16,9 @@ public class TilesetPanel extends JPanel {
     private static final int tileSize = 48;
     private static final Dimension SIZE = new Dimension(tileSize * WIDTH, tileSize * HEIGHT);
 
-    private final Pack pack;
     private final LevelEditorModel editor;
 
-    public TilesetPanel(Pack pack, LevelEditorModel editor) {
-        this.pack = pack;
+    public TilesetPanel(LevelEditorModel editor) {
         this.editor = editor;
         editor.addPropertyChangeListener(LevelEditorModel.TOOL_PROPERTY, (e) -> repaint());
         editor.addPropertyChangeListener(LevelEditorModel.SELECTED_ELEMENT_PROPERTY, (e) -> repaint());
