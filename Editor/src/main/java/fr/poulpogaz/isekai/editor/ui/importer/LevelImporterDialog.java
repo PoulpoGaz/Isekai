@@ -5,6 +5,7 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.SIPack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
+import fr.poulpogaz.json.utils.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +34,8 @@ public class LevelImporterDialog extends JDialog {
     private LevelImporter importer;
 
     private JProgressBar bar;
+
+    private List<Integer> fails;
 
     private LevelImporterDialog() {
         super(IsekaiEditor.getInstance(), "Import", true);
@@ -139,6 +142,8 @@ public class LevelImporterDialog extends JDialog {
                 bar = new JProgressBar();
             }
 
+            fails = new ArrayList<>();
+
             content.add(bar);
 
             importer = new LevelImporter(pack, range, this);
@@ -157,12 +162,63 @@ public class LevelImporterDialog extends JDialog {
     }
 
     protected void fail(int index) {
+        fails.add(index);
         increase();
     }
 
     protected void dispose(List<Level> levels) {
         this.levels = levels;
+
+        if (fails.size() > 0) {
+            StringBuilder text = new StringBuilder();
+            text.append("Failed to import ").append(fails.size()).append(" levels.\n");
+
+            asRange(text, fails);
+
+            JOptionPane.showMessageDialog(this, text.toString(), "Failed to import levels", JOptionPane.ERROR_MESSAGE);
+        }
+
         dispose();
+        fails = null;
+    }
+
+    protected void asRange(StringBuilder text, List<Integer> levels) {
+        int begin = -1;
+        int last = levels.get(0);
+
+        boolean write = false;
+        for (int i = 1; i < levels.size(); i++) {
+            int level = levels.get(i);
+
+            if (last + 1 == level) { // two consecutive levels
+                if (begin == -1) {
+                    begin = last;
+                }
+                write = false;
+            } else {
+                if (begin == -1) {
+                    text.append(last);
+                } else {
+                    text.append(begin).append("-").append(last);
+                    begin = -1;
+                }
+                if (i != levels.size() - 1) {
+                    text.append(", ");
+                }
+
+                write = true;
+            }
+
+            last = level;
+        }
+
+        if (!write) {
+            if (begin == -1) {
+                text.append(last);
+            } else {
+                text.append(begin).append("-").append(last);
+            }
+        }
     }
 
     public List<Level> getLevels() {

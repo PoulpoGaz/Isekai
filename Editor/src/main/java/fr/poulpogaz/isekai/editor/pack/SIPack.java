@@ -29,7 +29,7 @@ public record SIPack(String name, String author, int nLevels, int id) {
      */
     public Level importLevel(int index) {
         if (index <= 0 || index > nLevels) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Index out of range (0; %d): %d".formatted(nLevels, index));
         }
 
         try {
@@ -231,7 +231,7 @@ public record SIPack(String name, String author, int nLevels, int id) {
         SIPack.loadPacks();
         SIPack pack = SIPack.getPacks().get(0);
 
-        Level level = pack.importLevel(0);
+        Level level = pack.importLevel(1);
 
         if (level == null) {
             throw new IllegalStateException();

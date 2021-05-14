@@ -28,8 +28,6 @@ public class ImportEdit extends AbstractUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        super.undo();
-
         if (showMessage) {
             IsekaiEditor editor = IsekaiEditor.getInstance();
 
@@ -41,6 +39,8 @@ public class ImportEdit extends AbstractUndoableEdit {
 
             showMessage = false;
         }
+
+        super.undo();
 
         LOGGER.info("Undo ImportEdit. {} levels removed", levels.size());
         pack.removeAll(levels);
