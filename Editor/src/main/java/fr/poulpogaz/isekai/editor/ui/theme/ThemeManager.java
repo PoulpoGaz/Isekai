@@ -41,6 +41,10 @@ public final class ThemeManager {
             try {
                 InputStream is = ThemeDownloader.class.getResourceAsStream("/themes/themes.json");
 
+                if (is == null) {
+                    throw new RuntimeException();
+                }
+
                 JsonObject root = (JsonObject) JsonTreeReader.read(is);
 
                 for (Map.Entry<String, JsonElement> set : root.entrySet()) {
@@ -75,12 +79,12 @@ public final class ThemeManager {
             coreThemes.add(new CoreTheme("Flat IntelliJ Laf", true, FlatIntelliJLaf.class));
 
             loaded = true;
-        };
+        }
     }
 
     public static void setTheme(boolean updateUI) {
         loadThemes();
-        String themeName = Prefs.getPrefs().get(Prefs.THEME, null);
+        String themeName = Prefs.getTheme();
         Theme theme = null;
 
         if (themeName == null) {
@@ -120,7 +124,7 @@ public final class ThemeManager {
                 return false;
             }
 
-            Prefs.getPrefs().put(Prefs.THEME, theme.name());
+            Prefs.setTheme(theme.name());
 
             if (updateUI) {
                 FlatLaf.updateUI();

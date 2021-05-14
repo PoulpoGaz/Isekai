@@ -9,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class Main {
@@ -37,6 +39,20 @@ public class Main {
             ThemeManager.setTheme(false);
 
             IsekaiEditor editor = IsekaiEditor.getInstance();
+            editor.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    Prefs.setMaximized(editor.getExtendedState() == Frame.MAXIMIZED_BOTH);
+                    Prefs.setWidth(editor.getWidth());
+                    Prefs.setHeight(editor.getHeight());
+
+                    Point location = editor.getLocationOnScreen();
+
+                    Prefs.setWindowX(location.x);
+                    Prefs.setWindowY(location.y);
+                }
+            });
+
             editor.setVisible(true);
         });
     }

@@ -188,7 +188,7 @@ public class ThemePanel extends JPanel {
     }
 
     protected void selectTheme() {
-        String themeName = Prefs.getPrefs().get(Prefs.THEME, null);
+        String themeName = Prefs.getTheme();
         if (themeName == null) {
             return;
         }

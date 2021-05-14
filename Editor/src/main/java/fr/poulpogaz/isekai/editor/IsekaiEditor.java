@@ -21,6 +21,8 @@ import java.util.List;
 
 public class IsekaiEditor extends JFrame {
 
+    public static final int UNKNOWN_DIMENSION = -1;
+
     private static final IsekaiEditor INSTANCE = new IsekaiEditor();
 
     private final UndoManager undoManager = new UndoManager();
@@ -41,12 +43,24 @@ public class IsekaiEditor extends JFrame {
         initComponents();
 
         setIconImages(createImages());
-
         setJMenuBar(createMenuBar());
 
-        pack();
+        int width = Prefs.getWidth();
+        int height = Prefs.getHeight();
+        int x = Prefs.getWindowX();
+        int y = Prefs.getWindowY();
 
-        setLocationRelativeTo(null);
+        if (width > 0 && height > 0 && x >= 0 && y >= 0) {
+            setSize(new Dimension(width, height));
+            setLocation(x, y);
+        } else {
+            pack();
+            setLocationRelativeTo(null);
+        }
+
+        if (Prefs.isMaximized()) {
+            setExtendedState(MAXIMIZED_BOTH);
+        }
     }
 
     private void initComponents() {
@@ -92,6 +106,7 @@ public class IsekaiEditor extends JFrame {
         JMenu edit = new JMenu("Edit");
         edit.add(Actions.UNDO).setEnabled(false);
         edit.add(Actions.REDO).setEnabled(false);
+        edit.add(Actions.CLEAR_UNDO_HISTORY).setEnabled(false);
 
         JMenu help = new JMenu("Help");
         help.add(Actions.LICENSE);
@@ -108,6 +123,7 @@ public class IsekaiEditor extends JFrame {
         clearEdits();
         Actions.UNDO.setEnabled(false);
         Actions.REDO.setEnabled(false);
+        Actions.CLEAR_UNDO_HISTORY.setEnabled(false);
 
         this.pack = pack;
 
@@ -202,6 +218,7 @@ public class IsekaiEditor extends JFrame {
 
         Actions.UNDO.setEnabled(true);
         Actions.REDO.setEnabled(false);
+        Actions.CLEAR_UNDO_HISTORY.setEnabled(true);
     }
 
     public void undo() {
@@ -225,6 +242,7 @@ public class IsekaiEditor extends JFrame {
 
         Actions.REDO.setEnabled(false);
         Actions.UNDO.setEnabled(false);
+        Actions.CLEAR_UNDO_HISTORY.setEnabled(false);
     }
 
     public Pack getPack() {

@@ -219,15 +219,7 @@ public record SIPack(String name, String author, int nLevels, int id) {
         return exception;
     }
 
-    public static void main(String[] args) throws IOException {
-        URL url = new URL("https://sokoban.info/?1_1");
-
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("text.html"));
-
-        url.openStream().transferTo(bos);
-        bos.close();
-
-
+    public static void main(String[] args) {
         SIPack.loadPacks();
         SIPack pack = SIPack.getPacks().get(0);
 

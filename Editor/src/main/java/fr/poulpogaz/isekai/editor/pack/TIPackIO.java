@@ -60,7 +60,6 @@ public class TIPackIO {
 
         byte[] data = Converter.convert(baos.toByteArray(), varName);
         Files.write(out, data, StandardOpenOption.CREATE);
-        Files.write(Path.of(out + ".bin"), baos.toByteArray(), StandardOpenOption.CREATE);
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {

@@ -142,6 +142,19 @@ public class Actions {
 
     public static final Action REDO = newAction("Redo", Icons.get("icons/redo.svg"), ctrlShiftKey(VK_Z), Actions::redo);
 
+    public static final Action CLEAR_UNDO_HISTORY = newAction("Clear undo history", null, null, (e) -> {
+        IsekaiEditor editor = IsekaiEditor.getInstance();
+
+        int result = JOptionPane.showConfirmDialog(editor,
+                "Do you really want to clear the undo history?.",
+                "Clear undo history",
+                JOptionPane.YES_NO_OPTION);
+
+        if (result == JOptionPane.YES_OPTION) {
+            IsekaiEditor.getInstance().clearEdits();
+        }
+    });
+
     public static final Action ABOUT = newAction("About", null, null, e -> {
         AboutPanel.showDialog();
     });
