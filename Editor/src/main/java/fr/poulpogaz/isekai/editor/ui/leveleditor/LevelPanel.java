@@ -141,7 +141,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
     }
 
     @Override
-    public void newLevels() {
+    public void organisationChanged() {
         int packSize = pack.getNumberOfLevels();
         int comboSize = levelsComboBox.getItemCount();
 

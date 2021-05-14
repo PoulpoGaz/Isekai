@@ -9,6 +9,7 @@ import javax.swing.undo.UndoableEdit;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 public class Pack extends Model {
@@ -144,6 +145,31 @@ public class Pack extends Model {
         removeLevel(levels.indexOf(level));
     }
 
+    public void removeAll(List<Level> toRemove) {
+        if (toRemove != null && toRemove.size() > 0) {
+            boolean removed = false;
+
+            for (Level level : toRemove) {
+                if (levels.remove(level)) {
+                    removed = true;
+                }
+            }
+
+            if (!removed) {
+                return;
+            }
+
+            for (int i = 0; i < levels.size(); i++) {
+                Level level = levels.get(i);
+
+                level.index = i;
+            }
+
+            modified = true;
+            fireOrganisationChanged();
+        }
+    }
+
     public void swapLevels(int index1, int index2) {
         Level level1 = levels.get(index1);
         level1.index = index2;
@@ -178,7 +204,7 @@ public class Pack extends Model {
             }
 
             modified = true;
-            fireNewLevels();
+            fireOrganisationChanged();
         }
     }
 
@@ -225,7 +251,7 @@ public class Pack extends Model {
         fireListener(LevelsOrganisationListener.class, (t) -> t.levelsSwapped(index1, index2));
     }
 
-    private void fireNewLevels() {
-        fireListener(LevelsOrganisationListener.class, LevelsOrganisationListener::newLevels);
+    private void fireOrganisationChanged() {
+        fireListener(LevelsOrganisationListener.class, LevelsOrganisationListener::organisationChanged);
     }
 }

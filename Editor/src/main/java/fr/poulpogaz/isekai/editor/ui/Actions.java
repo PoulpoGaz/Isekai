@@ -6,6 +6,7 @@ import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.ui.about.AboutPanel;
 import fr.poulpogaz.isekai.editor.ui.about.License;
 import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
+import fr.poulpogaz.isekai.editor.ui.leveleditor.ImportEdit;
 import fr.poulpogaz.isekai.editor.ui.theme.ThemePanel;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 
@@ -246,6 +247,8 @@ public class Actions {
             Pack pack = editor.getPack();
 
             pack.addAll(levels);
+
+            IsekaiEditor.getInstance().addEdit(new ImportEdit(pack, levels));
         }
     }
 
