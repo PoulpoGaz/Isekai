@@ -1,18 +1,26 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
+import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 
 public class LevelPanel extends JPanel implements LevelsOrganisationListener {
+
+    private static final Logger LOGGER = LogManager.getLogger(LevelPanel.class);
 
     private final LevelEditorModel editor;
     private Pack pack;
@@ -36,11 +44,19 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 
-        JButton insertLevel = Utils.createButton("icons/add.svg", "Insert level", this::insertLevel);
-        JButton deleteLevel = Utils.createButton("icons/delete.svg", "Delete level", this::deleteLevel);
+        JButton insertLevel = Utils.createButton("icons/add.svg", "Insert level", (e) -> {
+            insertLevel(new Level(), levelsComboBox.getSelectedIndex() + 1, true);
+        });
+        JButton deleteLevel = Utils.createButton("icons/delete.svg", "Delete level", (e) -> {
+            deleteLevel(levelsComboBox.getSelectedIndex(), true);
+        });
 
-        JButton moveUp = Utils.createButton("icons/move_up.svg", "Move up", this::moveUp);
-        JButton moveDown = Utils.createButton("icons/move_down.svg", "Move down", this::moveDown);
+        JButton moveUp = Utils.createButton("icons/move_up.svg", "Move up", (e) -> {
+            moveUp(editor.getSelectedLevelIndex(), true);
+        });
+        JButton moveDown = Utils.createButton("icons/move_down.svg", "Move down", (e) -> {
+            moveDown(editor.getSelectedLevelIndex(), true);
+        });
 
         levelsComboBox = new JComboBox<>();
         levelsComboBox.addItemListener((e) -> {
@@ -58,39 +74,47 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         add(levelsComboBox, constraint);
     }
 
-    private void insertLevel(ActionEvent e) {
-        int index = levelsComboBox.getSelectedIndex() + 1;
-
-        Level level = new Level();
-
+    private void insertLevel(Level level, int index, boolean addEdit) {
         pack.addLevel(level, index);
         editor.setSelectedLevel(level);
-    }
 
-    private void deleteLevel(ActionEvent event) {
-        if (pack.getNumberOfLevels() > 1) {
-            int index = levelsComboBox.getSelectedIndex();
-
-            pack.removeLevel(index);
-            editor.setSelectedLevel(pack, Math.max(index - 1, 0));
+        if (addEdit) {
+            IsekaiEditor.getInstance().addEdit(new InsertEdit(index));
         }
     }
 
-    private void moveDown(ActionEvent event) {
-        int curr = editor.getSelectedLevelIndex();
-        int index = curr + 1;
+    private void deleteLevel(int index, boolean addEdit) {
+        if (pack.getNumberOfLevels() > 1 && index < pack.getNumberOfLevels()) {
+            Level old = pack.removeLevel(index);
+            editor.setSelectedLevel(pack, Math.max(index - 1, 0));
+
+            if (addEdit) {
+                IsekaiEditor.getInstance().addEdit(new DeleteEdit(index, old));
+            }
+        }
+    }
+
+    private void moveDown(int current, boolean addEdit) {
+        int index = current + 1;
 
         if (index < pack.getNumberOfLevels()) {
-            pack.swapLevels(curr, index);
+            pack.swapLevels(current, index);
+
+            if (addEdit) {
+                IsekaiEditor.getInstance().addEdit(new MoveDownEdit(index));
+            }
         }
     }
 
-    private void moveUp(ActionEvent event) {
-        int curr = editor.getSelectedLevelIndex();
-        int index = curr - 1;
+    private void moveUp(int current, boolean addEdit) {
+        int index = current - 1;
 
         if (index >= 0) {
-            pack.swapLevels(curr, index);
+            pack.swapLevels(current, index);
+
+            if (addEdit) {
+                IsekaiEditor.getInstance().addEdit(new MoveUpEdit(index));
+            }
         }
     }
     
@@ -137,5 +161,107 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
     private void switchLevel(PropertyChangeEvent evt) {
         levelsComboBox.setSelectedIndex(editor.getSelectedLevelIndex());
+    }
+
+    private class InsertEdit extends AbstractUndoableEdit {
+
+        private final int index;
+
+        public InsertEdit(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+
+            LOGGER.info("Redo InsertEdit. Creating level at index {}", index);
+            insertLevel(new Level(), index, false);
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+
+            LOGGER.info("Undo InsertEdit. Removing level at index {}", index);
+            deleteLevel(index, false);
+        }
+    }
+
+    private class DeleteEdit extends AbstractUndoableEdit {
+
+        private final int index;
+        private final Level old;
+
+        public DeleteEdit(int index, Level old) {
+            this.index = index;
+            this.old = old;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+
+            LOGGER.info("Redo DeleteEdit. Removing level at index {}", index);
+            deleteLevel(index, false);
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+
+            LOGGER.info("Undo DeleteEdit. Creating level at index {}", index);
+            insertLevel(old, index, false);
+        }
+    }
+
+    private class MoveUpEdit extends AbstractUndoableEdit {
+
+        private final int index;
+
+        public MoveUpEdit(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+
+            LOGGER.info("Redo MoveUpEdit. Move up level at index {}", index);
+            moveUp(index, false);
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+
+            LOGGER.info("Undo MoveUpEdit. Move down level at index {}", index);
+            moveDown(index, false);
+        }
+    }
+
+    private class MoveDownEdit extends AbstractUndoableEdit {
+
+        private final int index;
+
+        public MoveDownEdit(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+
+            LOGGER.info("Redo MoveDownEdit. Move up level at index {}", index);
+            moveDown(index, false);
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+
+            LOGGER.info("Undo MoveDownEdit. Move down level at index {}", index);
+            moveUp(index, false);
+        }
     }
 }

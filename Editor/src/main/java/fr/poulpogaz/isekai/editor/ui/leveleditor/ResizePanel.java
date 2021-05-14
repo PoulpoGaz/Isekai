@@ -56,7 +56,7 @@ public class ResizePanel extends JPanel {
 
             if (level.resize(width, height)) {
                 IsekaiEditor editor = IsekaiEditor.getInstance();
-                editor.addEdit(new ResizeEdit(this.editor, level, oldWidth, oldHeight, width, height));
+                editor.addEdit(new ResizeEdit(level, oldWidth, oldHeight, width, height));
             }
         }
     }

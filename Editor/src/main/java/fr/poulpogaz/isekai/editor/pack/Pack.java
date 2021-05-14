@@ -126,7 +126,7 @@ public class Pack extends Model {
         fireLevelChanged(index);
     }
 
-    public void removeLevel(int index) {
+    public Level removeLevel(int index) {
         Level old = levels.remove(index);
         old.index = 0;
 
@@ -136,6 +136,8 @@ public class Pack extends Model {
 
         modified = true;
         fireLevelRemoved(index);
+
+        return old;
     }
 
     public void removeLevel(Level level) {

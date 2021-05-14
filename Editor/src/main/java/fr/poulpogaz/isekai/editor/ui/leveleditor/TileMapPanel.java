@@ -229,7 +229,14 @@ public class TileMapPanel extends JPanel {
         Point offset = getOffset(getVisibleRect());
 
         hoverX = (e.getX() - offset.x) / pixelSize;
+        if (e.getX() < offset.x) {
+            hoverX--;
+        }
+
         hoverY = (e.getY() - offset.y) / pixelSize;
+        if (e.getY() < offset.y) {
+            hoverY--;
+        }
 
         repaint();
     }

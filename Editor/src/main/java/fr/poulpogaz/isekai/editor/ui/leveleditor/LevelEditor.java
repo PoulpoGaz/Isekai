@@ -68,4 +68,8 @@ public class LevelEditor extends LevelEditorBase {
 
         return eastPanel;
     }
+
+    public LevelEditorModel getEditorModel() {
+        return editor;
+    }
 }

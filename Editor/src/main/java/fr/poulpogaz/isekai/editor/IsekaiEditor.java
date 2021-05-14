@@ -236,7 +236,7 @@ public class IsekaiEditor extends JFrame {
     }
 
     public LevelEditorModel getEditorModel() {
-        return null;
+        return editor.getEditorModel();
     }
 
     public static IsekaiEditor getInstance() {

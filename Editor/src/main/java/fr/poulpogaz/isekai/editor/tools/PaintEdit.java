@@ -1,7 +1,9 @@
 package fr.poulpogaz.isekai.editor.tools;
 
+import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditorModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,12 +19,14 @@ public class PaintEdit extends AbstractUndoableEdit {
 
     private static final Logger LOGGER = LogManager.getLogger(PaintEdit.class);
 
+    private final LevelEditorModel model;
     private final Level level;
     private final Tile old;
     private final Tile newTile;
     private final List<Integer> affectedTiles;
 
     public PaintEdit(Level level, Tile old, Tile newTile, List<Integer> affectedTiles) {
+        this.model = IsekaiEditor.getInstance().getEditorModel();
         this.level = level;
         this.old = old;
         this.newTile = newTile;
@@ -35,9 +39,9 @@ public class PaintEdit extends AbstractUndoableEdit {
 
         LOGGER.info("Undo PaintEdit. Replacing {} by {}. Number of tiles affected: {}", newTile, old, affectedTiles.size());
 
-        /*if (model.getSelectedLevel() != level) {
+        if (model.getSelectedLevel() != level) {
             model.setSelectedLevel(level);
-        }*/
+        }
 
         level.setModifyingMap(true);
         affectedTiles.forEach((i) -> {
@@ -52,9 +56,9 @@ public class PaintEdit extends AbstractUndoableEdit {
 
         LOGGER.info("Redo PaintEdit. Replacing {} by {}. Number of tiles affected: {}", newTile, old, affectedTiles.size());
 
-        /*if (model.getSelectedLevel() != level) {
+        if (model.getSelectedLevel() != level) {
             model.setSelectedLevel(level);
-        }*/
+        }
 
         level.setModifyingMap(true);
         affectedTiles.forEach((i) -> {
