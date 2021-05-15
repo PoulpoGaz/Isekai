@@ -38,6 +38,8 @@ public final class ThemeManager {
                 return;
             }
 
+            LOGGER.info("Loading themes");
+
             try {
                 InputStream is = ThemeDownloader.class.getResourceAsStream("/themes/themes.json");
 

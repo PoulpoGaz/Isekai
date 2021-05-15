@@ -133,9 +133,9 @@ public class Actions {
         Pack pack = editor.getPack();
 
         if (pack != null && pack.isModified()) {
-            savePackDialog(editor, editor::dispose);
+            savePackDialog(editor, editor::saveAndExit);
         } else {
-            editor.dispose();
+            editor.saveAndExit();
         }
     });
 

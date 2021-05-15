@@ -69,6 +69,7 @@ public class CheckLevelDialog extends JDialog {
         });
 
         pack();
+        setLocationRelativeTo(IsekaiEditor.getInstance());
     }
 
     private void initComponents() {

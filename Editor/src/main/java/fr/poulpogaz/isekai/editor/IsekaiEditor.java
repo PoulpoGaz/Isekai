@@ -10,6 +10,8 @@ import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditor;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditorModel;
 import fr.poulpogaz.isekai.editor.ui.progressbar.JMemoryBar;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.undo.UndoManager;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IsekaiEditor extends JFrame {
+
+    private static final Logger LOGGER = LogManager.getLogger(IsekaiEditor.class);
 
     public static final int UNKNOWN_DIMENSION = -1;
 
@@ -40,7 +44,7 @@ public class IsekaiEditor extends JFrame {
     private LevelEditor editor;
 
     private IsekaiEditor() {
-        super("Editor");
+        super("Isekai Editor");
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         initComponents();
@@ -137,7 +141,8 @@ public class IsekaiEditor extends JFrame {
         };
     }
 
-    private void saveAndExit() {
+    public void saveAndExit() {
+        LOGGER.info("Saving...");
         Prefs.setMaximized(getExtendedState() == Frame.MAXIMIZED_BOTH);
         Prefs.setWidth(getWidth());
         Prefs.setHeight(getHeight());
@@ -147,6 +152,7 @@ public class IsekaiEditor extends JFrame {
         Prefs.setWindowX(location.x);
         Prefs.setWindowY(location.y);
 
+        LOGGER.info("Disposing Isekai Editor");
         dispose();
     }
 
