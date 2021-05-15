@@ -39,20 +39,6 @@ public class Main {
             ThemeManager.setTheme(false);
 
             IsekaiEditor editor = IsekaiEditor.getInstance();
-            editor.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    Prefs.setMaximized(editor.getExtendedState() == Frame.MAXIMIZED_BOTH);
-                    Prefs.setWidth(editor.getWidth());
-                    Prefs.setHeight(editor.getHeight());
-
-                    Point location = editor.getLocationOnScreen();
-
-                    Prefs.setWindowX(location.x);
-                    Prefs.setWindowY(location.y);
-                }
-            });
-
             editor.setVisible(true);
         });
     }

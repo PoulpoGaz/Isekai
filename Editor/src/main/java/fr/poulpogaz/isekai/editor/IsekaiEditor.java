@@ -15,6 +15,9 @@ import javax.swing.*;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +42,7 @@ public class IsekaiEditor extends JFrame {
     private IsekaiEditor() {
         super("Editor");
 
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         initComponents();
 
         setIconImages(createImages());
@@ -61,6 +64,8 @@ public class IsekaiEditor extends JFrame {
         if (Prefs.isMaximized()) {
             setExtendedState(MAXIMIZED_BOTH);
         }
+
+        addWindowListener(createWindowListener());
     }
 
     private void initComponents() {
@@ -117,6 +122,32 @@ public class IsekaiEditor extends JFrame {
         bar.add(help);
 
         return bar;
+    }
+
+    private WindowListener createWindowListener() {
+        return new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (pack != null && pack.isModified()) {
+                    Actions.save(IsekaiEditor.this, pack, false, () -> saveAndExit());
+                } else {
+                    saveAndExit();
+                }
+            }
+        };
+    }
+
+    private void saveAndExit() {
+        Prefs.setMaximized(getExtendedState() == Frame.MAXIMIZED_BOTH);
+        Prefs.setWidth(getWidth());
+        Prefs.setHeight(getHeight());
+
+        Point location = getLocationOnScreen();
+
+        Prefs.setWindowX(location.x);
+        Prefs.setWindowY(location.y);
+
+        dispose();
     }
 
     public void setPack(Pack pack) {
