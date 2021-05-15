@@ -129,7 +129,7 @@ public class IsekaiEditor extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (pack != null && pack.isModified()) {
-                    Actions.save(IsekaiEditor.this, pack, false, () -> saveAndExit());
+                    Actions.savePackDialog(IsekaiEditor.this, () -> saveAndExit());
                 } else {
                     saveAndExit();
                 }

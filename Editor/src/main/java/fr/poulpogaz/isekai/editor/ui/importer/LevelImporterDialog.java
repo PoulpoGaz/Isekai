@@ -5,7 +5,6 @@ import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.SIPack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
-import fr.poulpogaz.json.utils.Pair;
 
 import javax.swing.*;
 import java.awt.*;

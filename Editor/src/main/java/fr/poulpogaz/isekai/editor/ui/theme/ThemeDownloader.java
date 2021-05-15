@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
+import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,19 +10,36 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ThemeDownloader {
 
     private static final Logger LOGGER = LogManager.getLogger(ThemeDownloader.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws InterruptedException {
         ThemeManager.loadThemes();
 
-        for (IntelliJIDEATheme theme : ThemeManager.getThemes()) {
-            LOGGER.info("Downloading theme: {} at {} ", theme.name(), theme.getDownloadUrl());
+        ExecutorService executor = ExecutorWithException.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-            download(theme.getDownloadUrl(), "src/main/resources/themes/" + theme.fileName());
+        long time = System.currentTimeMillis();
+        for (IntelliJIDEATheme theme : ThemeManager.getThemes()) {
+            executor.submit(() -> {
+                LOGGER.info("Downloading theme: {} at {} ", theme.name(), theme.getDownloadUrl());
+
+                try {
+                    download(theme.getDownloadUrl(), "src/main/resources/themes/" + theme.fileName());
+                } catch (IOException e) {
+                    LOGGER.warn(e);
+                }
+            });
         }
+
+        executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        long time2 = System.currentTimeMillis();
+
+        LOGGER.info("Download finished in {}s", (time2 - time) / 1000f);
     }
 
     private static void download(String from, String to) throws IOException {

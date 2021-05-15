@@ -2,10 +2,13 @@ package fr.poulpogaz.isekai.editor.ui.importer;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.SIPack;
+import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class LevelImporter extends SwingWorker<List<Level>, Integer> {
 
@@ -43,19 +46,56 @@ public class LevelImporter extends SwingWorker<List<Level>, Integer> {
 
     @Override
     protected List<Level> doInBackground() {
-        List<Level> levels = Collections.synchronizedList(new ArrayList<>());
-        for (int index : this.levels) {
-            Level level = pack.importLevel(index);
+        ExecutorService executor = ExecutorWithException.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-            if (isCancelled()) {
+        List<Future<Level>> tasks = new ArrayList<>();
+
+        for (int index : this.levels) {
+            Future<Level> future = executor.submit(() -> {
+                if (isCancelled()) {
+                    return null;
+                }
+
+                Level level = pack.importLevel(index);
+
+                if (!isCancelled()) {
+                    if (level == null) {
+                        publish(index);
+                    } else {
+                        publish(-1);
+                        return level;
+                    }
+                }
+
                 return null;
+            });
+
+            tasks.add(future);
+        }
+
+        loop:
+        while (!isCancelled()) {
+            for (Future<Level> levels : tasks) {
+                if (!levels.isDone()) {
+                    continue loop;
+                }
             }
 
-            if (level == null) {
-                publish(index);
-            } else {
-                levels.add(level);
-                publish(-1);
+            break;
+        }
+
+        executor.shutdown();
+
+        if (isCancelled()) {
+            return null;
+        }
+
+        ArrayList<Level> levels = new ArrayList<>();
+        for (Future<Level> future : tasks) {
+            try {
+                levels.add(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                return null;
             }
         }
 

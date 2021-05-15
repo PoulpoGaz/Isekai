@@ -213,7 +213,7 @@ public class Actions {
         }
     }
 
-    private static void savePackDialog(IsekaiEditor editor, Runnable callback) {
+    public static void savePackDialog(IsekaiEditor editor, Runnable callback) {
         int result = JOptionPane.showConfirmDialog(editor, "Save current pack?", "Save", JOptionPane.YES_NO_CANCEL_OPTION);
 
         if (result == JFileChooser.APPROVE_OPTION) {

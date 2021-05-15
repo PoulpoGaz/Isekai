@@ -35,7 +35,8 @@ public class Converter {
         int size = data.length;
 
         if (size > TI8X_MAXDATA_SIZE) {
-            throw new PackIOException("Max size reached");
+            throw new PackIOException("Max size reached (%f KB). Maximum is %f KB Try reduce the number of levels"
+                    .formatted(data.length / 1024f, TI8X_MAXDATA_SIZE / 1024f));
         }
 
         int file_size = size + DATA + CHECKSUM_LEN;
@@ -43,7 +44,7 @@ public class Converter {
         int var_size = size + VARB_SIZE_LEN;
         int varb_size = size;
 
-        System.out.printf("file_size: %d\n", file_size);
+        // System.out.printf("file_size: %d\n", file_size);
         // System.out.printf("data_size: %d\n", data_size);
         // System.out.printf("var_size: %d\n", var_size);
         // System.out.printf("varb_size: %d\n", varb_size);
