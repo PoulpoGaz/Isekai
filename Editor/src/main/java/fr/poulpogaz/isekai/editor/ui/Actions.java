@@ -13,7 +13,6 @@ import fr.poulpogaz.isekai.editor.utils.Utils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.undo.UndoableEdit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -120,10 +119,12 @@ public class Actions {
         IsekaiEditor editor = IsekaiEditor.getInstance();
         Pack pack = editor.getPack();
 
-        if (pack != null && pack.isModified()) {
-            savePackDialog(editor, () -> {
+        if (pack != null) {
+            if (pack.isModified()) {
+                savePackDialog(editor, () -> editor.setPack(null));
+            } else {
                 editor.setPack(null);
-            });
+            }
         }
     });
 
@@ -168,7 +169,7 @@ public class Actions {
 
         if (result != null) {
             try {
-                Pack pack = TIPackIO.deserialize(result);
+                Pack pack = PackIO.deserialize(result);
                 pack.setModified(false);
 
                 if (editor.getPack() == null || !editor.getPack().isModified()) {
@@ -176,7 +177,7 @@ public class Actions {
                 } else {
                     savePackDialog(editor, () -> editor.setPack(pack));
                 }
-            } catch (TIPackIOException e) {
+            } catch (PackIOException e) {
                 showError(editor, "Can't open file.", e);
             }
         }
@@ -195,7 +196,7 @@ public class Actions {
             }
 
             try {
-                TIPackIO.serialize(pack, out);
+                PackIO.serialize(pack, out);
 
                 pack.setModified(false);
                 pack.setSaveLocation(out);
@@ -223,23 +224,23 @@ public class Actions {
     }
 
     private static boolean isPackValid(IsekaiEditor editor, Pack pack) {
-        if (pack.getName() == null || pack.getName().isEmpty()) {
-            showError(editor, "The pack doesn't have a name");
+        if (pack.getFileName() == null || pack.getFileName().isEmpty()) {
+            showError(editor, "Please set the file name before saving");
+        }
+
+        if (pack.getPackName() == null || pack.getPackName().isEmpty()) {
+            showError(editor, "Please set the pack name before saving");
             return false;
         }
 
         if (pack.getAuthor() == null || pack.getAuthor().isEmpty()) {
-            showError(editor, "The pack doesn't have an author");
+            showError(editor, "Please set the author before saving");
             return false;
         }
 
         if (pack.getNumberOfLevels() >= 65_536) {
             showError(editor, "Too many levels!");
             return false;
-        }
-
-        if (pack.getVersion() == null || pack.getVersion().isEmpty()) {
-            pack.setVersion("1.0");
         }
 
         return true;

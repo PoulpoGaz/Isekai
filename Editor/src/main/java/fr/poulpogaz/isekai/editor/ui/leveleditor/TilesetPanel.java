@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
+import com.formdev.flatlaf.ui.FlatBorder;
+import com.formdev.flatlaf.ui.FlatButtonUI;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 
 import javax.swing.*;
@@ -18,6 +20,8 @@ public class TilesetPanel extends JPanel {
 
     private final LevelEditorModel editor;
 
+    private Color hoverColor;
+
     public TilesetPanel(LevelEditorModel editor) {
         this.editor = editor;
         editor.addPropertyChangeListener(LevelEditorModel.TOOL_PROPERTY, (e) -> repaint());
@@ -29,6 +33,14 @@ public class TilesetPanel extends JPanel {
 
         addMouseListener(adapter);
         addMouseMotionListener(adapter);
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+
+        hoverColor = UIManager.getColor("Component.focusedBorderColor");
+        hoverColor = new Color(hoverColor.getRed(), hoverColor.getGreen(), hoverColor.getBlue(), 127);
     }
 
     @Override
@@ -50,7 +62,7 @@ public class TilesetPanel extends JPanel {
             g2d.drawImage(tile.getSprite(), xDraw, yDraw, tileSize, tileSize, null);
 
             if (editor.getSelectedTile() == tile) {
-                g.setColor(new Color(0, 217, 255, 64));
+                g.setColor(hoverColor);
                 g.fillRect(xDraw, yDraw, tileSize, tileSize);
             }
 

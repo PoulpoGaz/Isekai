@@ -1,7 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.pack.TIPackIOException;
-
+import javax.sound.midi.SysexMessage;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -32,11 +31,11 @@ public class Converter {
     private static final byte[] header = new byte[]{0x2A, 0x2A, 0x54, 0x49, 0x38, 0x33, 0x46, 0x2A, 0x1A, 0x0A, 0x00};
 
     @SuppressWarnings({"UnnecessaryLocalVariable", "PointlessArithmeticExpression", "PointlessBitwiseExpression"})
-    public static byte[] convert(byte[] data, String varName) throws TIPackIOException {
+    public static byte[] convert(byte[] data, String varName) throws PackIOException {
         int size = data.length;
 
         if (size > TI8X_MAXDATA_SIZE) {
-            throw new TIPackIOException("Max size reached");
+            throw new PackIOException("Max size reached");
         }
 
         int file_size = size + DATA + CHECKSUM_LEN;
@@ -44,7 +43,7 @@ public class Converter {
         int var_size = size + VARB_SIZE_LEN;
         int varb_size = size;
 
-        // System.out.printf("file_size: %d\n", file_size);
+        System.out.printf("file_size: %d\n", file_size);
         // System.out.printf("data_size: %d\n", data_size);
         // System.out.printf("var_size: %d\n", var_size);
         // System.out.printf("varb_size: %d\n", varb_size);
@@ -59,7 +58,7 @@ public class Converter {
         // Write name
         int offset = NAME;
         byte[] name = varName.getBytes(StandardCharsets.US_ASCII);
-        System.arraycopy(name, 0, output, offset, Math.min(name.length, 8));
+        System.arraycopy(name, 0, output, offset, name.length);
 
         // System.out.printf("name_size: %d\n", Math.min(name.length, 8));
 
@@ -109,5 +108,22 @@ public class Converter {
         System.arraycopy(in, DATA, output, 0, output.length);
 
         return output;
+    }
+
+    public static byte[] extractFileName(byte[] in) {
+        int offset = NAME;
+
+        int len = 0;
+        for (int i = offset; i < offset + 8; i++) {
+            if (in[i] == 0) {
+                break;
+            }
+            len++;
+        }
+
+        byte[] out = new byte[len];
+        System.arraycopy(in, offset, out, 0, len);
+
+        return out;
     }
 }

@@ -1,11 +1,8 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.Model;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,13 +11,17 @@ import java.util.Objects;
 
 public class Pack extends Model {
 
-    public static final String NAME_PROPERTY = "NameProperty";
-    public static final String AUTHOR_PROPERTY = "AuthorProperty";
-    public static final String VERSION_PROPERTY = "VersionProperty";
+    public static final int MAX_FILE_NAME_SIZE = 8;
+    public static final int MAX_PACK_NAME_SIZE = 32;
+    public static final int MAX_AUTHOR_SIZE = 32;
 
-    protected String name;
+    public static final String FILE_NAME_PROPERTY = "FileNameProperty";
+    public static final String PACK_NAME_PROPERTY = "PackNameProperty";
+    public static final String AUTHOR_PROPERTY = "AuthorProperty";
+
+    protected String fileName;
+    protected String packName;
     protected String author;
-    protected String version;
 
     protected ArrayList<Level> levels;
 
@@ -34,18 +35,41 @@ public class Pack extends Model {
         addLevel(new Level());
     }
 
-    public String getName() {
-        return name;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setName(String name) {
-        if (!Objects.equals(this.name, name)) {
-            String old = this.name;
+    public void setFileName(String fileName) {
+        if (!Objects.equals(this.fileName, fileName)) {
+            String old = this.fileName;
 
-            this.name = name;
+            if (fileName.length() > MAX_FILE_NAME_SIZE) {
+                this.fileName = fileName.substring(0, MAX_FILE_NAME_SIZE);
+            } else {
+                this.fileName = fileName;
+            }
 
             modified = true;
-            firePropertyChange(NAME_PROPERTY, old, name);
+            firePropertyChange(FILE_NAME_PROPERTY, old, fileName);
+        }
+    }
+
+    public String getPackName() {
+        return packName;
+    }
+
+    public void setPackName(String packName) {
+        if (!Objects.equals(this.packName, packName)) {
+            String old = this.packName;
+
+            if (packName.length() > MAX_PACK_NAME_SIZE) {
+                this.packName = packName.substring(0, MAX_PACK_NAME_SIZE);
+            } else {
+                this.packName = packName;
+            }
+
+            modified = true;
+            firePropertyChange(PACK_NAME_PROPERTY, old, packName);
         }
     }
 
@@ -57,25 +81,14 @@ public class Pack extends Model {
         if (!Objects.equals(this.author, author)) {
             String old = this.author;
 
-            this.author = author;
+            if (author.length() > MAX_AUTHOR_SIZE) {
+                this.author = author.substring(0, MAX_AUTHOR_SIZE);
+            } else {
+                this.author = author;
+            }
 
             modified = true;
             firePropertyChange(AUTHOR_PROPERTY, old, author);
-        }
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        if (!Objects.equals(this.version, version)) {
-            String old = this.version;
-
-            this.version = version;
-
-            modified = true;
-            firePropertyChange(VERSION_PROPERTY, old, version);
         }
     }
 

@@ -11,19 +11,19 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
-public class TIPackIO {
+public class PackIO {
 
     private static final byte[] PACK_MARKER = new byte[] {(byte) 0xFE, (byte) 0xDC, (byte) 0xBA};
 
-    private static final Logger LOGGER = LogManager.getLogger(TIPackIO.class);
+    private static final Logger LOGGER = LogManager.getLogger(PackIO.class);
 
     /**
      * Pack format
      * header bytes              3 bytes
      * pack name                 (n <= 32 bytes)
      * author                    (n <= 32 bytes)
-     * version                   (n <= 8 bytes)
-     * number of levels          1 byte
+     * sprite theme              8 bytes
+     * number of levels          2 byte
      * offsets to each levels    number of levels * 2 bytes
      *  level
      *  player x                 1 byte
@@ -36,48 +36,46 @@ public class TIPackIO {
      */
     public static void serialize(Pack pack, Path out) throws IOException {
         if (!Files.isDirectory(out)) {
-            throw new TIPackIOException("Path isn't a directory: " + out);
+            throw new PackIOException("Path isn't a directory: " + out);
         }
 
         LOGGER.info("Exporting pack to {}", out);
-
-        String packName = pack.getName();
-        String varName = packName.substring(0, Math.min(packName.length(), 8));
-
-        writePack(pack, varName, out.resolve(varName + ".8xv"));
+        writePack(pack, out.resolve(pack.getFileName() + ".8xv"));
 
         LOGGER.info("Pack exported!");
     }
 
-    private static void writePack(Pack pack, String varName, Path out) throws IOException {
+    private static void writePack(Pack pack, Path out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         baos.write(PACK_MARKER);
         writePackInfo(pack, baos);
 
+        // sprite theme
+        for (int i = 0; i < 8; i++) {
+            baos.write(0);
+        }
+
         writeLevels(pack.getLevels(), baos);
         baos.close();
 
-        byte[] data = Converter.convert(baos.toByteArray(), varName);
+        byte[] data = Converter.convert(baos.toByteArray(), pack.getFileName());
         Files.write(out, data, StandardOpenOption.CREATE);
     }
 
     private static void writePackInfo(Pack pack, OutputStream os) throws IOException {
-        byte[] name = pack.getName().getBytes(StandardCharsets.ISO_8859_1);
-        os.write(name, 0, Math.min(name.length, 31));
+        byte[] name = pack.getPackName().getBytes(StandardCharsets.ISO_8859_1);
+        os.write(name);
         os.write('\0'); // string end
 
         byte[] author = pack.getAuthor().getBytes(StandardCharsets.ISO_8859_1);
-        os.write(author, 0, Math.min(author.length, 31));
-        os.write('\0');
-
-        byte[] version = pack.getVersion().getBytes(StandardCharsets.ISO_8859_1);
-        os.write(version, 0, Math.min(version.length, 7));
+        os.write(author);
         os.write('\0');
     }
 
     private static void writeLevels(ArrayList<Level> levels, OutputStream os) throws IOException {
-        os.write(levels.size());
+        os.write(levels.size() & 0xFF);
+        os.write((levels.size() >> 8) & 0xFF);
 
         byte[][] levelsData = new byte[levels.size()][];
 
@@ -168,24 +166,30 @@ public class TIPackIO {
         return baos.toByteArray();
     }
 
-    public static Pack deserialize(Path in) throws TIPackIOException {
+    public static Pack deserialize(Path in) throws PackIOException {
         if (Files.isDirectory(in)) {
-            throw new TIPackIOException("Input path isn't a file");
+            throw new PackIOException("Input path isn't a file");
         }
 
         LOGGER.info("Importing pack from {}", in);
 
         byte[] data;
+        byte[] fileName;
         try {
-            data = Converter.extract(Files.readAllBytes(in));
-        } catch (IOException e) {
+            byte[] fileBytes = Files.readAllBytes(in);
+
+            data = Converter.extract(fileBytes);
+            fileName = Converter.extractFileName(fileBytes);
+        } catch (Exception e) {
             LOGGER.warn("Failed to import pack", e);
 
-            return null;
+            throw new PackIOException(e);
         }
 
         Pack pack = new Pack();
         pack.setSaveLocation(in.getParent());
+
+        pack.setFileName(new String(fileName));
 
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
 
@@ -195,7 +199,7 @@ public class TIPackIO {
             readPackInfo(pack, bais);
             readLevels(pack, bais);
 
-        }  catch (TIPackIOException e) {
+        }  catch (PackIOException e) {
             throw e;
         } catch (IOException ignored) {} // can't happen
 
@@ -203,9 +207,8 @@ public class TIPackIO {
     }
 
     private static void readPackInfo(Pack pack, InputStream is) throws IOException {
-        pack.setName(readString(is));
+        pack.setPackName(readString(is));
         pack.setAuthor(readString(is));
-        pack.setVersion(readString(is));
     }
 
     private static String readString(InputStream is) throws IOException {
@@ -215,7 +218,7 @@ public class TIPackIO {
             int next = is.read();
 
             if (next == -1) {
-                throw new TIPackIOException("EOF");
+                throw new PackIOException("EOF");
             }
 
             if (next == '\0') {
@@ -227,7 +230,7 @@ public class TIPackIO {
     }
 
     private static void readLevels(Pack pack, InputStream is) throws IOException {
-        int nLevels = is.read();
+        int nLevels = (is.read() & 0xFF) | ((is.read() << 8) & 0xFF00);
 
         is.readNBytes(nLevels * 2); // skip offsets, they are useless here
 
@@ -268,7 +271,7 @@ public class TIPackIO {
                 int i = is.read();
 
                 if (i == -1) {
-                    throw new TIPackIOException("EOF");
+                    throw new PackIOException("EOF");
                 }
 
                 data[y][x] = values[i];
@@ -284,7 +287,7 @@ public class TIPackIO {
         int i;
         while ((i = is.read()) != 0xFF) {
             if (i == -1) {
-                throw new TIPackIOException("EOF");
+                throw new PackIOException("EOF");
             }
 
             if (count > 0) {
