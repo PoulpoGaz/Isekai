@@ -93,7 +93,13 @@ public class LevelImporter extends SwingWorker<List<Level>, Integer> {
         ArrayList<Level> levels = new ArrayList<>();
         for (Future<Level> future : tasks) {
             try {
-                levels.add(future.get());
+                Level level = future.get();
+
+                if (level == null) {
+                    continue;
+                }
+
+                levels.add(level);
             } catch (InterruptedException | ExecutionException e) {
                 return null;
             }

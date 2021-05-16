@@ -1,10 +1,10 @@
-package fr.poulpogaz.isekai.editor.ui.check;
+package fr.poulpogaz.isekai.editor.ui.solver;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.pack.Tile;
-import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
-import fr.poulpogaz.isekai.editor.pack.checker.State;
+import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
+import fr.poulpogaz.isekai.editor.pack.solver.State;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 

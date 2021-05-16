@@ -32,6 +32,7 @@ bool update();
 void move(int8_t dir_x, int8_t dir_y);
 uint8_t get_tile_at(int8_t x, int8_t y); // OUTISDE if outside
 uint8_t get_tile_at_index(uint16_t i);
+uint16_t compute_scroll(int16_t value, uint8_t length, uint8_t max_length);
 
 void init_game() {
 	gfx_tilemap_t *tilemap = &game.tilemap;
@@ -120,30 +121,16 @@ void center_camera() {
 	if (game.level_width > MAX_DRAW_WIDTH) {
 		int16_t x = game.player_x * 16 - MAX_DRAW_WIDTH * 8; // * 16 / 2 = * 8
 
-		if (x < 0) {
-			game.scroll_x = 0;
-		} else if (x + MAX_DRAW_WIDTH * 16 > game.level_width * 16) {
-			game.scroll_x = (game.level_width - MAX_DRAW_WIDTH) * 16;
-		} else {
-			game.scroll_x = (uint16_t) x;
-		}
-
+		game.scroll_x = compute_scroll(x, game.level_width, MAX_DRAW_WIDTH);
 		tilemap->x_loc = 0;
 	} else {
 		tilemap->x_loc = (LCD_WIDTH - game.level_width * 16) / 2;
 	}
 
 	if (game.level_height > MAX_DRAW_HEIGHT) {
-		int16_t y = game.player_y * 16 - MAX_DRAW_HEIGHT * 8; // * 16 / 2 = * 8
+		int16_t y = game.player_y * 16 - (MAX_DRAW_HEIGHT + 1) * 8; // * 16 / 2 = * 8
 
-		if (y < 0) {
-			game.scroll_y = 0;
-		} else if (y + MAX_DRAW_HEIGHT * 16 > game.level_height * 16) {
-			game.scroll_y = (game.level_height - MAX_DRAW_HEIGHT) * 16;
-		} else {
-			game.scroll_y = (uint16_t) y;
-		}
-
+		game.scroll_y = compute_scroll(y, game.level_height, MAX_DRAW_HEIGHT);
 		tilemap->y_loc = 0;
 	} else {
 		tilemap->y_loc = (LCD_HEIGHT - game.level_height * 16) / 2;
@@ -154,25 +141,23 @@ void move_camera(int8_t dir_x, int8_t dir_y) {
 	if (dir_x != 0 && game.level_width > MAX_DRAW_WIDTH) {
 		int16_t x = game.scroll_x + dir_x; // * 16 / 2 = * 8
 
-		if (x < 0) {
-			game.scroll_x = 0;
-		} else if (x + MAX_DRAW_WIDTH * 16 > game.level_width * 16) {
-			game.scroll_x = (game.level_width - MAX_DRAW_WIDTH) * 16;
-		} else {
-			game.scroll_x = (uint16_t) x;
-		}
+		game.scroll_x = compute_scroll(x, game.level_width, MAX_DRAW_WIDTH);
 	}
 
 	if (dir_y != 0 && game.level_height > MAX_DRAW_HEIGHT) {
 		int16_t y = game.scroll_y + dir_y; // * 16 / 2 = * 8
 
-		if (y < 0) {
-			game.scroll_y = 0;
-		} else if (y + MAX_DRAW_HEIGHT * 16 > game.level_height * 16) {
-			game.scroll_y = (game.level_height - MAX_DRAW_HEIGHT) * 16;
-		} else {
-			game.scroll_y = (uint16_t) y;
-		}
+		game.scroll_y = compute_scroll(y, game.level_height, MAX_DRAW_HEIGHT);
+	}
+}
+
+uint16_t compute_scroll(int16_t value, uint8_t length, uint8_t max_length) {
+	if (value < 0) {
+		return 0;
+	} else if (value + max_length * 16 > length * 16) {
+		return (length - max_length) * 16;
+	} else {
+		return (uint16_t) value;
 	}
 }
 
@@ -280,12 +265,12 @@ bool update() {
 
 		if (repaint) {
 			if (game.nb_targets == game.nb_crates_on_target) { // win check
-				uint8_t level = current_pack->current_level;
+				uint16_t level = current_pack->current_level;
 				current_pack->pushs[level] = game.pushs;
 				current_pack->moves[level] = game.moves;
 
 				if (level + 1 >= current_pack->n_levels) {
-					gfx_FillScreen(BLACK);
+					draw_menu_background(false, true);
 					print_string_centered("You win!", 124);
 					gfx_SwapDraw();
 

@@ -1,11 +1,11 @@
-package fr.poulpogaz.isekai.editor.ui.check;
+package fr.poulpogaz.isekai.editor.ui.solver;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.checker.BFSSolver;
-import fr.poulpogaz.isekai.editor.pack.checker.DFSSolver;
-import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
+import fr.poulpogaz.isekai.editor.pack.solver.BFSSolver;
+import fr.poulpogaz.isekai.editor.pack.solver.DFSSolver;
+import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
@@ -18,7 +18,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.TimeUnit;
 
-public class CheckLevelDialog extends JDialog {
+public class SolverLevelDialog extends JDialog {
 
     private static final ExecutorWithException executor;
 
@@ -28,7 +28,7 @@ public class CheckLevelDialog extends JDialog {
         executor.allowCoreThreadTimeOut(true);
     }
 
-    private static final CheckLevelDialog INSTANCE = new CheckLevelDialog();
+    private static final SolverLevelDialog INSTANCE = new SolverLevelDialog();
 
     public static void showDialog() {
         INSTANCE.setupChooseLayout();
@@ -48,7 +48,7 @@ public class CheckLevelDialog extends JDialog {
 
     private ISolver solver;
 
-    private CheckLevelDialog() {
+    private SolverLevelDialog() {
         super(IsekaiEditor.getInstance(), "Checking level", true);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

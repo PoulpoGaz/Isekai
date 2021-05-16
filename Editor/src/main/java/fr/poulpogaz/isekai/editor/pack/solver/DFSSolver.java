@@ -1,18 +1,17 @@
-package fr.poulpogaz.isekai.editor.pack.checker;
+package fr.poulpogaz.isekai.editor.pack.solver;
 
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Tile;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
-import java.util.ArrayDeque;
 import java.util.List;
-import java.util.Queue;
+import java.util.Stack;
 
-public class BFSSolver extends AbstractSolver {
+public class DFSSolver extends AbstractSolver {
 
     private final ListOrderedSet<State> visited = new ListOrderedSet<>();
 
-    public BFSSolver(Level level) {
+    public DFSSolver(Level level) {
         super(level);
     }
 
@@ -27,16 +26,16 @@ public class BFSSolver extends AbstractSolver {
         findDeadlockTiles();
 
         visited.clear();
-        Queue<State> states = new ArrayDeque<>();
+        Stack<State> states = new Stack<>();
 
-        states.offer(defaultState);
+        states.push(defaultState);
         visited.add(defaultState);
 
         Tile[] mapWithCrates = map.clone();
 
         int stateNumber = 0;
         while (!states.isEmpty() && status != CANCELED) {
-            State state = states.poll();
+            State state = states.pop();
 
             if (isSolution(state)) {
                 return true;
@@ -72,7 +71,7 @@ public class BFSSolver extends AbstractSolver {
                                 return true;
                             }
 
-                            states.offer(child);
+                            states.push(child);
                         }
                     }
                 }

@@ -48,6 +48,8 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     String yMax = getValue(js, "BoardYMax");
 
                     if (board == null || xMax == null || yMax == null) {
+                        LOGGER.warn("Can't find variables");
+
                         return null;
                     }
 
@@ -59,9 +61,10 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     if (decode(level, board.substring(1, board.length() - 1))) {
                         return level;
                     }
-
                 }
             }
+
+            LOGGER.warn("Failed to import level {}", index);
 
             return null;
         } catch (Exception e) {

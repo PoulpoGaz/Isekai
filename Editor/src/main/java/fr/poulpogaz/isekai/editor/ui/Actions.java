@@ -98,7 +98,7 @@ public class Actions {
         }
     });
 
-    public static final Action IMPORT_LOCAL = newAction("From your computer", null, shiftKey(VK_I), e -> {
+    public static final Action IMPORT_LOCAL = newAction("From your computer", null, ctrlShiftKey(VK_I), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
 
         Path path = showFileChooser(editor, JFileChooser.FILES_ONLY, new Filter(), true);
@@ -229,6 +229,7 @@ public class Actions {
     private static boolean isPackValid(IsekaiEditor editor, Pack pack) {
         if (pack.getFileName() == null || pack.getFileName().isEmpty()) {
             showError(editor, "Please set the file name before saving");
+            return false;
         }
 
         if (pack.getPackName() == null || pack.getPackName().isEmpty()) {

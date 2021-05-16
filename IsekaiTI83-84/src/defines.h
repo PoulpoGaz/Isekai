@@ -11,11 +11,10 @@ typedef struct pack_info_t {
 	char app_var[9];
 	char *name;
 	char *author;
-	char *version;
-	uint8_t n_levels;
+	uint16_t n_levels;
 
-	uint8_t current_level;
-	uint8_t max_level_reached;
+	uint16_t current_level;
+	uint16_t max_level_reached;
 
 	uint16_t *moves;
 	uint16_t *pushs;

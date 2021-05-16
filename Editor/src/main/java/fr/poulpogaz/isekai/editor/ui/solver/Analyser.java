@@ -1,8 +1,8 @@
-package fr.poulpogaz.isekai.editor.ui.check;
+package fr.poulpogaz.isekai.editor.ui.solver;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import fr.poulpogaz.isekai.editor.pack.checker.ISolver;
-import fr.poulpogaz.isekai.editor.pack.checker.State;
+import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
+import fr.poulpogaz.isekai.editor.pack.solver.State;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.concurrent.Alarm;
 

@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.pack.checker;
+package fr.poulpogaz.isekai.editor.pack.solver;
 
 import java.util.Arrays;
 

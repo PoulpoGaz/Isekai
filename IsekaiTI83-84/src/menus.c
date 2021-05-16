@@ -157,16 +157,14 @@ void show_pack_info() {
 			print_string_centered(current_pack->name, 50);
 			print_string_centered("By", 70);
 			print_string_centered(current_pack->author, 80);
-			print_string_centered("Version:", 100);
-			print_string_centered(current_pack->version, 110);
-			print_string_centered("Progression:", 130);
+			print_string_centered("Progression:", 100);
 
-			gfx_PrintStringXY("/", 156, 140);
-			gfx_SetTextXY(140, 140);
-			gfx_PrintUInt(current_pack->max_level_reached + 1, 2);
+			gfx_PrintStringXY("/", 156, 110);
+			gfx_SetTextXY(116, 110);
+			gfx_PrintUInt(current_pack->max_level_reached + 1, 5);
 
-			gfx_SetTextXY(164, 140);
-			gfx_PrintUInt(current_pack->n_levels, 2);
+			gfx_SetTextXY(164, 110);
+			gfx_PrintUInt(current_pack->n_levels, 5);
 
 			print_string_centered("Press [Del] to return", 180);
 			print_string_centered("Press [2nd] to reset progression", 190);
@@ -291,11 +289,11 @@ void draw_stats_menu() {
 	gfx_PrintStringXY("Moves", 88, 24);
 	gfx_PrintStringXY("Pushs", 224, 24);
 
-	uint8_t start = page * 20;
-	uint8_t max = min(start + 20, current_pack->n_levels);
+	uint16_t start = page * 20;
+	uint16_t max = min(start + 20, current_pack->n_levels);
 
 	uint8_t y = 34;
-	for (uint8_t i = start; i < max; i++) {
+	for (uint16_t i = start; i < max; i++) {
 		gfx_SetTextXY(16, y);
 		gfx_PrintUInt(i + 1, 2);
 

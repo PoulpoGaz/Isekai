@@ -1,6 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.pack.checker.AbstractSolver;
+import fr.poulpogaz.isekai.editor.pack.solver.AbstractSolver;
 import fr.poulpogaz.isekai.editor.ui.Model;
 import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +11,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class Level extends Model {
 
@@ -20,8 +19,8 @@ public class Level extends Model {
     public static final int MINIMUM_MAP_WIDTH = 5;
     public static final int MINIMUM_MAP_HEIGHT = 5;
 
-    public static final int MAXIMUM_MAP_WIDTH = 64;
-    public static final int MAXIMUM_MAP_HEIGHT = 64;
+    public static final int MAXIMUM_MAP_WIDTH = 255;
+    public static final int MAXIMUM_MAP_HEIGHT = 255;
 
     public static final int DEFAULT_MAP_WIDTH = 9;
     public static final int DEFAULT_MAP_HEIGHT = 9;

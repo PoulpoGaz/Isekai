@@ -50,14 +50,22 @@ void load_packs_info() {
 
 		data += read_string(data, &pack->name);
 		data += read_string(data, &pack->author);
-		data += read_string(data, &pack->version);
 
-		pack->n_levels = *data;
+        data += 8; // sprite theme
+
+        bool valid = *data++;
+
+        if (!valid) {
+            dbg_sprintf(dbgout, "Invalid pack (name: %s, author: %s). Skip\n", pack->name, pack->author);
+            continue;
+        }
+
+		pack->n_levels = * ( (uint16_t *) data );
 
         pack->moves = calloc(pack->n_levels, sizeof(uint16_t));
         pack->pushs = calloc(pack->n_levels, sizeof(uint16_t));
 
-		dbg_sprintf(dbgout, "New pack\n-name:%s\n-author:%s\n-version:%s\n-levels:%i\n", pack->name, pack->author, pack->version, pack->n_levels);
+		dbg_sprintf(dbgout, "New pack\n-name:%s\n-author:%s\n-levels:%i\n", pack->name, pack->author, pack->n_levels);
 
 		num_packs++;
 	}
@@ -75,13 +83,12 @@ void free_packs_info() {
 
 		free(pack->name);
 		free(pack->author);
-		free(pack->version);
         free(pack->moves);
         free(pack->pushs);
 	}
 }
 
-void load_level_data(pack_info_t pack, uint8_t level) {
+void load_level_data(pack_info_t pack, uint16_t level) {
     ti_var_t slot;
 
     ti_CloseAll();
@@ -90,8 +97,9 @@ void load_level_data(pack_info_t pack, uint8_t level) {
 
         data += strlen(pack.name) + 1;    // skip pack name
         data += strlen(pack.author) + 1;  // skip pack author
-        data += strlen(pack.version) + 1; // skip pack version
-        data += 1;                        // skip number of levels
+
+        // skip sprite theme (8 bytes), valid flag (1 bytes), number of levels (2 bytes)
+        data += 11;
 
         uint16_t *offsets = (uint16_t *) data;
         uint16_t level_data_offset = offsets[level];
@@ -168,7 +176,7 @@ void save() {
             pack_info_t *pack = &packs[i];
 
             ti_Write(&pack->app_var, sizeof(char), 8, slot);
-            ti_Write(&pack->max_level_reached, sizeof(uint8_t), 1, slot);
+            ti_Write(&pack->max_level_reached, sizeof(uint16_t), 1, slot);
             ti_Write(pack->moves, sizeof(uint16_t), pack->n_levels, slot);
             ti_Write(pack->pushs, sizeof(uint16_t), pack->n_levels, slot);
         }
@@ -194,7 +202,7 @@ void load_save() {
                 pack_info_t *pack = &packs[j];
 
                 if (strcmp(app_var, pack->app_var) == 0) {
-                    ti_Read(&pack->max_level_reached, sizeof(uint8_t), 1, slot);
+                    ti_Read(&pack->max_level_reached, sizeof(uint16_t), 1, slot);
                     ti_Read(pack->moves, sizeof(uint16_t), pack->n_levels, slot);
                     ti_Read(pack->pushs, sizeof(uint16_t), pack->n_levels, slot);
 

@@ -6,7 +6,7 @@ import fr.poulpogaz.isekai.editor.tools.FillTool;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
 import fr.poulpogaz.isekai.editor.ui.Icons;
-import fr.poulpogaz.isekai.editor.ui.check.CheckLevelDialog;
+import fr.poulpogaz.isekai.editor.ui.solver.SolverLevelDialog;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 
@@ -36,7 +36,7 @@ public class LevelEditor extends LevelEditorBase {
 
         JButton check = new JButton();
         check.setIcon(Icons.get("icons/check.svg"));
-        check.addActionListener((e) -> CheckLevelDialog.showDialog());
+        check.addActionListener((e) -> SolverLevelDialog.showDialog());
         toolBar.add(check);
 
         return toolBar;
