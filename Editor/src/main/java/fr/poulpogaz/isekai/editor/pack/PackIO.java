@@ -23,6 +23,7 @@ public class PackIO {
      * pack name                 (n <= 32 bytes)
      * author                    (n <= 32 bytes)
      * sprite theme              8 bytes
+     * valid                     1 byte
      * number of levels          2 byte
      * offsets to each levels    number of levels * 2 bytes
      *  level
@@ -55,6 +56,8 @@ public class PackIO {
         for (int i = 0; i < 8; i++) {
             baos.write(0);
         }
+
+        baos.write(pack.isValid() ? 1 : 0);
 
         writeLevels(pack.getLevels(), baos);
         baos.close();
@@ -209,6 +212,9 @@ public class PackIO {
     private static void readPackInfo(Pack pack, InputStream is) throws IOException {
         pack.setPackName(readString(is));
         pack.setAuthor(readString(is));
+
+        is.readNBytes(8); // sprite theme
+        is.readNBytes(1); // valid
     }
 
     private static String readString(InputStream is) throws IOException {

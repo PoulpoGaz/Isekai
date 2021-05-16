@@ -12,10 +12,7 @@ import static fr.poulpogaz.isekai.editor.pack.Tile.*;
 
 public abstract class AbstractSolver implements ISolver {
 
-    protected static final int X_AXIS = 0;
-    protected static final int Y_AXIS = 1;
-
-    protected static final int[][] MOVES = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    public static final int[][] MOVES = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     protected final Level level;
     protected final Tile[] map;

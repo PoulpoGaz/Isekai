@@ -3,6 +3,7 @@ package fr.poulpogaz.isekai.editor.pack;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 public final class PackSprites {
 
@@ -16,8 +17,8 @@ public final class PackSprites {
 
     private static BufferedImage PLAYER;
 
-    public static void initialize() throws IOException {
-        TILESET = ImageIO.read(PackSprites.class.getResourceAsStream("/tileset.png"));
+    public static void initialize() throws Exception {
+        TILESET = ImageIO.read(Objects.requireNonNull(PackSprites.class.getResourceAsStream("/tileset.png")));
 
         FLOOR           = TILESET.getSubimage(0, 0, 16, 16);
         WALL            = TILESET.getSubimage(16, 0, 16, 16);

@@ -13,7 +13,6 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +41,7 @@ public class Main {
 
         try {
             PackSprites.initialize();
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.fatal("Failed to load tileset", e);
 
             JOptionPane.showMessageDialog(null, "Failed to load tileset\n\nError:" + e, "FATAL", JOptionPane.ERROR_MESSAGE);

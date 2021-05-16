@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
 import fr.poulpogaz.isekai.editor.ui.Model;
+import org.apache.logging.log4j.LogManager;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -98,6 +99,7 @@ public class Pack extends Model {
 
     public void addLevel(Level level) {
         level.index = levels.size();
+        level.pack = this;
         levels.add(level);
 
         modified = true;
@@ -106,6 +108,7 @@ public class Pack extends Model {
 
     public void addLevel(Level level, int index) {
         level.index = index;
+        level.pack = this;
         levels.add(index, level);
 
         for (int i = index + 1; i < levels.size(); i++) {
@@ -122,6 +125,7 @@ public class Pack extends Model {
         int index = levels.size();
         for (Level level : newLevels) {
             level.index = index;
+            level.pack = this;
             index++;
 
             levels.add(level);
@@ -133,7 +137,9 @@ public class Pack extends Model {
 
     public void setLevel(Level level, int index) {
         level.index = index;
+        level.pack = this;
         Level old = levels.set(index, level);
+        old.pack = null;
         old.index = -1;
 
         modified = true;
@@ -142,7 +148,8 @@ public class Pack extends Model {
 
     public Level removeLevel(int index) {
         Level old = levels.remove(index);
-        old.index = 0;
+        old.index = -1;
+        old.pack = null;
 
         for (int i = index; i < levels.size(); i++) {
             levels.get(i).index = i;
@@ -164,6 +171,9 @@ public class Pack extends Model {
 
             for (Level level : toRemove) {
                 if (levels.remove(level)) {
+                    level.index = -1;
+                    level.pack = null;
+
                     removed = true;
                 }
             }
@@ -176,6 +186,7 @@ public class Pack extends Model {
                 Level level = levels.get(i);
 
                 level.index = i;
+                level.pack = this;
             }
 
             modified = true;
@@ -208,7 +219,10 @@ public class Pack extends Model {
     public void setLevels(ArrayList<Level> levels) {
         if (levels.size() > 0) {
             ArrayList<Level> old = this.levels;
-            old.forEach((level) -> level.index = -1);
+            old.forEach((level) -> {
+                level.index = -1;
+                level.pack = null;
+            });
 
             this.levels = levels;
 
@@ -219,6 +233,16 @@ public class Pack extends Model {
             modified = true;
             fireOrganisationChanged();
         }
+    }
+
+    public boolean isValid() {
+        for (Level level : levels) {
+            if (!level.isValid()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void setSaveLocation(Path saveLocation) {

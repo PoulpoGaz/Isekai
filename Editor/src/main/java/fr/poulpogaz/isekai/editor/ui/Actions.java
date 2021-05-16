@@ -9,6 +9,8 @@ import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.ImportEdit;
 import fr.poulpogaz.isekai.editor.ui.theme.ThemePanel;
 import fr.poulpogaz.isekai.editor.utils.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -27,6 +29,7 @@ import static java.awt.event.KeyEvent.*;
 
 public class Actions {
 
+    private static final Logger LOGGER = LogManager.getLogger(Actions.class);
     private static final FileNameExtensionFilter _8XV = new FileNameExtensionFilter("8xv", "8xv");
 
     public static Action newAction(String name, Icon icon, KeyStroke keyStroke, ActionListener listener) {
@@ -201,7 +204,7 @@ public class Actions {
                 pack.setModified(false);
                 pack.setSaveLocation(out);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.warn("Failed to save pack", e);
                 showError(editor, "Failed to save the pack.", e);
 
                 return;
