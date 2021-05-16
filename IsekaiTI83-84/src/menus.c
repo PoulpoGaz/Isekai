@@ -86,6 +86,9 @@ void draw_main_menu() {
 	gfx_PrintStringXY("Restart level/Enter", 80, 210);
     gfx_PrintStringXY("Pack info", 80, 220);
     gfx_PrintStringXY("Pack stats", 80, 230);
+
+	gfx_PrintStringXY("1.0", 300, 220);
+	gfx_PrintStringXY("By PoulpoGaz", 230, 230);
 }
 
 bool update_main_menu() {
