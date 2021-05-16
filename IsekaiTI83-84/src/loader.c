@@ -40,6 +40,8 @@ void load_packs_info() {
 
 	ti_CloseAll();
 	while((var_name = ti_Detect(&search_pos, search_string)) != NULL) {
+        dbg_sprintf(dbgout, "Loading pack: %s, num_packs=%i\n", var_name, num_packs);
+
 		pack_info_t *pack = &packs[num_packs];
 
 		ti_var_t slot = ti_Open(var_name, "r");
@@ -54,25 +56,24 @@ void load_packs_info() {
         data += 8; // sprite theme
 
         bool valid = *data++;
+		pack->n_levels = * ( (uint16_t *) data );
+        data += 2;
 
         if (!valid) {
             dbg_sprintf(dbgout, "Invalid pack (name: %s, author: %s). Skip\n", pack->name, pack->author);
             continue;
         }
 
-		pack->n_levels = * ( (uint16_t *) data );
-
         pack->moves = calloc(pack->n_levels, sizeof(uint16_t));
         pack->pushs = calloc(pack->n_levels, sizeof(uint16_t));
 
-		dbg_sprintf(dbgout, "New pack\n-name:%s\n-author:%s\n-levels:%i\n", pack->name, pack->author, pack->n_levels);
+		dbg_sprintf(dbgout, "New pack\n-app_var:%s\n-name:%s\n-author:%s\n-levels:%i\n", pack->app_var, pack->name, pack->author, pack->n_levels);
 
 		num_packs++;
+        ti_CloseAll();
 	}
 
 	dbg_sprintf(dbgout, "%i pack(s) found\n", num_packs);
-
-	ti_CloseAll();
 }
 
 void free_packs_info() {

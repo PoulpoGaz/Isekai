@@ -317,11 +317,11 @@ bool update_stats_menu() {
 		return true;
 	}
 
-	if (key_released(key_Right) && page != 0) {
+	if (key_released(key_Left) && page != 0) {
 		page--;
 	}
 
-	if (key_released(key_Left) && (page + 1) * 20  < current_pack->n_levels) {
+	if (key_released(key_Right) && (page + 1) * 20  < current_pack->n_levels) {
 		page++;
 	}
 

@@ -14,6 +14,7 @@ palettes:
       - color: {index: 8, r:  73, g: 146, b:  49} # 32 ->  73, 146,  49
       - color: {index: 9, r: 100, g: 164, b:  44} # 28 -> 100, 164,  44
       - color: {index: 10, r: 224, g: 19, b: 8}   # Red
+      - color: {index: 11, r: 85,  g: 85, b: 85}
 
 converts:
   - name: sprites

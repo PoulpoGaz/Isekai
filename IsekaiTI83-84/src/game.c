@@ -162,7 +162,7 @@ uint16_t compute_scroll(int16_t value, uint8_t length, uint8_t max_length) {
 }
 
 void draw() {
-	gfx_FillScreen(BACKGROUND_7);
+	gfx_FillScreen(GAME_BACKGROUND);
 
 	gfx_Tilemap(&game.tilemap, game.scroll_x, game.scroll_y);
 
