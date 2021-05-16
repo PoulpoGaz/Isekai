@@ -16,8 +16,8 @@ public class Level extends Model {
 
     private static final Logger LOGGER = LogManager.getLogger(Level.class);
 
-    public static final int MINIMUM_MAP_WIDTH = 5;
-    public static final int MINIMUM_MAP_HEIGHT = 5;
+    public static final int MINIMUM_MAP_WIDTH = 3;
+    public static final int MINIMUM_MAP_HEIGHT = 3;
 
     public static final int MAXIMUM_MAP_WIDTH = 255;
     public static final int MAXIMUM_MAP_HEIGHT = 255;

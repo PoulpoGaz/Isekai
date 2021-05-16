@@ -56,6 +56,12 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     int width = Integer.parseInt(xMax);
                     int height = Integer.parseInt(yMax);
 
+                    if (width < Level.MINIMUM_MAP_WIDTH || height < Level.MINIMUM_MAP_HEIGHT) {
+                        LOGGER.warn("Level is too small");
+
+                        return null;
+                    }
+
                     Level level = new Level(width, height);
 
                     if (decode(level, board.substring(1, board.length() - 1))) {
@@ -220,24 +226,5 @@ public record SIPack(String name, String author, int nLevels, int id) {
 
     public static Exception getException() {
         return exception;
-    }
-
-    public static void main(String[] args) {
-        SIPack.loadPacks();
-        SIPack pack = SIPack.getPacks().get(0);
-
-        Level level = pack.importLevel(1);
-
-        if (level == null) {
-            throw new IllegalStateException();
-        }
-
-        for (int y = 0; y < level.getHeight(); y++) {
-            for (int x = 0; x < level.getWidth(); x++) {
-                System.out.print(level.get(x, y) + " ");
-            }
-
-            System.out.println();
-        }
     }
 }

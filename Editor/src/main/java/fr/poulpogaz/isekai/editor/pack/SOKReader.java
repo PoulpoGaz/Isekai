@@ -76,6 +76,10 @@ public class SOKReader {
 
         height = lines.size();
 
+        if (width < Level.MINIMUM_MAP_WIDTH || height < Level.MINIMUM_MAP_HEIGHT) {
+            return null;
+        }
+
         Level level = new Level(width, height);
 
         int y = 0;
