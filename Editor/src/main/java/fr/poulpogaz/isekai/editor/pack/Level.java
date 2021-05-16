@@ -172,25 +172,15 @@ public class Level extends Model {
     }
 
     /**
-     * A level is valid when:
-     *  - the player can't go outside
+     * A level is playable when:
      *  - the number of crates is equal to the number of target and strictly superior to 0
-     *  - all crates can move except when the crate is on a target
      */
-    public boolean isValid() {
-        if (canGoOutside()) {
-            return false;
-        }
-
+    public boolean isPlayable() {
         int nCrates = 0;
         int nTarget = 0;
 
-        for (int y = 0; y < tiles.length; y++) {
-            Tile[] tile = tiles[y];
-
-            for (int x = 0; x < tile.length; x++) {
-                Tile t = tile[x];
-
+        for (Tile[] tile : tiles) {
+            for (Tile t : tile) {
                 if (t.isCrate()) {
                     nCrates++;
                 }
@@ -198,66 +188,10 @@ public class Level extends Model {
                 if (t.isTarget()) {
                     nTarget++;
                 }
-
-                if (t == Tile.CRATE) {
-                    if (!canMove(x, y)) {
-                        return false;
-                    }
-                }
             }
         }
 
         return nCrates == nTarget && nCrates > 0;
-    }
-
-    private boolean canGoOutside() {
-        Set<Integer> visited = new HashSet<>();
-        Queue<Integer> positions = new ArrayDeque<>();
-
-        positions.offer(playerPos.y * width + playerPos.x);
-        visited.add(positions.peek());
-
-        while (!positions.isEmpty()) {
-            int pos = positions.poll();
-
-            int x = pos % width;
-            int y = pos / width;
-
-            for (int[] move : AbstractSolver.MOVES) {
-                int x2 = x + move[0];
-                int y2 = y + move[1];
-
-                if (isInside(x2, y2)) {
-                    if (tiles[y2][x2] != Tile.WALL) {
-                        int pos2 = y2 * width + x2;
-
-                        if (visited.add(pos2)) {
-                            positions.offer(pos2);
-                        }
-                    }
-                } else {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean canMove(int x, int y) {
-        for (int[] move : AbstractSolver.MOVES) {
-            int destX = x + move[0];
-            int destY = y + move[1];
-
-            int backX = x - move[0];
-            int backY = y - move[1];
-
-            if (tiles[backY][backX] != Tile.WALL && tiles[destY][destX] != Tile.WALL) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

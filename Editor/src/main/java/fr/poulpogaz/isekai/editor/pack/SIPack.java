@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -7,12 +8,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public record SIPack(String name, String author, int nLevels, int id) {
 
@@ -156,13 +160,13 @@ public record SIPack(String name, String author, int nLevels, int id) {
         return true;
     }
 
+    /**
+     * STATIC PART
+     */
     public static final int NOT_LOADED = 0;
     public static final int OK = 1;
     public static final int ERROR = 2;
 
-    /**
-     * STATIC PART
-     */
     private static List<SIPack> packs;
     private static int packLoaded = NOT_LOADED;
     private static Exception exception;
@@ -226,5 +230,76 @@ public record SIPack(String name, String author, int nLevels, int id) {
 
     public static Exception getException() {
         return exception;
+    }
+
+    // download all packs
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        SIPack.loadPacks();
+
+        ExecutorService scanner = ExecutorWithException.newFixedThreadPool(1);
+        ExecutorService executor = ExecutorWithException.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        for (final SIPack pack : packs) {
+            final List<Level> levels = new ArrayList<>();
+
+            for (int i = 0; i < pack.nLevels; i++) {
+                final int i2 = i;
+
+                executor.submit(() -> {
+                    Level level = pack.importLevel(i2);
+
+                    if (level != null) {
+                        levels.add(level);
+                    }
+                });
+            }
+
+            executor.submit(() -> {
+                Pack p = new Pack() ;
+                p.addAll(levels);
+
+                String fileName;
+                if (pack.name().length() > Pack.MAX_FILE_NAME_SIZE) {
+                    try {
+                        fileName = scanner.submit(() -> askName(sc, pack)).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                } else {
+                    fileName = pack.name();
+                }
+
+                p.setFileName(fileName);
+                p.setPackName(pack.name());
+                p.setAuthor(pack.author());
+
+                try {
+                    PackIO.serialize(p, Path.of("levels/"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    private static String askName(Scanner scanner, SIPack pack) {
+        System.out.println(pack.name + "?");
+
+        String name;
+        while (true) {
+            if (scanner.hasNextLine()) {
+                name = scanner.nextLine();
+
+                if (name.length() <= Pack.MAX_FILE_NAME_SIZE) {
+                    break;
+                }
+
+                System.out.println("Too long");
+            }
+        }
+
+        return name;
     }
 }

@@ -24,6 +24,16 @@ public class Cache {
 
     public static Path ROOT = Path.of(System.getProperty("java.io.tmpdir") + "/Java");
 
+    public static void setRoot() {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            Cache.setRoot(System.getenv("APPDATA"), "/Isekai-Editor");
+        } else {
+            Cache.setRoot(System.getProperty("user.home"), "/Isekai-Editor");
+        }
+    }
+
     public static void setRoot(Path root) {
         ROOT = root;
     }

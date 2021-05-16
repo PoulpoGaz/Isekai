@@ -55,12 +55,12 @@ void load_packs_info() {
 
         data += 8; // sprite theme
 
-        bool valid = *data++;
+        bool playable = *data++;
 		pack->n_levels = * ( (uint16_t *) data );
         data += 2;
 
-        if (!valid) {
-            dbg_sprintf(dbgout, "Invalid pack (name: %s, author: %s). Skip\n", pack->name, pack->author);
+        if (!playable) {
+            dbg_sprintf(dbgout, "Unplayable pack (name: %s, author: %s). Skip\n", pack->name, pack->author);
             continue;
         }
 

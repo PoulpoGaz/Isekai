@@ -235,9 +235,9 @@ public class Pack extends Model {
         }
     }
 
-    public boolean isValid() {
+    public boolean isPlayable() {
         for (Level level : levels) {
-            if (!level.isValid()) {
+            if (!level.isPlayable()) {
                 return false;
             }
         }

@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
+import fr.poulpogaz.isekai.editor.utils.Cache;
+import fr.poulpogaz.isekai.editor.utils.Log4j2Utils;
 import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +20,8 @@ public class ThemeDownloader {
     private static final Logger LOGGER = LogManager.getLogger(ThemeDownloader.class);
 
     public static void main(String[] args) throws InterruptedException {
+        Cache.setRoot();
+        Log4j2Utils.setup();
         ThemeManager.loadThemes();
 
         ExecutorService executor = ExecutorWithException.newFixedThreadPool(Runtime.getRuntime().availableProcessors());

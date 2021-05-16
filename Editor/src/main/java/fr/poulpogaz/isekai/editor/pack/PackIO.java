@@ -23,7 +23,7 @@ public class PackIO {
      * pack name                 (n <= 32 bytes)
      * author                    (n <= 32 bytes)
      * sprite theme              8 bytes
-     * valid                     1 byte
+     * playable                  1 byte
      * number of levels          2 byte
      * offsets to each levels    number of levels * 2 bytes
      *  level
@@ -57,7 +57,7 @@ public class PackIO {
             baos.write(0);
         }
 
-        baos.write(pack.isValid() ? 1 : 0);
+        baos.write(pack.isPlayable() ? 1 : 0);
 
         writeLevels(pack.getLevels(), baos);
         baos.close();
