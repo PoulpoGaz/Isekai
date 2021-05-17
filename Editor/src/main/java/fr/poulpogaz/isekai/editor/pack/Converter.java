@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import javax.sound.midi.SysexMessage;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -8,7 +7,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class Converter {
 
-    private static final int TI8X_MAXDATA_SIZE = (0x10000 - 0x130);
+    public static final int TI8X_MAXDATA_SIZE = (0x10000 - 0x130);
 
     private static final byte CHECKSUM_LEN = 2;
     private static final byte VARB_SIZE_LEN = 2;

@@ -1,6 +1,5 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -8,15 +7,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public record SIPack(String name, String author, int nLevels, int id) {
 
@@ -31,16 +27,38 @@ public record SIPack(String name, String author, int nLevels, int id) {
     /**
      * @param index a value between 1 and nLevels inclusive
      */
-    public Level importLevel(int index) {
+    public String getLinkFor(int index) {
         if (index <= 0 || index > nLevels) {
             throw new IndexOutOfBoundsException("Index out of range (0; %d): %d".formatted(nLevels, index));
         }
 
+        return "https://sokoban.info/?%d_%d".formatted(id, index);
+    }
+
+    /**
+     * @param index a value between 1 and nLevels inclusive
+     */
+    public Level importLevel(int index) {
         try {
-            String link = "https://sokoban.info/?%d_%d".formatted(id, index);
+            String link = getLinkFor(index);
             LOGGER.info("Importing level from {}", link);
 
-            Document document = Jsoup.connect(link).get();
+            URL url = new URL(link);
+
+            InputStream is = new BufferedInputStream(url.openStream());
+            Document document = Jsoup.parse(is, null, url.toString());
+            is.close();
+
+            return importLevel(document, index);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to import level {}", index, e);
+
+            return null;
+        }
+    }
+
+    Level importLevel(Document document, int index) {
+        try {
             Elements scripts = document.head().select("script");
 
             for (Element element : scripts) {
@@ -135,7 +153,6 @@ public record SIPack(String name, String author, int nLevels, int id) {
 
             switch (c) {
                 case ' ' -> level.setTile(Tile.FLOOR, x, y);
-                case '#', 'x' -> level.setTile(Tile.WALL, x, y);
                 case '$' -> level.setTile(Tile.CRATE, x, y);
                 case '.' -> level.setTile(Tile.TARGET, x, y);
                 case '*' -> level.setTile(Tile.CRATE_ON_TARGET, x, y);
@@ -152,7 +169,7 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     y++;
                 }
                 default -> {
-                    return false;
+                    level.setTile(Tile.WALL, x, y);
                 }
             }
         }
@@ -230,76 +247,5 @@ public record SIPack(String name, String author, int nLevels, int id) {
 
     public static Exception getException() {
         return exception;
-    }
-
-    // download all packs
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        SIPack.loadPacks();
-
-        ExecutorService scanner = ExecutorWithException.newFixedThreadPool(1);
-        ExecutorService executor = ExecutorWithException.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        for (final SIPack pack : packs) {
-            final List<Level> levels = new ArrayList<>();
-
-            for (int i = 0; i < pack.nLevels; i++) {
-                final int i2 = i;
-
-                executor.submit(() -> {
-                    Level level = pack.importLevel(i2);
-
-                    if (level != null) {
-                        levels.add(level);
-                    }
-                });
-            }
-
-            executor.submit(() -> {
-                Pack p = new Pack() ;
-                p.addAll(levels);
-
-                String fileName;
-                if (pack.name().length() > Pack.MAX_FILE_NAME_SIZE) {
-                    try {
-                        fileName = scanner.submit(() -> askName(sc, pack)).get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                } else {
-                    fileName = pack.name();
-                }
-
-                p.setFileName(fileName);
-                p.setPackName(pack.name());
-                p.setAuthor(pack.author());
-
-                try {
-                    PackIO.serialize(p, Path.of("levels/"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-    }
-
-    private static String askName(Scanner scanner, SIPack pack) {
-        System.out.println(pack.name + "?");
-
-        String name;
-        while (true) {
-            if (scanner.hasNextLine()) {
-                name = scanner.nextLine();
-
-                if (name.length() <= Pack.MAX_FILE_NAME_SIZE) {
-                    break;
-                }
-
-                System.out.println("Too long");
-            }
-        }
-
-        return name;
     }
 }
