@@ -27,7 +27,7 @@ void horiz_line_out(void (*draw)());
 void (*transitions_in[])(void (*draw)()) = {circle_transition_in, ray_transition_in, horiz_line_in};
 void (*transitions_out[])(void (*draw)()) = {circle_transition_out, ray_transition_out, horiz_line_out};
 
-uint8_t current_transition = 0;
+uint8_t current_transition = 255;
 
 void transition_in(void (*draw)()) {
     current_transition = randInt(0, NUMBER_OF_TRANSITIONS - 1);
@@ -36,7 +36,12 @@ void transition_in(void (*draw)()) {
 }
 
 void transition_out(void (*draw)()) {
+    if (current_transition == 255) {
+        current_transition = randInt(0, NUMBER_OF_TRANSITIONS - 1);
+    }
+
     (*transitions_out[current_transition])(draw);
+    current_transition = 255;
 }
 
 // CIRCLE TRANSITION

@@ -23,7 +23,7 @@
 */
 gfx_UninitedRLETSprite(chicken_right, 95);
 
-void change_level();
+void change_level(void (*draw_in)(), void (*draw_out)());
 void init_level();
 void center_camera();
 void move_camera(int8_t dir_x, int8_t dir_y);
