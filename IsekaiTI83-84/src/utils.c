@@ -15,14 +15,11 @@
 #define INNER_RADIUS 170
 #define OUTER_RADIUS 260
 
-/*
-    Stars are placed between two circles of center (160; 240) and radius 170 and 260
-*/
 typedef struct star_t {
-    float x;
-    float y;
-    float vx;
-    float vy;
+    int16_t x;
+    int16_t y;
+    int8_t vx;
+    int8_t vy;
     uint8_t size;
 } star_t;
 
@@ -54,14 +51,14 @@ void generate_stars() {
     float star_vy = (float) rand() / RAND_MAX * dir_y;
 
     for (uint8_t i = 0; i < N_STARS; i++) {
-        uint16_t x = randInt(0, LCD_WIDTH);
-        uint8_t y = randInt(0, LCD_HEIGHT);
+        int16_t x = randInt(0, LCD_WIDTH);
+        int16_t y = randInt(0, LCD_HEIGHT);
 
         star_t *star = &stars[i];
         star->x = x;
         star->y = y;
-        star->vx = star_vx * randInt(1, 4);
-        star->vy = star_vy * randInt(1, 4);
+        star->vx = (int8_t) (star_vx * randInt(1, 4)) + 1;
+        star->vy = (int8_t) (star_vy * randInt(1, 4)) + 1;
         star->size = randInt(1, 2);
     }
 }
@@ -99,21 +96,20 @@ void draw_menu_background(bool draw_title, bool draw_chicken) {
 
         if (star->x < 0) {
             star->x = LCD_WIDTH;
-        }
-        if (star->y < 0) {
-            star->y = LCD_HEIGHT;
-        }
-        if (star->x > LCD_WIDTH) {
+        } else if (star->x > LCD_WIDTH) {
             star->x = 0;
         }
-        if (star->y > LCD_HEIGHT) {
+
+        if (star->y < 0) {
+            star->y = LCD_HEIGHT;
+        } else if (star->y > LCD_HEIGHT) {
             star->y = 0;
         }
 
-        int16_t diff_x = (int16_t) (star->x) - LCD_WIDTH / 2;
-        int16_t diff_y = (int16_t) (star->y) - LCD_HEIGHT;
+        int16_t diff_x = star->x - LCD_WIDTH / 2;
+        int16_t diff_y = star->y - LCD_HEIGHT;
 
-        uint16_t radius = diff_x * diff_x + diff_y * diff_y;
+        uint24_t radius = diff_x * diff_x + diff_y * diff_y;
 
         if (radius < EARTH_RADIUS * EARTH_RADIUS) {
             continue;
