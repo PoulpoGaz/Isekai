@@ -6,9 +6,7 @@
 
 #include "utils.h"
 #include "gfx/gfx.h"
-#include "cos_sin_table.h"
 
-#define DEG           16
 #define EARTH_RADIUS 110
 
 #define N_STARS       64
@@ -21,9 +19,10 @@
     Stars are placed between two circles of center (160; 240) and radius 170 and 260
 */
 typedef struct star_t {
-    uint8_t theta;
-    uint16_t radius;
-    uint8_t speed;
+    float x;
+    float y;
+    float vx;
+    float vy;
     uint8_t size;
 } star_t;
 
@@ -48,12 +47,21 @@ uint24_t get_x_centered_between(const char *str, uint24_t min_x, uint24_t width)
 
 // MENU BACKGROUND
 void generate_stars() {
-    for (uint8_t i = 0; i < N_STARS; i++) {
-        star_t *star = &stars[i];
+    int8_t dir_x = randInt(0, 1) == 0 ? -1 : 1;
+    int8_t dir_y = randInt(0, 1) == 0 ? -1 : 1;
 
-        star->theta = randInt(0, 127);
-        star->radius = randInt(INNER_RADIUS, OUTER_RADIUS);
-        star->speed = randInt(1, 3);
+    float star_vx = (float) rand() / RAND_MAX * dir_x;
+    float star_vy = (float) rand() / RAND_MAX * dir_y;
+
+    for (uint8_t i = 0; i < N_STARS; i++) {
+        uint16_t x = randInt(0, LCD_WIDTH);
+        uint8_t y = randInt(0, LCD_HEIGHT);
+
+        star_t *star = &stars[i];
+        star->x = x;
+        star->y = y;
+        star->vx = star_vx * randInt(1, 4);
+        star->vy = star_vy * randInt(1, 4);
         star->size = randInt(1, 2);
     }
 }
@@ -83,50 +91,49 @@ void draw_menu_background(bool draw_title, bool draw_chicken) {
     gfx_FillCircle(160, 240, 50);
 
     // Draw stars
-    gfx_SetColor(WHITE);
-
     for (uint8_t i = 0; i < N_STARS; i++) {
         star_t *star = &stars[i];
 
-        star->theta += star->speed;
+        star->x += star->vx;
+        star->y += star->vy;
 
-        if (star->theta > 127) {
-            star->theta -= 127;
+        if (star->x < 0) {
+            star->x = LCD_WIDTH;
+        }
+        if (star->y < 0) {
+            star->y = LCD_HEIGHT;
+        }
+        if (star->x > LCD_WIDTH) {
+            star->x = 0;
+        }
+        if (star->y > LCD_HEIGHT) {
+            star->y = 0;
         }
 
-        int16_t x = (int16_t) (fast_cos(255 - star->theta) * star->radius) + CENTER_X;
-        int16_t y = (int16_t) (fast_sin(255 - star->theta) * star->radius) + CENTER_Y;
+        int16_t diff_x = (int16_t) (star->x) - LCD_WIDTH / 2;
+        int16_t diff_y = (int16_t) (star->y) - LCD_HEIGHT;
 
-        gfx_FillRectangle(x, y, star->size, star->size);
+        uint16_t radius = diff_x * diff_x + diff_y * diff_y;
+
+        if (radius < EARTH_RADIUS * EARTH_RADIUS) {
+            continue;
+        } else if (radius < 140 * 140) {
+            gfx_SetColor(STAR_COLOR_3);
+        } else if (radius < INNER_RADIUS * INNER_RADIUS) {
+            gfx_SetColor(STAR_COLOR_2);
+        } else {
+            gfx_SetColor(WHITE);
+        }
+
+        gfx_FillRectangle((uint16_t) star->x, (uint8_t) star->y, star->size, star->size);
+
     }
-
     // Draw chickens
     if (draw_chicken) {
-    	float x = EARTH_RADIUS + 12;
-    	float y = 0;
+    	offset = offset % 16;
+        uint8_t frame = offset / 4;
 
-    	offset = offset % DEG;
-
-    	if (offset > 0) {
-    		rotate(&x, &y, offset);
-    	}
-
-        gfx_rletsprite_t *rlet_sprite = NULL;
-    	for (int8_t i = -1; i <= 180 / DEG; i++) {
-    		uint16_t y_draw = (uint16_t) (y + 224);
-
-    		if (y_draw < 240) {
-    	  		uint16_t x_draw = (uint16_t) (x + 144);
-
-    			gfx_RotateScaleSprite(chicken_left_walk_tiles[offset / 5], scale_rotate_sprite, 191 - (i + 1) * DEG - offset, 128);
-
-                rlet_sprite = gfx_ConvertMallocRLETSprite(scale_rotate_sprite);
-                gfx_RLETSprite(rlet_sprite, x_draw, y_draw);
-                free(rlet_sprite);
-			}
-
-    		rotate(&x, &y, DEG);
-    	}
+        gfx_ScaledTransparentSprite_NoClip(chicken_down_walk_tiles[frame], 144, 104, 2, 2);
 
         offset++;
     }
@@ -135,15 +142,4 @@ void draw_menu_background(bool draw_title, bool draw_chicken) {
     if(draw_title) {
         print_string_centered("ISEKAI", 50);
     }
-}
-
-void rotate(float *x, float *y, uint8_t theta) {
-	float cos_ = fast_cos(255 - theta);
-	float sin_ = fast_sin(255 - theta);
-
-    float tempX = *x;
-	float tempY = *y;
-
-	*x = cos_ * tempX - sin_ * tempY;
-	*y = sin_ * tempX + cos_ * tempY;
 }

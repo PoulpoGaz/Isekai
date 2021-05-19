@@ -2,19 +2,21 @@ palettes:
   - name: palette
     images: automatic
     fixed-entries:
-      - color: {index: 0, r:   0, g:   0, b:   0} # Black
-      - color: {index: 1, r: 255, g: 255, b: 255} # White
-      - color: {index: 2, r: 255, g:   0, b: 255} # Magenta -> transparent color
+      - color: {index: 0,  r:   0, g:   0, b:   0} # Black
+      - color: {index: 1,  r: 255, g: 255, b: 255} # White, star color 1
+      - color: {index: 2,  r: 255, g:   0, b: 255} # Magenta -> transparent color
 
-      - color: {index: 3, r:  23, g:   4, b:  50} # AF ->  23,   4,  50
-      - color: {index: 4, r:  12, g:  34, b:  81} # 03 ->  12,  34,  81
-      - color: {index: 5, r:  18, g:  59, b: 147} # 11 ->  18,  59, 147
-      - color: {index: 6, r:   0, g: 107, b:  70} # 3F ->   0, 107,  70
-      - color: {index: 7, r:  47, g: 129, b:  54} # 06 ->  47, 129,  54
-      - color: {index: 8, r:  73, g: 146, b:  49} # 32 ->  73, 146,  49
-      - color: {index: 9, r: 100, g: 164, b:  44} # 28 -> 100, 164,  44
-      - color: {index: 10, r: 224, g: 19, b: 8}   # Red
-      - color: {index: 11, r: 85,  g: 85, b: 85}
+      - color: {index: 3,  r:  23, g:   4, b:  50} # AF ->  23,   4,  50
+      - color: {index: 4,  r:  12, g:  34, b:  81} # 03 ->  12,  34,  81
+      - color: {index: 5,  r:  18, g:  59, b: 147} # 11 ->  18,  59, 147
+      - color: {index: 6,  r:   0, g: 107, b:  70} # 3F ->   0, 107,  70
+      - color: {index: 7,  r:  47, g: 129, b:  54} # 06 ->  47, 129,  54
+      - color: {index: 8,  r:  73, g: 146, b:  49} # 32 ->  73, 146,  49
+      - color: {index: 9,  r: 100, g: 164, b:  44} # 28 -> 100, 164,  44
+      - color: {index: 10, r: 224, g:  19, b:   8} # Red
+      - color: {index: 11, r:  85, g:  85, b:  85} # gray, level background
+      - color: {index: 12, r: 158, g: 172, b: 201} # star color 2
+      - color: {index: 13, r: 126, g: 146, b: 188} # star color 3
 
 converts:
   - name: sprites
@@ -26,13 +28,13 @@ converts:
       - chicken_left.png
       - chicken_up.png
 
-  - name: chicken_left_walk
+  - name: chicken_down_walk
     palette: palette
     tilesets:
       tile-width: 16
       tile-height: 16
       images:
-        - chicken_left_walk.png
+        - chicken_down_walk.png
 
   - name: tileset
     palette: palette
@@ -47,7 +49,7 @@ outputs:
     include-file: gfx.h
     converts:
       - sprites
-      - chicken_left_walk
+      - chicken_down_walk
       - tileset
     palettes:
       - palette

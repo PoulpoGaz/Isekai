@@ -25,6 +25,10 @@
 
 #define GAME_BACKGROUND   11
 
+#define STAR_COLOR_1 1
+#define STAR_COLOR_2 12
+#define STAR_COLOR_3 13
+
 #define max(a, b) a > b ? a : b
 #define min(a, b) a > b ? b : a
 
@@ -36,8 +40,6 @@ uint24_t get_x_centered_between(const char *str, uint24_t min_x, uint24_t width)
 
 void generate_stars();
 void draw_menu_background(bool draw_title, bool draw_chicken);
-
-void rotate(float *x, float *y, uint8_t theta);
 
 #define draw_triangle(x1, y1, x2, y2, x3, y3) gfx_Line(x1, y1, x2, y2); \
                                               gfx_Line(x2, y2, x3, y3); \

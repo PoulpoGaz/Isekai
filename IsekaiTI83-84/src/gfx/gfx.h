@@ -10,8 +10,8 @@ extern "C" {
 #include "chicken_down.h"
 #include "chicken_left.h"
 #include "chicken_up.h"
-#define chicken_left_walk_palette_offset 0
-#include "chicken_left_walk.h"
+#define chicken_down_walk_palette_offset 0
+#include "chicken_down_walk.h"
 #define tileset_palette_offset 0
 #include "tileset.h"
 

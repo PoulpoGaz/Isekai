@@ -26,22 +26,14 @@ uint8_t selected = 0;
 uint8_t scroll = 0;
 
 void show_main_menu() {
-	uint8_t wait = 0;
-
 	while (true) {
-		if (wait == 0) {
-			draw_main_menu();
-			gfx_SwapDraw();
-
-			wait = 10;
-		}
+		draw_main_menu();
+		gfx_SwapDraw();
 
 		scan();
 		if (update_main_menu()) {
 			return;
 		}
-
-		wait--;
 	}
 }
 
@@ -87,7 +79,7 @@ void draw_main_menu() {
     gfx_PrintStringXY("Pack info", 80, 220);
     gfx_PrintStringXY("Pack stats", 80, 230);
 
-	gfx_PrintStringXY("1.0", 300, 220);
+	gfx_PrintStringXY("1.0b", 294, 220);
 	gfx_PrintStringXY("By PoulpoGaz", 230, 230);
 }
 
@@ -151,31 +143,25 @@ bool update_main_menu() {
  * PACK INFO *
  *************/
 void show_pack_info() {
-	uint8_t wait = 0;
-
 	while (true) {
-		if (wait == 0) {
-			draw_menu_background(false, true);
+		draw_menu_background(false, true);
 
-			print_string_centered(current_pack->name, 50);
-			print_string_centered("By", 70);
-			print_string_centered(current_pack->author, 80);
-			print_string_centered("Progression:", 100);
+		print_string_centered(current_pack->name, 50);
+		print_string_centered("By", 70);
+		print_string_centered(current_pack->author, 80);
+		print_string_centered("Progression:", 100);
 
-			gfx_PrintStringXY("/", 156, 110);
-			gfx_SetTextXY(116, 110);
-			gfx_PrintUInt(current_pack->max_level_reached + 1, 5);
+		gfx_PrintStringXY("/", 156, 110);
+		gfx_SetTextXY(116, 110);
+		gfx_PrintUInt(current_pack->max_level_reached + 1, 5);
 
-			gfx_SetTextXY(164, 110);
-			gfx_PrintUInt(current_pack->n_levels, 5);
+		gfx_SetTextXY(164, 110);
+		gfx_PrintUInt(current_pack->n_levels, 5);
 
-			print_string_centered("Press [Del] to return", 180);
-			print_string_centered("Press [2nd] to reset progression", 190);
+		print_string_centered("Press [Del] to return", 180);
+		print_string_centered("Press [2nd] to reset progression", 190);
 
-			gfx_SwapDraw();
-
-			wait = 10;
-		}
+		gfx_SwapDraw();
 
 		scan();
 		if (key_released(key_Del)) {
@@ -186,8 +172,6 @@ void show_pack_info() {
 		if (key_released(key_2nd)) {
 			show_danger_zone();
 		}
-
-		wait--;
 	}
 }
 
@@ -260,24 +244,16 @@ DRAW:
 uint8_t page;
 
 void show_stats_menu() {
-	uint8_t wait = 0;
-
 	page = 0;
 
 	while (true) {
-		if (wait == 0) {
-			draw_stats_menu();
-			gfx_SwapDraw();
-
-			wait = 10;
-		}
+		draw_stats_menu();
+		gfx_SwapDraw();
 
 		scan();
 		if (update_stats_menu()) {
 			return;
 		}
-
-		wait--;
 	}
 }
 
