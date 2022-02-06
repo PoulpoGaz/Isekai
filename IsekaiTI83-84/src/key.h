@@ -3,8 +3,6 @@
 
 #include <tice.h>
 
-#define NUM_KEYS  15
-
 #define key_2nd    0
 #define key_Del    1
 
@@ -23,6 +21,11 @@
 #define key_5     12
 #define key_6     13
 #define key_8     14
+
+#define key_Graph 15
+
+#define NUM_KEYS  16
+
 
 void scan();
 

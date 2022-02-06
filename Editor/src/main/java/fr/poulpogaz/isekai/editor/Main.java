@@ -35,6 +35,9 @@ public class Main {
             return;
         }
 
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
+
         Prefs.init();
 
         EventQueue.invokeLater(() -> {

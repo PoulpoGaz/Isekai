@@ -24,7 +24,9 @@ const uint24_t mappings[NUM_KEYS] = {
 	kb_Key4,
 	kb_Key5,
 	kb_Key6,
-	kb_Key8
+	kb_Key8,
+
+	kb_KeyGraph
 };
 
 bool keys[NUM_KEYS][2] = { {false} };
