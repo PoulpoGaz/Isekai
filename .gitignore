@@ -3,10 +3,11 @@
 *.bin
 *.dbg
 *.map
-IsekaiTI83-84/bin
-IsekaiTI83-84/obj
+isekai-calculator/bin
+isekai-calculator/obj
 
 *.iml
 .idea/
-Editor/target
+isekai-editor/target
+isekai-pcgame/target
 levels/cache
