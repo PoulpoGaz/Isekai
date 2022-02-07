@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.solver;
 
+import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
+import fr.poulpogaz.isekai.commons.concurrent.NamedThreadFactory;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.Pack;
@@ -8,8 +10,6 @@ import fr.poulpogaz.isekai.editor.pack.solver.DFSSolver;
 import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
-import fr.poulpogaz.isekai.editor.utils.concurrent.NamedThreadFactory;
 
 import javax.swing.*;
 import java.awt.*;

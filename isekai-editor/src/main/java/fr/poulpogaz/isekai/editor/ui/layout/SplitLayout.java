@@ -1,6 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.layout;
 
-import fr.poulpogaz.isekai.editor.utils.Utils;
+import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
 
 import java.awt.*;
 
@@ -30,7 +30,7 @@ public class SplitLayout implements LayoutManager {
     @Override
     public Dimension preferredLayoutSize(Container parent) {
         if (parent.getComponentCount() == 0) {
-            return Utils.from(parent.getInsets());
+            return GraphicsUtils.from(parent.getInsets());
         } else {
             Dimension max = new Dimension();
 
@@ -67,7 +67,7 @@ public class SplitLayout implements LayoutManager {
         Insets insets = parent.getInsets();
         Dimension dimension = parent.getSize();
 
-        Dimension inner = Utils.sub(dimension, insets);
+        Dimension inner = GraphicsUtils.sub(dimension, insets);
 
         if (parent.getComponentCount() == 1) {
             Component component = parent.getComponent(0);

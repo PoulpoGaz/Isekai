@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.about;
 
+import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.Main;
 import fr.poulpogaz.isekai.editor.ui.Icons;
@@ -9,7 +10,6 @@ import fr.poulpogaz.isekai.editor.ui.NoSelectionCaret;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

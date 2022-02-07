@@ -1,6 +1,11 @@
 package fr.poulpogaz.isekai.editor.utils;
 
+import fr.poulpogaz.isekai.editor.ui.Icons;
+import fr.poulpogaz.isekai.editor.ui.layout.SplitLayout;
+
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
@@ -109,5 +114,37 @@ public class GraphicsUtils {
         } else {
             return "#000000"; // black
         }
+    }
+
+    public static Dimension sub(Dimension dim, Insets insets) {
+        Dimension out = new Dimension();
+
+        out.width = dim.width - insets.left - insets.right;
+        out.height = dim.height - insets.top - insets.bottom;
+
+        return out;
+    }
+
+    public static Dimension from(Insets insets) {
+        return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+    }
+
+    public static JPanel split(JComponent left, JComponent right) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new SplitLayout(1, 0.5f));
+
+        panel.add(left);
+        panel.add(right);
+
+        return panel;
+    }
+
+    public static JButton createButton(String icon, String text, ActionListener listener) {
+        JButton button = new JButton();
+        button.addActionListener(listener);
+        button.setText(text);
+        button.setIcon(Icons.get(icon));
+
+        return button;
     }
 }

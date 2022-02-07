@@ -130,6 +130,12 @@
             <artifactId>joml</artifactId>
             <version>${joml.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>fr.poulpogaz</groupId>
+            <artifactId>isekai-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

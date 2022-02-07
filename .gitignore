@@ -10,4 +10,5 @@ isekai-calculator/obj
 .idea/
 isekai-editor/target
 isekai-pcgame/target
+isekai-commons/target
 levels/cache

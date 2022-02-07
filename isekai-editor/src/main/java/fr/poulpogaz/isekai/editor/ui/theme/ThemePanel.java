@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.Prefs;
 import fr.poulpogaz.isekai.editor.ui.Dialogs;
@@ -9,7 +10,6 @@ import fr.poulpogaz.isekai.editor.ui.WrapBorder;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.editor.ui.Model;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

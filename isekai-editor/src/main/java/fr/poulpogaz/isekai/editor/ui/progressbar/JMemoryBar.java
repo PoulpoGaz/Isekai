@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.progressbar;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import fr.poulpogaz.isekai.editor.utils.Unit;
-import fr.poulpogaz.isekai.editor.utils.concurrent.Alarm;
+import fr.poulpogaz.isekai.commons.Unit;
+import fr.poulpogaz.isekai.commons.concurrent.Alarm;
 
 import java.awt.*;
 import java.lang.management.ManagementFactory;

@@ -12,6 +12,7 @@
     <modules>
         <module>isekai-editor</module>
         <module>isekai-pcgame</module>
+        <module>isekai-commons</module>
     </modules>
 
     <properties>

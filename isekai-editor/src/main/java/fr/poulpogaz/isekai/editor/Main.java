@@ -1,10 +1,10 @@
 package fr.poulpogaz.isekai.editor;
 
 import com.formdev.flatlaf.FlatLaf;
+import fr.poulpogaz.isekai.commons.Cache;
+import fr.poulpogaz.isekai.commons.Log4j2Init;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.ui.theme.ThemeManager;
-import fr.poulpogaz.isekai.editor.utils.Cache;
-import fr.poulpogaz.isekai.editor.utils.Log4j2Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,18 +13,13 @@ import java.awt.*;
 
 public class Main {
 
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
 
-    private static final Logger LOGGER;
-
-    static {
-        Cache.setRoot();
-        Log4j2Utils.setup();
-        LOGGER = LogManager.getLogger(Main.class);
-    }
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        LOGGER.info("Launching Isekai Editor");
+        Cache.setRoot();
+        Log4j2Init.init("editor");
 
         try {
             PackSprites.initialize();

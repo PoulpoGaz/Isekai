@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.importer;
 
+import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.SIPack;
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 
 import javax.swing.*;
 import java.util.*;

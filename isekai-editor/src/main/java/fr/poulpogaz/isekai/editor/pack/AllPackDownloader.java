@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
-import fr.poulpogaz.isekai.editor.utils.Utils;
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
+import fr.poulpogaz.isekai.commons.Utils;
+import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;

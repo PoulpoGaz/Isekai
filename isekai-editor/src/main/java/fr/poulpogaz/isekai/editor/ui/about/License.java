@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.about;
 
+import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.ui.JLabelLink;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;

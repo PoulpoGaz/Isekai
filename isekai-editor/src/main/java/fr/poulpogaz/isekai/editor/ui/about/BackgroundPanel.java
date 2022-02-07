@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.about;
 
+import fr.poulpogaz.isekai.commons.concurrent.Alarm;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.utils.concurrent.Alarm;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;

@@ -1,5 +1,6 @@
 package fr.poulpogaz.isekai.editor.utils;
 
+import fr.poulpogaz.isekai.commons.Cache;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.*;

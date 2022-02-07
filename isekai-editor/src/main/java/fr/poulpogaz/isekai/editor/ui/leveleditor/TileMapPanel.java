@@ -1,8 +1,10 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
+import fr.poulpogaz.isekai.commons.Math2;
+import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
-import fr.poulpogaz.isekai.editor.utils.Utils;
+import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -143,17 +145,17 @@ public class TileMapPanel extends JPanel {
         int w = (int) Math.ceil(visibleRect.getWidth() / pixelSize) + 1;
         int h = (int) Math.ceil(visibleRect.getHeight() / pixelSize) + 1;
 
-        return new Bounds(Utils.clamp(x, 0, map.getWidth()),
-                Utils.clamp(y, 0, map.getHeight()),
-                Utils.clamp(w + x, 0, map.getWidth()),
-                Utils.clamp(h + y, 0, map.getHeight()));
+        return new Bounds(Math2.clamp(x, 0, map.getWidth()),
+                Math2.clamp(y, 0, map.getHeight()),
+                Math2.clamp(w + x, 0, map.getWidth()),
+                Math2.clamp(h + y, 0, map.getHeight()));
     }
 
     protected Point getOffset(Rectangle visible) {
         Dimension dim = getSize();
         Insets insets = getInsets();
 
-        Dimension in = Utils.sub(dim, insets);
+        Dimension in = GraphicsUtils.sub(dim, insets);
 
         Point offset = new Point();
 

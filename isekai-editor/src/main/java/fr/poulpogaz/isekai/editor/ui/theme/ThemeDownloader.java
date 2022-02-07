@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
-import fr.poulpogaz.isekai.editor.utils.Cache;
+import fr.poulpogaz.isekai.commons.Cache;
+import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.editor.utils.Log4j2Utils;
-import fr.poulpogaz.isekai.editor.utils.concurrent.ExecutorWithException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

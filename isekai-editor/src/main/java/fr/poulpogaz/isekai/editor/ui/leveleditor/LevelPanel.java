@@ -6,7 +6,7 @@ import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
 import fr.poulpogaz.isekai.editor.pack.Pack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
-import fr.poulpogaz.isekai.editor.utils.Utils;
+import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,17 +43,17 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         VerticalConstraint constraint = new VerticalConstraint();
         constraint.fillXAxis = true;
 
-        JButton insertLevel = Utils.createButton("icons/add.svg", "Insert level", (e) -> {
+        JButton insertLevel = GraphicsUtils.createButton("icons/add.svg", "Insert level", (e) -> {
             insertLevel(new Level(), levelsComboBox.getSelectedIndex() + 1, true);
         });
-        JButton deleteLevel = Utils.createButton("icons/delete.svg", "Delete level", (e) -> {
+        JButton deleteLevel = GraphicsUtils.createButton("icons/delete.svg", "Delete level", (e) -> {
             deleteLevel(levelsComboBox.getSelectedIndex(), true);
         });
 
-        JButton moveUp = Utils.createButton("icons/move_up.svg", "Move up", (e) -> {
+        JButton moveUp = GraphicsUtils.createButton("icons/move_up.svg", "Move up", (e) -> {
             moveUp(editor.getSelectedLevelIndex(), true);
         });
-        JButton moveDown = Utils.createButton("icons/move_down.svg", "Move down", (e) -> {
+        JButton moveDown = GraphicsUtils.createButton("icons/move_down.svg", "Move down", (e) -> {
             moveDown(editor.getSelectedLevelIndex(), true);
         });
 
@@ -68,8 +68,8 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
             levelsComboBox.addItem(i + 1);
         }
 
-        add(Utils.split(insertLevel, deleteLevel), constraint);
-        add(Utils.split(moveUp, moveDown), constraint);
+        add(GraphicsUtils.split(insertLevel, deleteLevel), constraint);
+        add(GraphicsUtils.split(moveUp, moveDown), constraint);
         add(levelsComboBox, constraint);
     }
 

@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
+import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.*;
 import fr.poulpogaz.isekai.editor.ui.about.AboutPanel;
@@ -8,7 +9,6 @@ import fr.poulpogaz.isekai.editor.ui.about.License;
 import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.ImportEdit;
 import fr.poulpogaz.isekai.editor.ui.theme.ThemePanel;
-import fr.poulpogaz.isekai.editor.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
