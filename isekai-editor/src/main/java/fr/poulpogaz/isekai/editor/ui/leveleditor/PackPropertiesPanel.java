@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -16,13 +16,13 @@ import java.util.function.Consumer;
 
 public class PackPropertiesPanel extends JPanel {
 
-    private final Pack pack;
+    private final PackModel pack;
 
     private JTextField fileNameField;
     private JTextField packNameField;
     private JTextField authorField;
 
-    public PackPropertiesPanel(Pack pack) {
+    public PackPropertiesPanel(PackModel pack) {
         this.pack = Objects.requireNonNull(pack);
         pack.addPropertyChangeListener(this::propertyChange);
 
@@ -35,19 +35,19 @@ public class PackPropertiesPanel extends JPanel {
     private void initComponents() {
         fileNameField = new JTextField();
         fileNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "File name");
-        fileNameField.setDocument(new LimitedDocument(Pack.MAX_FILE_NAME_SIZE));
+        fileNameField.setDocument(new LimitedDocument(PackModel.MAX_FILE_NAME_SIZE));
         fileNameField.setText(pack.getFileName());
         addDocumentListener(fileNameField, pack::setFileName);
 
         packNameField = new JTextField();
         packNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pack name");
-        packNameField.setDocument(new LimitedDocument(Pack.MAX_PACK_NAME_SIZE));
+        packNameField.setDocument(new LimitedDocument(PackModel.MAX_PACK_NAME_SIZE));
         packNameField.setText(pack.getPackName());
         addDocumentListener(packNameField, pack::setPackName);
 
         authorField = new JTextField();
         authorField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Author");
-        authorField.setDocument(new LimitedDocument(Pack.MAX_AUTHOR_SIZE));
+        authorField.setDocument(new LimitedDocument(PackModel.MAX_AUTHOR_SIZE));
         authorField.setText(pack.getAuthor());
         addDocumentListener(authorField, pack::setAuthor);
 
@@ -99,9 +99,9 @@ public class PackPropertiesPanel extends JPanel {
 
     private void propertyChange(PropertyChangeEvent event) {
         switch (event.getPropertyName()) {
-            case Pack.FILE_NAME_PROPERTY -> setText(pack.getFileName(), fileNameField);
-            case Pack.PACK_NAME_PROPERTY -> setText(pack.getPackName(), packNameField);
-            case Pack.AUTHOR_PROPERTY -> setText(pack.getAuthor(), authorField);
+            case PackModel.FILE_NAME_PROPERTY -> setText(pack.getFileName(), fileNameField);
+            case PackModel.PACK_NAME_PROPERTY -> setText(pack.getPackName(), packNameField);
+            case PackModel.AUTHOR_PROPERTY -> setText(pack.getAuthor(), authorField);
         }
     }
 

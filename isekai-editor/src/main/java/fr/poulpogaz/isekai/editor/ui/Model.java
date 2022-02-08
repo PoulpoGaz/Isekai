@@ -31,7 +31,7 @@ public class Model {
         changeSupport.firePropertyChange(property, oldValue, newValue);
     }
 
-    protected  <T extends EventListener> void fireListener(Class<T> type, Consumer<T> action) {
+    protected <T extends EventListener> void fireListener(Class<T> type, Consumer<T> action) {
         T[] listeners = listenerList.getListeners(type);
 
         for (T listener : listeners) {

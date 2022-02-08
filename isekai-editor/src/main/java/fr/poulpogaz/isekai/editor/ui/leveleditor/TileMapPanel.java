@@ -1,10 +1,14 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.commons.Math2;
-import fr.poulpogaz.isekai.commons.Utils;
-import fr.poulpogaz.isekai.editor.pack.*;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
+import fr.poulpogaz.isekai.editor.pack.LevelSizeListener;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.utils.Bounds;
 import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
+import org.joml.Vector2i;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -16,10 +20,10 @@ import java.beans.PropertyChangeEvent;
 
 public class TileMapPanel extends JPanel {
 
-    protected final Pack pack;
+    protected final PackModel pack;
 
     protected final LevelEditorModel editor;
-    protected Level map;
+    protected LevelModel map;
 
     protected LevelSizeListener mapSizeListener;
     protected ChangeListener mapChangedListener;
@@ -31,7 +35,7 @@ public class TileMapPanel extends JPanel {
 
     protected boolean showCursor;
 
-    public TileMapPanel(Pack pack, LevelEditorModel editor) {
+    public TileMapPanel(PackModel pack, LevelEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
         this.map = editor.getSelectedLevel();
@@ -176,7 +180,7 @@ public class TileMapPanel extends JPanel {
     }
 
     protected void paintMap(Graphics2D g2d, Point offset, Rectangle visibleRect, Bounds mapBounds) {
-        Point player = map.getPlayerPos();
+        Vector2i player = map.getPlayerPos();
 
         for (int y = mapBounds.getMinY(); y < mapBounds.getMaxY(); y++) {
             for (int x = mapBounds.getMinX(); x < mapBounds.getMaxX(); x++) {
@@ -185,9 +189,9 @@ public class TileMapPanel extends JPanel {
                 int drawX = offset.x + x * pixelSize;
                 int drawY = offset.y + y * pixelSize;
 
-                g2d.drawImage(t.getSprite(), drawX, drawY, pixelSize, pixelSize, null);
+                g2d.drawImage(PackSprites.img(t), drawX, drawY, pixelSize, pixelSize, null);
 
-                if (Utils.equals(player, x, y)) {
+                if (player.equals(x, y)) {
                     g2d.drawImage(PackSprites.getPlayer(), drawX, drawY, pixelSize, pixelSize, null);
                 }
             }
@@ -260,7 +264,7 @@ public class TileMapPanel extends JPanel {
         repaint();
     }
 
-    protected void mapSizeChanged(Level map, int newWidth, int newHeight) {
+    protected void mapSizeChanged(LevelModel map, int newWidth, int newHeight) {
         setPreferredSize();
         revalidate();
         repaint();

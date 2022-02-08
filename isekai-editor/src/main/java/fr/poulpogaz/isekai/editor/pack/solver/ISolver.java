@@ -1,6 +1,6 @@
 package fr.poulpogaz.isekai.editor.pack.solver;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 
 import java.util.List;
 
@@ -19,5 +19,5 @@ public interface ISolver {
 
     List<State> visited();
 
-    Level getLevel();
+    LevelModel getLevel();
 }

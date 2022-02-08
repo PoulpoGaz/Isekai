@@ -1,9 +1,9 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import fr.poulpogaz.isekai.editor.pack.LevelsOrganisationListener;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
@@ -22,11 +22,11 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
     private static final Logger LOGGER = LogManager.getLogger(LevelPanel.class);
 
     private final LevelEditorModel editor;
-    private Pack pack;
+    private PackModel pack;
 
     private JComboBox<Integer> levelsComboBox;
 
-    public LevelPanel(Pack pack, LevelEditorModel editor) {
+    public LevelPanel(PackModel pack, LevelEditorModel editor) {
         this.pack = Objects.requireNonNull(pack);
         pack.addLevelsOrganisationListener(this);
 
@@ -44,7 +44,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         constraint.fillXAxis = true;
 
         JButton insertLevel = GraphicsUtils.createButton("icons/add.svg", "Insert level", (e) -> {
-            insertLevel(new Level(), levelsComboBox.getSelectedIndex() + 1, true);
+            insertLevel(new LevelModel(), levelsComboBox.getSelectedIndex() + 1, true);
         });
         JButton deleteLevel = GraphicsUtils.createButton("icons/delete.svg", "Delete level", (e) -> {
             deleteLevel(levelsComboBox.getSelectedIndex(), true);
@@ -61,7 +61,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         levelsComboBox.addItemListener((e) -> {
             int index = levelsComboBox.getSelectedIndex();
 
-            editor.setSelectedLevel(pack, index);
+            editor.setSelectedLevel(index);
         });
 
         for (int i = 0; i < pack.getNumberOfLevels(); i++) {
@@ -73,7 +73,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
         add(levelsComboBox, constraint);
     }
 
-    private void insertLevel(Level level, int index, boolean addEdit) {
+    private void insertLevel(LevelModel level, int index, boolean addEdit) {
         pack.addLevel(level, index);
         editor.setSelectedLevel(level);
 
@@ -84,8 +84,8 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
 
     private void deleteLevel(int index, boolean addEdit) {
         if (pack.getNumberOfLevels() > 1 && index < pack.getNumberOfLevels()) {
-            Level old = pack.removeLevel(index);
-            editor.setSelectedLevel(pack, Math.max(index - 1, 0));
+            LevelModel old = pack.removeLevel(index);
+            editor.setSelectedLevel(Math.max(index - 1, 0));
 
             if (addEdit) {
                 IsekaiEditor.getInstance().addEdit(new DeleteEdit(index, old));
@@ -150,6 +150,8 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
             }
 
         } else {
+            editor.setSelectedLevel(packSize - 1);
+
             for (int i = comboSize - 1; i >= pack.getNumberOfLevels(); i--) {
                 levelsComboBox.removeItemAt(i);
             }
@@ -175,7 +177,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
             super.redo();
 
             LOGGER.info("Redo InsertEdit. Creating level at index {}", index);
-            insertLevel(new Level(), index, false);
+            insertLevel(new LevelModel(), index, false);
         }
 
         @Override
@@ -190,9 +192,9 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
     private class DeleteEdit extends AbstractUndoableEdit {
 
         private final int index;
-        private final Level old;
+        private final LevelModel old;
 
-        public DeleteEdit(int index, Level old) {
+        public DeleteEdit(int index, LevelModel old) {
             this.index = index;
             this.old = old;
         }

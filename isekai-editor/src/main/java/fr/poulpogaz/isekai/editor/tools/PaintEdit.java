@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.tools;
 
+import fr.poulpogaz.isekai.commons.pack.Tile;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import fr.poulpogaz.isekai.editor.ui.leveleditor.LevelEditorModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,12 +20,12 @@ public class PaintEdit extends AbstractUndoableEdit {
     private static final Logger LOGGER = LogManager.getLogger(PaintEdit.class);
 
     private final LevelEditorModel model;
-    private final Level level;
+    private final LevelModel level;
     private final Tile old;
     private final Tile newTile;
     private final List<Integer> affectedTiles;
 
-    public PaintEdit(Level level, Tile old, Tile newTile, List<Integer> affectedTiles) {
+    public PaintEdit(LevelModel level, Tile old, Tile newTile, List<Integer> affectedTiles) {
         this.model = IsekaiEditor.getInstance().getEditorModel();
         this.level = level;
         this.old = old;
@@ -69,12 +69,12 @@ public class PaintEdit extends AbstractUndoableEdit {
 
     public static class Builder {
 
-        private final Level level;
+        private final LevelModel level;
         private final Tile old;
         private final Tile newTile;
         private final List<Integer> affectedTiles;
 
-        public Builder(Level level, Tile old, Tile newTile) {
+        public Builder(LevelModel level, Tile old, Tile newTile) {
             this.level = level;
             this.old = old;
             this.newTile = newTile;

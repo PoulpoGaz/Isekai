@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 import fr.poulpogaz.isekai.editor.tools.FillTool;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
@@ -22,7 +22,7 @@ public class LevelEditor extends LevelEditorBase {
 
     private ToolBar toolBar;
 
-    public LevelEditor(Pack pack) {
+    public LevelEditor(PackModel pack) {
         super(pack, new LevelEditorModel(pack, Tile.FLOOR));
     }
 

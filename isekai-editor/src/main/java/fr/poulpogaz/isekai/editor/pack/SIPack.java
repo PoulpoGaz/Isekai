@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.commons.pack.Level;
+import fr.poulpogaz.isekai.commons.pack.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -50,7 +52,7 @@ public record SIPack(String name, String author, int nLevels, int id) {
             is.close();
 
             return importLevel(document, index);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.warn("Failed to import level {}", index, e);
 
             return null;
@@ -58,48 +60,42 @@ public record SIPack(String name, String author, int nLevels, int id) {
     }
 
     Level importLevel(Document document, int index) {
-        try {
-            Elements scripts = document.head().select("script");
+        Elements scripts = document.head().select("script");
 
-            for (Element element : scripts) {
-                String js = element.html();
+        for (Element element : scripts) {
+            String js = element.html();
 
-                if (js.contains("Board")) {
-                    String board = getValue(js, "Board");
-                    String xMax = getValue(js, "BoardXMax");
-                    String yMax = getValue(js, "BoardYMax");
+            if (js.contains("Board")) {
+                String board = getValue(js, "Board");
+                String xMax = getValue(js, "BoardXMax");
+                String yMax = getValue(js, "BoardYMax");
 
-                    if (board == null || xMax == null || yMax == null) {
-                        LOGGER.warn("Can't find variables");
+                if (board == null || xMax == null || yMax == null) {
+                    LOGGER.warn("Can't find variables");
 
-                        return null;
-                    }
+                    return null;
+                }
 
-                    int width = Integer.parseInt(xMax);
-                    int height = Integer.parseInt(yMax);
+                int width = Integer.parseInt(xMax);
+                int height = Integer.parseInt(yMax);
 
-                    if (width < Level.MINIMUM_MAP_WIDTH || height < Level.MINIMUM_MAP_HEIGHT) {
-                        LOGGER.warn("Level is too small");
+                if (width < Level.MINIMUM_MAP_WIDTH || height < Level.MINIMUM_MAP_HEIGHT) {
+                    LOGGER.warn("Level is too small");
 
-                        return null;
-                    }
+                    return null;
+                }
 
-                    Level level = new Level(width, height);
+                Level level = new Level(width, height);
 
-                    if (decode(level, board.substring(1, board.length() - 1))) {
-                        return level;
-                    }
+                if (decode(level, board.substring(1, board.length() - 1))) {
+                    return level;
                 }
             }
-
-            LOGGER.warn("Failed to import level {}", index);
-
-            return null;
-        } catch (Exception e) {
-            LOGGER.warn("Failed to import level {}", index, e);
-
-            return null;
         }
+
+        LOGGER.warn("Failed to import level {}", index);
+
+        return null;
     }
 
     private String getValue(String js, String variable) {
@@ -146,22 +142,29 @@ public record SIPack(String name, String author, int nLevels, int id) {
     }
 
     private boolean decode(Level level, String data) {
+        // put the player at the last tile
+        // This is important because Level#set check if the player
+        // is at the targeted tile. To prevent this, we just have
+        // to put the player at the last tile. Then it will
+        // automatically add at his correct position without disturb
+        level.setPlayerPos(level.getWidth() - 1, level.getHeight() - 1);
+
         int x = -1;
         int y = 0;
         for (char c : data.toCharArray()) {
             x++;
 
             switch (c) {
-                case ' ' -> level.setTile(Tile.FLOOR, x, y);
-                case '$' -> level.setTile(Tile.CRATE, x, y);
-                case '.' -> level.setTile(Tile.TARGET, x, y);
-                case '*' -> level.setTile(Tile.CRATE_ON_TARGET, x, y);
+                case ' ' -> level.set(Tile.FLOOR, x, y);
+                case '$' -> level.set(Tile.CRATE, x, y);
+                case '.' -> level.set(Tile.TARGET, x, y);
+                case '*' -> level.set(Tile.CRATE_ON_TARGET, x, y);
                 case '@' -> {
-                    level.setTile(Tile.FLOOR, x, y);
+                    level.set(Tile.FLOOR, x, y);
                     level.setPlayerPos(x, y);
                 }
                 case '+' -> {
-                    level.setTile(Tile.TARGET, x, y);
+                    level.set(Tile.TARGET, x, y);
                     level.setPlayerPos(x, y);
                 }
                 case '!' -> {
@@ -169,7 +172,7 @@ public record SIPack(String name, String author, int nLevels, int id) {
                     y++;
                 }
                 default -> {
-                    level.setTile(Tile.WALL, x, y);
+                    level.set(Tile.WALL, x, y);
                 }
             }
         }

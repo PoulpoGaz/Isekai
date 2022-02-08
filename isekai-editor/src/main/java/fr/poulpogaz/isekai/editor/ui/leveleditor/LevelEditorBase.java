@@ -1,6 +1,6 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,14 +8,14 @@ import java.awt.event.AdjustmentListener;
 
 public abstract class LevelEditorBase extends JPanel {
 
-    protected final Pack pack;
+    protected final PackModel pack;
     protected final LevelEditorModel editor;
 
     protected ToolBar toolbar;
     protected TileMapPanel mapPanel;
     protected JPanel eastPanel;
 
-    public LevelEditorBase(Pack pack, LevelEditorModel editor) {
+    public LevelEditorBase(PackModel pack, LevelEditorModel editor) {
         this.pack = pack;
         this.editor = editor;
 

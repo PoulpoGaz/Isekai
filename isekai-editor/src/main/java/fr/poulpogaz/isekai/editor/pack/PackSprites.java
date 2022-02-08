@@ -1,5 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.commons.pack.Tile;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
@@ -25,6 +27,16 @@ public final class PackSprites {
         CRATE           = TILESET.getSubimage(32, 0, 16, 16);
         CRATE_ON_TARGET = TILESET.getSubimage(48, 0, 16, 16);
         PLAYER          = TILESET.getSubimage(32, 16, 16, 16);
+    }
+
+    public static BufferedImage img(Tile tile) {
+        return switch (tile) {
+            case WALL -> WALL;
+            case CRATE -> CRATE;
+            case FLOOR -> FLOOR;
+            case TARGET -> TARGET;
+            case CRATE_ON_TARGET -> CRATE_ON_TARGET;
+        };
     }
 
     public static BufferedImage getTileset() {

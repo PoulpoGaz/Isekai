@@ -1,20 +1,19 @@
 package fr.poulpogaz.isekai.editor.pack.solver;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
+import org.joml.Vector2i;
 
-import java.awt.*;
-import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import static fr.poulpogaz.isekai.editor.pack.Tile.*;
+import static fr.poulpogaz.isekai.commons.pack.Tile.*;
 
 public abstract class AbstractSolver implements ISolver {
 
     public static final int[][] MOVES = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-    protected final Level level;
+    protected final LevelModel level;
     protected final Tile[] map;
     protected final int width;
     protected final int height;
@@ -34,7 +33,7 @@ public abstract class AbstractSolver implements ISolver {
     protected final boolean[] reachableTiles;
     protected final boolean[] deadlockTiles;
 
-    public AbstractSolver(Level level) {
+    public AbstractSolver(LevelModel level) {
         this.level = level;
         this.width = level.getWidth();
         this.height = level.getHeight();
@@ -82,7 +81,7 @@ public abstract class AbstractSolver implements ISolver {
     }
 
     protected void initializeState() {
-        Point player = level.getPlayerPos();
+        Vector2i player = level.getPlayerPos();
 
         defaultState.playerIndex = player.y * width + player.x;
         defaultState.cratesIndex = new int[numberOfCrates];
@@ -354,7 +353,7 @@ public abstract class AbstractSolver implements ISolver {
     }
 
     @Override
-    public Level getLevel() {
+    public LevelModel getLevel() {
         return level;
     }
 }

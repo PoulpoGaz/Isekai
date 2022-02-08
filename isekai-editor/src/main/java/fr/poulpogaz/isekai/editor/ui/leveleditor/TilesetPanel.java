@@ -1,6 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.PackSprites;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -57,7 +58,7 @@ public class TilesetPanel extends JPanel {
             int xDraw = x * tileSize + insets.left;
             int yDraw = y * tileSize + insets.top;
 
-            g2d.drawImage(tile.getSprite(), xDraw, yDraw, tileSize, tileSize, null);
+            g2d.drawImage(PackSprites.img(tile), xDraw, yDraw, tileSize, tileSize, null);
 
             if (editor.getSelectedTile() == tile) {
                 g.setColor(hoverColor);

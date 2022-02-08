@@ -4,5 +4,5 @@ import java.util.EventListener;
 
 public interface LevelSizeListener extends EventListener {
 
-    void levelResized(Level level, int newWidth, int newHeight);
+    void levelResized(LevelModel level, int newWidth, int newHeight);
 }

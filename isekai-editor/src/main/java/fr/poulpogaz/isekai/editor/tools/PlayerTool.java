@@ -1,17 +1,17 @@
 package fr.poulpogaz.isekai.editor.tools;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector2i;
 
 import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
-import java.awt.*;
 
 public class PlayerTool implements Tool {
 
@@ -25,9 +25,9 @@ public class PlayerTool implements Tool {
     private Builder builder = null;
 
     @Override
-    public void press(Level level, Tile tile, int x, int y) {
+    public void press(LevelModel level, Tile tile, int x, int y) {
         Tile old = level.get(x, y);
-        Point oldPlayerPos = level.getPlayerPos();
+        Vector2i oldPlayerPos = level.getPlayerPos();
         if (apply(level, tile, x, y)) {
             if (builder == null) {
                 builder = new Builder(level, oldPlayerPos);
@@ -38,7 +38,7 @@ public class PlayerTool implements Tool {
     }
 
     @Override
-    public UndoableEdit release(Level level, Tile tile, int x, int y) {
+    public UndoableEdit release(LevelModel level, Tile tile, int x, int y) {
         if (builder != null) {
             PlayerEdit action = builder.build();
             builder = null;
@@ -48,16 +48,16 @@ public class PlayerTool implements Tool {
         return null;
     }
 
-    private boolean apply(Level level, Tile tile, int x, int y) {
+    private boolean apply(LevelModel level, Tile tile, int x, int y) {
         Tile current = level.get(x, y);
 
         if (current.isSolid() && !tile.isSolid()) {
             level.set(tile, x, y);
-            level.setPlayerPos(new Point(x, y));
+            level.setPlayerPos(new Vector2i(x, y));
 
             return true;
         } else if (!current.isSolid()) {
-            level.setPlayerPos(new Point(x, y));
+            level.setPlayerPos(new Vector2i(x, y));
 
             return true;
         }
@@ -76,20 +76,18 @@ public class PlayerTool implements Tool {
 
     private class PlayerEdit extends AbstractUndoableEdit {
 
-        private final Level level;
+        private final LevelModel level;
         private final int x;
         private final int y;
-        private final int oldPlayerX;
-        private final int oldPlayerY;
+        private final Vector2i oldPlayerPos;
         private final Tile tile;
         private final Tile oldTile;
 
-        public PlayerEdit(Level level, int x, int y, int oldPlayerX, int oldPlayerY, Tile tile, Tile oldTile) {
+        public PlayerEdit(LevelModel level, int x, int y, Vector2i oldPlayerPos, Tile tile, Tile oldTile) {
             this.level = level;
             this.x = x;
             this.y = y;
-            this.oldPlayerX = oldPlayerX;
-            this.oldPlayerY = oldPlayerY;
+            this.oldPlayerPos = oldPlayerPos;
             this.tile = tile;
             this.oldTile = oldTile;
         }
@@ -98,7 +96,7 @@ public class PlayerTool implements Tool {
         public void redo() throws CannotRedoException {
             super.redo();
 
-            LOGGER.info("Redo PlayerEdit. Player pos: ({}; {}), Old player pos ({}; {}). Replacing {} by {}", x, y, oldPlayerX, oldPlayerY, oldTile, tile);
+            LOGGER.info("Redo PlayerEdit. Player pos: ({}; {}), Old player pos ({}). Replacing {} by {}", x, y, oldPlayerPos, oldTile, tile);
             apply(level, tile, x, y);
         }
 
@@ -106,30 +104,28 @@ public class PlayerTool implements Tool {
         public void undo() throws CannotUndoException {
             super.undo();
 
-            LOGGER.info("Undo PlayerEdit. Player pos: ({}; {}), Old player pos ({}; {}). Replacing {} by {}", x, y, oldPlayerX, oldPlayerY, tile, oldTile);
-            level.setPlayerPos(new Point(oldPlayerX, oldPlayerY));
+            LOGGER.info("Undo PlayerEdit. Player pos: ({}; {}), Old player pos ({}). Replacing {} by {}", x, y, oldPlayerPos, tile, oldTile);
+            level.setPlayerPos(oldPlayerPos);
             level.set(oldTile, x, y);
         }
     }
 
     private class Builder {
 
-        private final Level level;
-        private final int oldPlayerX;
-        private final int oldPlayerY;
+        private final LevelModel level;
+        private final Vector2i oldPlayerPos;
         private int x;
         private int y;
         private Tile tile;
         private Tile oldTile;
 
-        public Builder(Level level, Point oldPlayerPos) {
+        public Builder(LevelModel level, Vector2i oldPlayerPos) {
             this.level = level;
-            this.oldPlayerX = oldPlayerPos.x;
-            this.oldPlayerY = oldPlayerPos.y;
+            this.oldPlayerPos = new Vector2i(oldPlayerPos);
         }
 
         public PlayerEdit build() {
-            return new PlayerEdit(level, x, y, oldPlayerX, oldPlayerY, tile, oldTile);
+            return new PlayerEdit(level, x, y, oldPlayerPos, tile, oldTile);
         }
 
         public void set(int x, int y, Tile tile, Tile oldTile) {

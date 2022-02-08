@@ -3,8 +3,8 @@ package fr.poulpogaz.isekai.editor.ui.solver;
 import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.commons.concurrent.NamedThreadFactory;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 import fr.poulpogaz.isekai.editor.pack.solver.BFSSolver;
 import fr.poulpogaz.isekai.editor.pack.solver.DFSSolver;
 import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
@@ -106,7 +106,7 @@ public class SolverLevelDialog extends JDialog {
         content.setLayout(new BorderLayout());
         content.add(analyser, BorderLayout.CENTER);
 
-        Pack pack = IsekaiEditor.getInstance().getPack();
+        PackModel pack = IsekaiEditor.getInstance().getPack();
 
         solver = createSolver(pack.getLevel(0));
         if (solver == null) {
@@ -126,7 +126,7 @@ public class SolverLevelDialog extends JDialog {
         setupAnalyserLayout();
     }
 
-    private ISolver createSolver(Level level) {
+    private ISolver createSolver(LevelModel level) {
         Object obj =  solvers.getSelectedItem();
 
         if (obj == null) {

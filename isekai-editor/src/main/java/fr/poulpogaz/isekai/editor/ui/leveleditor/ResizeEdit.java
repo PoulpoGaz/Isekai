@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,13 +14,13 @@ public class ResizeEdit extends AbstractUndoableEdit {
     private static final Logger LOGGER = LogManager.getLogger(ResizeEdit.class);
 
     private final LevelEditorModel model;
-    private final Level level;
+    private final LevelModel level;
     private final int oldWidth;
     private final int oldHeight;
     private final int width;
     private final int height;
 
-    public ResizeEdit(Level level, int oldWidth, int oldHeight, int width, int height) {
+    public ResizeEdit(LevelModel level, int oldWidth, int oldHeight, int width, int height) {
         this.model = IsekaiEditor.getInstance().getEditorModel();
         this.level = level;
         this.oldWidth = oldWidth;

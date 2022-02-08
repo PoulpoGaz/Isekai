@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.solver;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
 import fr.poulpogaz.isekai.editor.pack.solver.State;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
@@ -12,8 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static fr.poulpogaz.isekai.editor.pack.Tile.FLOOR;
-import static fr.poulpogaz.isekai.editor.pack.Tile.TARGET;
+import static fr.poulpogaz.isekai.commons.pack.Tile.FLOOR;
+import static fr.poulpogaz.isekai.commons.pack.Tile.TARGET;
 
 public class StateView extends JPanel {
 
@@ -48,7 +48,7 @@ public class StateView extends JPanel {
         initComponents();
     }
 
-    protected void initializeMap(Level level) {
+    protected void initializeMap(LevelModel level) {
         for (int i = 0; i < map.length; i++) {
             Tile tile = level.get(i % width, i / width);
 
@@ -155,7 +155,7 @@ public class StateView extends JPanel {
             int x = (i % width) * 16;
             int y = (i / width) * 16;
 
-            g2d.drawImage(tile.getSprite(), x, y, null);
+            g2d.drawImage(PackSprites.img(tile), x, y, null);
         }
         for (int cratePos : state.cratesIndex) {
             int x = (cratePos % width) * 16;

@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack.solver;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class DFSSolver extends AbstractSolver {
 
     private final ListOrderedSet<State> visited = new ListOrderedSet<>();
 
-    public DFSSolver(Level level) {
+    public DFSSolver(LevelModel level) {
         super(level);
     }
 

@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.theme;
 
 import fr.poulpogaz.isekai.commons.Cache;
+import fr.poulpogaz.isekai.commons.Log4j2Init;
 import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
-import fr.poulpogaz.isekai.editor.utils.Log4j2Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +21,7 @@ public class ThemeDownloader {
 
     public static void main(String[] args) throws InterruptedException {
         Cache.setRoot();
-        Log4j2Utils.setup();
+        Log4j2Init.init("theme-downloader");
         ThemeManager.loadThemes();
 
         ExecutorService executor = ExecutorWithException.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -32,7 +32,7 @@ public class ThemeDownloader {
                 LOGGER.info("Downloading theme: {} at {} ", theme.name(), theme.getDownloadUrl());
 
                 try {
-                    download(theme.getDownloadUrl(), "src/main/resources/themes/" + theme.fileName());
+                    download(theme.getDownloadUrl(), "isekai-editor/src/main/resources/themes/" + theme.fileName());
                 } catch (IOException e) {
                     LOGGER.warn(e);
                 }

@@ -1,8 +1,8 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,12 +16,12 @@ public class ImportEdit extends AbstractUndoableEdit {
 
     private static final Logger LOGGER = LogManager.getLogger(ImportEdit.class);
 
-    private final Pack pack;
-    private final List<Level> levels;
+    private final PackModel pack;
+    private final List<LevelModel> levels;
 
     private boolean showMessage = true;
 
-    public ImportEdit(Pack pack, List<Level> levels) {
+    public ImportEdit(PackModel pack, List<LevelModel> levels) {
         this.pack = pack;
         this.levels = levels;
     }

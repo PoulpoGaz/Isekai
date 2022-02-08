@@ -9,6 +9,12 @@ public class NamedThreadFactory implements ThreadFactory {
     private final ThreadGroup group;
     private final String namePrefix;
 
+    /**
+     * Explanation of the SuppressWarnings annotation.
+     * Valid as of Java 17
+     * @see java.util.concurrent.Executors.DefaultThreadFactory
+     */
+    @SuppressWarnings("removal")
     public NamedThreadFactory(String poolName) {
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();

@@ -1,12 +1,13 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.commons.Log4j2Init;
 import fr.poulpogaz.isekai.commons.Utils;
 import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
+import fr.poulpogaz.isekai.commons.pack.Level;
+import fr.poulpogaz.isekai.commons.pack.Pack;
+import fr.poulpogaz.isekai.commons.pack.PackIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.*;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -22,24 +23,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.apache.logging.log4j.Level.INFO;
-import static org.apache.logging.log4j.Level.TRACE;
-
 public class AllPackDownloader {
 
-    private static final String STDOUT_LOGGER = "STDOUT";
+    private static final String LOGGER_LOGGER = "LOGGER";
 
     private static final Path LEVELS = Path.of("../levels/");
     private static final Path CACHE = Path.of("../levels/cache");
 
-    private static Logger LOGGER;
-    private static Logger STDOUT;
+    private static final Logger LOGGER = LogManager.getLogger(AllPackDownloader.class);
 
     public static void main(String[] args) {
-        setup();
+        Log4j2Init.initPath("all-pack-downloader", LEVELS);
         delete8XV();
-        LOGGER = LogManager.getLogger(AllPackDownloader.class);
-        STDOUT = LogManager.getLogger(STDOUT_LOGGER);
 
         SIPack.loadPacks();
 
@@ -66,7 +61,7 @@ public class AllPackDownloader {
         }
 
         final int max = allLevels.size();
-        STDOUT.info("Total number of levels={}", max);
+        LOGGER.info("Total number of levels={}", max);
 
         long last = max;
         long time = System.currentTimeMillis();
@@ -82,14 +77,14 @@ public class AllPackDownloader {
 
                 long diff = last - allLevels.size();
 
-                STDOUT.info("Progress: {}%, Speed: {} import/s", progress, diff);
+                LOGGER.info("Progress: {}%, Speed: {} import/s", progress, diff);
 
                 time = time2;
                 last = allLevels.size();
             }
         }
 
-        STDOUT.info("Download finished. Exporting...");
+        LOGGER.info("Download finished. Exporting...");
         for (Map.Entry<SIPack, List<Future<Result>>> entry : levels.entrySet()) {
             write(entry.getKey(), entry.getValue());
         }
@@ -162,7 +157,8 @@ public class AllPackDownloader {
     }
 
     private static void write(SIPack pack, List<Future<Result>> results) {
-        List<Level> levels = results.stream()
+        List<Level> levels =
+                results.stream()
                 .map(AllPackDownloader::get)
                 .filter((r) -> {
                     if (r == null) {
@@ -170,7 +166,7 @@ public class AllPackDownloader {
                     }
 
                     if (r.level == null) {
-                        STDOUT.info("Failed to get level {} of pack {}", r.index, r.pack);
+                        LOGGER.info("Failed to get level {} of pack {}", r.index, r.pack);
 
                         return false;
                     }
@@ -194,7 +190,7 @@ public class AllPackDownloader {
         try {
             PackIO.serialize(p, LEVELS);
         } catch (IOException e) {
-            STDOUT.warn("Failed to save pack {}", pack, e);
+            LOGGER.warn("Failed to save pack {}", pack, e);
         }
     }
 
@@ -205,7 +201,7 @@ public class AllPackDownloader {
             if ((c >= '0' & c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
                 builder.append(c);
 
-                if (builder.length() >= Pack.MAX_FILE_NAME_SIZE) {
+                if (builder.length() >= PackModel.MAX_FILE_NAME_SIZE) {
                     break;
                 }
             }
@@ -232,38 +228,6 @@ public class AllPackDownloader {
         }
 
         return fileName;
-    }
-
-    public static void setup() {
-        ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
-        builder.setStatusLevel(INFO);
-
-        LayoutComponentBuilder layout = builder.newLayout("PatternLayout");
-        layout.addAttribute("pattern", "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n");
-
-        AppenderComponentBuilder console = builder.newAppender("stdout", "Console");
-        console.addAttribute("target", "SYSTEM_OUT");
-        console.add(layout);
-
-        AppenderComponentBuilder file = builder.newAppender("log", "File");
-        file.addAttribute("fileName", LEVELS.resolve("log.log"));
-        file.addAttribute("immediateFlush", false);
-        file.addAttribute("append", false);
-        file.add(layout);
-
-        builder.add(console);
-        builder.add(file);
-
-        RootLoggerComponentBuilder rootLogger = builder.newRootLogger(TRACE);
-        rootLogger.add(builder.newAppenderRef("log"));
-
-        LoggerComponentBuilder logger = builder.newLogger(STDOUT_LOGGER);
-        logger.add(builder.newAppenderRef("stdout"));
-
-        builder.add(rootLogger);
-        builder.add(logger);
-
-        Configurator.initialize(builder.build());
     }
 
     public static void delete8XV() {

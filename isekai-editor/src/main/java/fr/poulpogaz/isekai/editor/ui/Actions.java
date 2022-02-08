@@ -2,8 +2,13 @@ package fr.poulpogaz.isekai.editor.ui;
 
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import fr.poulpogaz.isekai.commons.Utils;
+import fr.poulpogaz.isekai.commons.pack.Level;
+import fr.poulpogaz.isekai.commons.pack.PackIO;
+import fr.poulpogaz.isekai.commons.pack.PackIOException;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.*;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
+import fr.poulpogaz.isekai.editor.pack.SOKReader;
 import fr.poulpogaz.isekai.editor.ui.about.AboutPanel;
 import fr.poulpogaz.isekai.editor.ui.about.License;
 import fr.poulpogaz.isekai.editor.ui.importer.LevelImporterDialog;
@@ -22,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static fr.poulpogaz.isekai.editor.ui.Dialogs.showError;
 import static fr.poulpogaz.isekai.editor.ui.Dialogs.showFileChooser;
@@ -59,12 +65,12 @@ public class Actions {
 
     public static final Action NEW = newAction("New", Icons.get("icons/new.svg"), ctrlKey(VK_N), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
-        Pack pack = editor.getPack();
+        PackModel pack = editor.getPack();
 
         if (pack == null || !pack.isModified()) {
-            editor.setPack(new Pack());
+            editor.setPack(new PackModel());
         } else {
-            savePackDialog(editor, () -> editor.setPack(new Pack()));
+            savePackDialog(editor, () -> editor.setPack(new PackModel()));
         }
     });
 
@@ -74,7 +80,7 @@ public class Actions {
 
     public static final Action SAVE = newAction("Save", Icons.get("icons/save.svg"), ctrlKey(VK_S), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
-        Pack pack = editor.getPack();
+        PackModel pack = editor.getPack();
 
         if (pack != null) {
             save(editor, pack, false, null);
@@ -83,7 +89,7 @@ public class Actions {
 
     public static final Action SAVE_AS = newAction("Save as", null, ctrlShiftKey(VK_S), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
-        Pack pack = editor.getPack();
+        PackModel pack = editor.getPack();
 
         if (pack != null) {
             save(editor, pack, true, null);
@@ -120,7 +126,7 @@ public class Actions {
 
     public static final Action CLOSE_PROJECT = newAction("Close pack", null, null, e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
-        Pack pack = editor.getPack();
+        PackModel pack = editor.getPack();
 
         if (pack != null) {
             if (pack.isModified()) {
@@ -133,7 +139,7 @@ public class Actions {
 
     public static final Action QUIT = newAction("Quit", null, ctrlKey(VK_Q), e -> {
         IsekaiEditor editor = IsekaiEditor.getInstance();
-        Pack pack = editor.getPack();
+        PackModel pack = editor.getPack();
 
         if (pack != null && pack.isModified()) {
             savePackDialog(editor, editor::saveAndExit);
@@ -172,8 +178,9 @@ public class Actions {
 
         if (result != null) {
             try {
-                Pack pack = PackIO.deserialize(result);
+                PackModel pack = new PackModel(PackIO.deserialize(result));
                 pack.setModified(false);
+                pack.setSaveLocation(result.getParent());
 
                 if (editor.getPack() == null || !editor.getPack().isModified()) {
                     editor.setPack(pack);
@@ -186,7 +193,7 @@ public class Actions {
         }
     }
 
-    public static void save(IsekaiEditor editor, Pack pack, boolean saveAs, Runnable callback) {
+    public static void save(IsekaiEditor editor, PackModel pack, boolean saveAs, Runnable callback) {
         if (isPackValid(editor, pack)) {
             Path out = pack.getSaveLocation();
 
@@ -199,7 +206,7 @@ public class Actions {
             }
 
             try {
-                PackIO.serialize(pack, out);
+                PackIO.serialize(pack.getPack(), out);
 
                 pack.setModified(false);
                 pack.setSaveLocation(out);
@@ -226,7 +233,7 @@ public class Actions {
         }
     }
 
-    private static boolean isPackValid(IsekaiEditor editor, Pack pack) {
+    private static boolean isPackValid(IsekaiEditor editor, PackModel pack) {
         if (pack.getFileName() == null || pack.getFileName().isEmpty()) {
             showError(editor, "Please set the file name before saving");
             return false;
@@ -251,22 +258,26 @@ public class Actions {
     }
 
     private static void addLevelsToPack(IsekaiEditor editor, List<Level> levels) {
+        List<LevelModel> models = levels.stream()
+                .map(LevelModel::new)
+                .collect(Collectors.toList());
+
         if (editor.getPack() == null) {
-            Pack pack = new Pack();
+            PackModel pack = new PackModel();
 
-            pack.setLevel(levels.get(0), 0);
+            pack.setLevel(models.get(0), 0);
 
-            if (levels.size() > 1) {
-                pack.addAll(levels.subList(1, levels.size()));
+            if (models.size() > 1) {
+                pack.addAll(models.subList(1, models.size()));
             }
 
             editor.setPack(pack);
         } else {
-            Pack pack = editor.getPack();
+            PackModel pack = editor.getPack();
 
-            pack.addAll(levels);
+            pack.addAll(models);
 
-            IsekaiEditor.getInstance().addEdit(new ImportEdit(pack, levels));
+            IsekaiEditor.getInstance().addEdit(new ImportEdit(pack, models));
         }
     }
 

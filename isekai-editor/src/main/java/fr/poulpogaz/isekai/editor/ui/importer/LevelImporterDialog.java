@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.importer;
 
+import fr.poulpogaz.isekai.commons.pack.Level;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
 import fr.poulpogaz.isekai.editor.pack.SIPack;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;

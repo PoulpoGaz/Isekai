@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.pack.solver;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
 import java.util.ArrayDeque;
@@ -12,7 +12,7 @@ public class BFSSolver extends AbstractSolver {
 
     private final ListOrderedSet<State> visited = new ListOrderedSet<>();
 
-    public BFSSolver(Level level) {
+    public BFSSolver(LevelModel level) {
         super(level);
     }
 

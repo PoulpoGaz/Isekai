@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import fr.poulpogaz.isekai.editor.pack.LevelSizeListener;
 import fr.poulpogaz.isekai.editor.ui.JLabeledComponent;
 
@@ -9,12 +9,12 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.beans.PropertyChangeEvent;
 
-import static fr.poulpogaz.isekai.editor.pack.Level.*;
+import static fr.poulpogaz.isekai.commons.pack.Level.*;
 
 public class ResizePanel extends JPanel {
 
     private final LevelEditorModel editor;
-    private Level level;
+    private LevelModel level;
 
     private final LevelSizeListener levelSizeListener;
 
@@ -74,7 +74,7 @@ public class ResizePanel extends JPanel {
         canResize = true;
     }
 
-    private void levelResized(Level level, int w, int h) {
+    private void levelResized(LevelModel level, int w, int h) {
         widthSpinner.setValue(w);
         heightSpinner.setValue(h);
     }

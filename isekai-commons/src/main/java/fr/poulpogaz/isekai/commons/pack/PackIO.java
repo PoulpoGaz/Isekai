@@ -1,15 +1,15 @@
-package fr.poulpogaz.isekai.editor.pack;
+package fr.poulpogaz.isekai.commons.pack;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector2i;
 
-import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
+import java.util.List;
 
 public class PackIO {
 
@@ -76,7 +76,7 @@ public class PackIO {
         os.write('\0');
     }
 
-    private static void writeLevels(ArrayList<Level> levels, OutputStream os) throws IOException {
+    private static void writeLevels(List<Level> levels, OutputStream os) throws IOException {
         os.write(levels.size() & 0xFF);
         os.write((levels.size() >> 8) & 0xFF);
 
@@ -101,7 +101,7 @@ public class PackIO {
     private static byte[] toByte(Level level) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        Point player = level.getPlayerPos();
+        Vector2i player = level.getPlayerPos();
         baos.write(player.x);
         baos.write(player.y);
 
@@ -190,8 +190,6 @@ public class PackIO {
         }
 
         Pack pack = new Pack();
-        pack.setSaveLocation(in.getParent());
-
         pack.setFileName(new String(fileName));
 
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
@@ -243,7 +241,7 @@ public class PackIO {
         for (int i = 0; i < nLevels; i++) {
             Level level = new Level();
 
-            Point pos = level.getPlayerPos();
+            Vector2i pos = level.getPlayerPos();
             pos.x = is.read();
             pos.y = is.read();
 

@@ -1,5 +1,8 @@
 package fr.poulpogaz.isekai.editor.pack;
 
+import fr.poulpogaz.isekai.commons.pack.Level;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,6 +59,9 @@ public class SOKReader {
         return true;
     }
 
+    /**
+     * {@link SIPack#decode(Level, String)}
+     */
     private static Level parseLevel(String firstLine, BufferedReader br) throws IOException {
         int width = firstLine.length();
         int height;
@@ -81,6 +87,7 @@ public class SOKReader {
         }
 
         Level level = new Level(width, height);
+        level.setPlayerPos(width - 1, height - 1);
 
         int y = 0;
         //noinspection ForLoopReplaceableByForEach
@@ -90,17 +97,17 @@ public class SOKReader {
             int x = 0;
             for (char c : line.toCharArray()) {
                 switch (c) {
-                    case ' ', '-' -> level.setTile(Tile.FLOOR, x, y);
-                    case '#', '_' -> level.setTile(Tile.WALL, x, y);
-                    case '$' -> level.setTile(Tile.CRATE, x, y);
-                    case '.' -> level.setTile(Tile.TARGET, x, y);
-                    case '*' -> level.setTile(Tile.CRATE_ON_TARGET, x, y);
+                    case ' ', '-' -> level.set(Tile.FLOOR, x, y);
+                    case '#', '_' -> level.set(Tile.WALL, x, y);
+                    case '$' -> level.set(Tile.CRATE, x, y);
+                    case '.' -> level.set(Tile.TARGET, x, y);
+                    case '*' -> level.set(Tile.CRATE_ON_TARGET, x, y);
                     case '@' -> {
-                        level.setTile(Tile.FLOOR, x, y);
+                        level.set(Tile.FLOOR, x, y);
                         level.setPlayerPos(x, y);
                     }
                     case '+' -> {
-                        level.setTile(Tile.TARGET, x, y);
+                        level.set(Tile.TARGET, x, y);
                         level.setPlayerPos(x, y);
                     }
                     default -> {
@@ -113,7 +120,7 @@ public class SOKReader {
 
             if (x != width) {
                 for (; x < width; x++) {
-                    level.setTile(Tile.WALL, x, y);
+                    level.set(Tile.WALL, x, y);
                 }
             }
 

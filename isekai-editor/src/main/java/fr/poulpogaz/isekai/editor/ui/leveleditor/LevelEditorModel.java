@@ -1,10 +1,10 @@
 package fr.poulpogaz.isekai.editor.ui.leveleditor;
 
+import fr.poulpogaz.isekai.commons.pack.Tile;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
-import fr.poulpogaz.isekai.editor.pack.Tile;
 import fr.poulpogaz.isekai.editor.tools.PaintTool;
 import fr.poulpogaz.isekai.editor.tools.PlayerTool;
 import fr.poulpogaz.isekai.editor.tools.Tool;
@@ -26,21 +26,21 @@ public class LevelEditorModel extends Model {
     private static final Logger LOGGER = LogManager.getLogger(LevelEditorModel.class);
 
     protected Tool tool = PaintTool.getInstance();
-    protected Pack pack;
-    protected Level selectedLevel;
+    protected PackModel pack;
+    protected LevelModel selectedLevel;
     protected Tile selectedTile;
 
     protected boolean showGrid = true;
 
-    public LevelEditorModel(Pack pack, Tile selectedTile) {
+    public LevelEditorModel(PackModel pack, Tile selectedTile) {
         this.pack = Objects.requireNonNull(pack);
         this.selectedLevel = pack.getLevel(0);
         this.selectedTile = Objects.requireNonNull(selectedTile);
     }
 
-    public void setSelectedLevel(Level selectedLevel) {
+    public void setSelectedLevel(LevelModel selectedLevel) {
         if (this.selectedLevel != selectedLevel) {
-            Level old = this.selectedLevel;
+            LevelModel old = this.selectedLevel;
 
             this.selectedLevel = selectedLevel;
 
@@ -48,7 +48,7 @@ public class LevelEditorModel extends Model {
         }
     }
 
-    public Level getSelectedLevel() {
+    public LevelModel getSelectedLevel() {
         return selectedLevel;
     }
 
@@ -102,14 +102,12 @@ public class LevelEditorModel extends Model {
         if (tool instanceof PlayerTool) {
             return PackSprites.getPlayer();
         } else {
-            return selectedTile.getSprite();
+            return PackSprites.img(selectedTile);
         }
     }
 
-    public void setSelectedLevel(Pack pack, int index) {
-        Level level = pack.getLevel(index);
-
-        setSelectedLevel(level);
+    public void setSelectedLevel(int index) {
+        setSelectedLevel(pack.getLevel(index));
     }
 
     public int getSelectedLevelIndex() {

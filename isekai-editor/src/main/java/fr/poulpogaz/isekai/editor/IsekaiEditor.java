@@ -1,6 +1,6 @@
 package fr.poulpogaz.isekai.editor;
 
-import fr.poulpogaz.isekai.editor.pack.Pack;
+import fr.poulpogaz.isekai.editor.pack.PackModel;
 import fr.poulpogaz.isekai.editor.pack.PackSprites;
 import fr.poulpogaz.isekai.editor.ui.Actions;
 import fr.poulpogaz.isekai.editor.ui.NoPackLoadedPanel;
@@ -34,7 +34,7 @@ public class IsekaiEditor extends JFrame {
 
     private final UndoManager undoManager = new UndoManager();
 
-    private Pack pack;
+    private PackModel pack;
 
     private JPanel content;
 
@@ -156,7 +156,7 @@ public class IsekaiEditor extends JFrame {
         dispose();
     }
 
-    public void setPack(Pack pack) {
+    public void setPack(PackModel pack) {
         clearEdits();
         Actions.UNDO.setEnabled(false);
         Actions.REDO.setEnabled(false);
@@ -282,7 +282,7 @@ public class IsekaiEditor extends JFrame {
         Actions.CLEAR_UNDO_HISTORY.setEnabled(false);
     }
 
-    public Pack getPack() {
+    public PackModel getPack() {
         return pack;
     }
 

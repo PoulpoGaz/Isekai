@@ -1,7 +1,7 @@
 package fr.poulpogaz.isekai.editor.tools;
 
-import fr.poulpogaz.isekai.editor.pack.Level;
-import fr.poulpogaz.isekai.editor.pack.Tile;
+import fr.poulpogaz.isekai.commons.pack.Tile;
+import fr.poulpogaz.isekai.editor.pack.LevelModel;
 import fr.poulpogaz.isekai.editor.ui.Icons;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ public class PaintTool implements Tool {
 
     }
 
-    private boolean apply(Level level, Tile tile, int x, int y) {
+    private boolean apply(LevelModel level, Tile tile, int x, int y) {
         if (level.get(x, y) == tile) {
             return false;
         }
@@ -26,7 +26,7 @@ public class PaintTool implements Tool {
     }
 
     @Override
-    public void press(Level level, Tile tile, int x, int y) {
+    public void press(LevelModel level, Tile tile, int x, int y) {
         Tile old = level.get(x, y);
 
         if (builder == null) {
@@ -39,7 +39,7 @@ public class PaintTool implements Tool {
     }
 
     @Override
-    public UndoableEdit release(Level level, Tile tile, int x, int y) {
+    public UndoableEdit release(LevelModel level, Tile tile, int x, int y) {
         if (builder != null) {
             PaintEdit action = builder.build();
             builder = null;

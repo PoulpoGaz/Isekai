@@ -1,4 +1,4 @@
-package fr.poulpogaz.isekai.editor.pack;
+package fr.poulpogaz.isekai.commons.pack;
 
 import java.nio.charset.StandardCharsets;
 
