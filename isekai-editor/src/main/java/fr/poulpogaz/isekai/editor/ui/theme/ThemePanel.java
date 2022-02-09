@@ -125,6 +125,7 @@ public class ThemePanel extends JPanel {
     public void addNotify() {
         super.addNotify();
 
+        themes.requestFocus();
         themes.ensureIndexIsVisible(themes.getSelectedIndex());
     }
 
