@@ -9,6 +9,8 @@ import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Analyser extends JPanel {
@@ -21,6 +23,9 @@ public class Analyser extends JPanel {
 
     private JFormattedTextField searchState;
     private JLabel numberOfState;
+
+    private State solution;
+    private List<State> pathToSolution = new ArrayList<>();
 
     public Analyser() {
         setLayout(new BorderLayout());
@@ -42,7 +47,8 @@ public class Analyser extends JPanel {
             if (value == null) {
                 return;
             }
-            int v = (int) (long) value; // needed cast to long, because value is a Long
+            // -1 because 0 is not natural for the user
+            int v = (int) (long) value - 1; // needed to be cast to long, because value is a Long
 
             if (v >= 0 && v < states.size()) {
                 stateView.setState(states.get(v));
@@ -86,19 +92,36 @@ public class Analyser extends JPanel {
                 alarm.shutdown();
                 alarm = null;
             }
-            removeAll();
+            remove(stateView);
             stateView = null;
             this.solver = null;
+            solution = null;
+            pathToSolution.clear();
 
             // for garbage collect
         }
     }
 
+    private void constructPathToSolution() {
+        State state = solution;
+
+        while (state != null) {
+            pathToSolution.add(state);
+            state = state.parent;
+        }
+
+        Collections.reverse(pathToSolution);
+    }
+
     public void notifyEnd() {
         EventQueue.invokeLater(() -> {
             if (solver != null) {
-                if (solver.check()) {
+                solution = solver.check();
+
+                if (solution != null) {
                     status.setText("This sokoban has a solution!");
+
+                    constructPathToSolution();
                 } else {
                     status.setText("This sokoban has no solution.");
                 }
@@ -115,5 +138,9 @@ public class Analyser extends JPanel {
 
     public State getStateAt(int index) {
         return solver.visited().get(index);
+    }
+
+    public boolean isInSolution(State s) {
+        return pathToSolution.contains(s);
     }
 }

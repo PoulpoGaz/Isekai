@@ -36,7 +36,7 @@ public class LevelEditor extends LevelEditorBase {
 
         JButton check = new JButton();
         check.setIcon(Icons.get("icons/check.svg"));
-        check.addActionListener((e) -> SolverLevelDialog.showDialog());
+        check.addActionListener((e) -> SolverLevelDialog.showDialog(editor.getSelectedLevel()));
         toolBar.add(check);
 
         return toolBar;

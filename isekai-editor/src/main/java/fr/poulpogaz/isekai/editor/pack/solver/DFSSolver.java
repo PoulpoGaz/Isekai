@@ -16,11 +16,11 @@ public class DFSSolver extends AbstractSolver {
     }
 
     @Override
-    public boolean check() {
+    public State check() {
         if (status == TRUE) {
-            return true;
+            return solution;
         } else if (status == FALSE || status == CANCELED) {
-            return false;
+            return null;
         }
 
         findDeadlockTiles();
@@ -38,7 +38,8 @@ public class DFSSolver extends AbstractSolver {
             State state = states.pop();
 
             if (isSolution(state)) {
-                return true;
+                solution = state;
+                return solution;
             }
 
             fillMapWithCrates(state, mapWithCrates);
@@ -68,7 +69,8 @@ public class DFSSolver extends AbstractSolver {
 
                                 status = TRUE;
 
-                                return true;
+                                solution = child;
+                                return solution;
                             }
 
                             states.push(child);
@@ -86,7 +88,7 @@ public class DFSSolver extends AbstractSolver {
             status = FALSE;
         }
 
-        return false;
+        return null;
     }
 
     @Override

@@ -6,10 +6,10 @@ import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.Prefs;
 import fr.poulpogaz.isekai.editor.ui.Dialogs;
 import fr.poulpogaz.isekai.editor.ui.Icons;
-import fr.poulpogaz.isekai.editor.ui.WrapBorder;
 import fr.poulpogaz.isekai.editor.ui.layout.HCOrientation;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalConstraint;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
+import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,7 +88,6 @@ public class ThemePanel extends JPanel {
 
         pane = new JScrollPane();
         pane.setViewportView(themes);
-        pane.setBorder(new WrapBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), pane.getBorder()));
 
         // top
         github = new JButton(Icons.get("icons/github.svg"));
@@ -118,7 +117,7 @@ public class ThemePanel extends JPanel {
 
         // add components to panel
         add(top, BorderLayout.NORTH);
-        add(pane, BorderLayout.CENTER);
+        add(GraphicsUtils.wrap(pane, 5, 5, 5, 5), BorderLayout.CENTER);
     }
 
     @Override

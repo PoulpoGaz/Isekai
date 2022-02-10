@@ -14,8 +14,6 @@ import java.util.List;
 
 public class LevelModel extends Model {
 
-    private static final Logger LOGGER = LogManager.getLogger(LevelModel.class);
-
     protected final List<LevelSizeListener> sizeListeners = new ArrayList<>();
     protected boolean modifyingMap = false;
 
@@ -33,6 +31,11 @@ public class LevelModel extends Model {
 
     public LevelModel(Level level) {
         this.level = level;
+    }
+
+    public LevelModel(Level level, PackModel pack) {
+        this.level = level;
+        this.pack = pack;
     }
 
     public boolean resize(int newWidth, int newHeight) {
@@ -112,39 +115,8 @@ public class LevelModel extends Model {
         }
     }
 
-    /**
-     * A level is playable when:
-     *  - the number of crates is equal to the number of target and strictly superior to 0
-     */
     public boolean isPlayable() {
-        int nCrates = 0;
-        int nTarget = 0;
-
-        for (Tile[] tile : level.getTiles()) {
-            for (Tile t : tile) {
-                if (t.isCrate()) {
-                    nCrates++;
-                }
-
-                if (t.isTarget()) {
-                    nTarget++;
-                }
-            }
-        }
-
-        return nCrates == nTarget && nCrates > 0;
-    }
-
-    /**
-     * Methods used by reader
-     * They don't fire any view
-     */
-    void setTile(Tile tile, int x, int y) {
-        level.set(tile, x, y);
-    }
-
-    void setPlayerPos(int x, int y) {
-        level.setPlayerPos(new Vector2i(x, y));
+        return level.isPlayable();
     }
 
     public int getIndex() {

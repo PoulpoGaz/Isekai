@@ -11,7 +11,10 @@ public interface ISolver {
     int FALSE = 2;
     int CANCELED = 3;
 
-    boolean check();
+    /**
+     * @return the "solution" state. Path to solution can be created with State#parent
+     */
+    State check();
 
     void cancel();
 

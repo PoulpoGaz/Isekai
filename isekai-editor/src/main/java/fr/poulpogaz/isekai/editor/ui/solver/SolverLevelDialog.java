@@ -4,12 +4,13 @@ import fr.poulpogaz.isekai.commons.concurrent.ExecutorWithException;
 import fr.poulpogaz.isekai.commons.concurrent.NamedThreadFactory;
 import fr.poulpogaz.isekai.editor.IsekaiEditor;
 import fr.poulpogaz.isekai.editor.pack.LevelModel;
-import fr.poulpogaz.isekai.editor.pack.PackModel;
 import fr.poulpogaz.isekai.editor.pack.solver.BFSSolver;
 import fr.poulpogaz.isekai.editor.pack.solver.DFSSolver;
 import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,8 @@ import java.awt.event.WindowEvent;
 import java.util.concurrent.TimeUnit;
 
 public class SolverLevelDialog extends JDialog {
+
+    private static final Logger LOGGER = LogManager.getLogger(SolverLevelDialog.class);
 
     private static final ExecutorWithException executor;
 
@@ -30,7 +33,8 @@ public class SolverLevelDialog extends JDialog {
 
     private static final SolverLevelDialog INSTANCE = new SolverLevelDialog();
 
-    public static void showDialog() {
+    public static void showDialog(LevelModel level) {
+        INSTANCE.setLevel(level);
         INSTANCE.setupChooseLayout();
         INSTANCE.setVisible(true);
     }
@@ -47,6 +51,7 @@ public class SolverLevelDialog extends JDialog {
     private Analyser analyser;
 
     private ISolver solver;
+    private LevelModel level;
 
     private SolverLevelDialog() {
         super(IsekaiEditor.getInstance(), "Checking level", true);
@@ -87,9 +92,12 @@ public class SolverLevelDialog extends JDialog {
         run.addActionListener(this::run);
 
         analyser = new Analyser();
+
+        setContentPane(content);
     }
 
     private void setupChooseLayout() {
+        content.removeAll();
         choosePanel.setLayout(new HorizontalLayout(5, 5));
         choosePanel.add(choose);
         choosePanel.add(solvers);
@@ -97,8 +105,6 @@ public class SolverLevelDialog extends JDialog {
         content.setLayout(new VerticalLayout(5, 5));
         content.add(choosePanel);
         content.add(run);
-
-        setContentPane(content);
     }
 
     private void setupAnalyserLayout() {
@@ -106,9 +112,7 @@ public class SolverLevelDialog extends JDialog {
         content.setLayout(new BorderLayout());
         content.add(analyser, BorderLayout.CENTER);
 
-        PackModel pack = IsekaiEditor.getInstance().getPack();
-
-        solver = createSolver(pack.getLevel(0));
+        solver = createSolver(level);
         if (solver == null) {
             JOptionPane.showMessageDialog(this, "You didn't select a solver");
         }
@@ -116,10 +120,12 @@ public class SolverLevelDialog extends JDialog {
         analyser.setSolver(solver);
 
         executor.submit(() -> {
-            System.out.println(solver.check());
+            LOGGER.info("Sokoban has a solution ? {}", solver.check());
 
             analyser.notifyEnd();
         });
+
+        repaint();
     }
 
     private void run(ActionEvent e) {
@@ -127,7 +133,7 @@ public class SolverLevelDialog extends JDialog {
     }
 
     private ISolver createSolver(LevelModel level) {
-        Object obj =  solvers.getSelectedItem();
+        Object obj = solvers.getSelectedItem();
 
         if (obj == null) {
             return null;
@@ -138,5 +144,9 @@ public class SolverLevelDialog extends JDialog {
             case DFS -> new DFSSolver(level);
             default -> null;
         };
+    }
+
+    private void setLevel(LevelModel level) {
+        this.level = level;
     }
 }

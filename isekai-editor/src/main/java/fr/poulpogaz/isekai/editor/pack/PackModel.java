@@ -29,9 +29,7 @@ public class PackModel extends Model {
     protected boolean modified = true;
 
     public PackModel() {
-        pack = new Pack();
-        models = new ArrayList<>();
-        models.add(new LevelModel(pack.getLevel(0)));
+        this(new Pack());
     }
 
     public PackModel(Pack pack) {
@@ -39,7 +37,7 @@ public class PackModel extends Model {
         models = new ArrayList<>();
 
         for (Level level : pack.getLevels()) {
-            models.add(new LevelModel(level));
+            models.add(new LevelModel(level, this));
         }
     }
 
@@ -109,6 +107,7 @@ public class PackModel extends Model {
     public void addLevel(LevelModel level) {
         pack.addLevel(level.getLevel());
         models.add(level);
+        level.pack = this;
 
         modified = true;
         fireLevelInserted(level.getIndex(), level.getIndex());
@@ -117,6 +116,7 @@ public class PackModel extends Model {
     public void addLevel(LevelModel level, int index) {
         pack.addLevel(level.getLevel(), index);
         models.add(index, level);
+        level.pack = this;
 
         modified = true;
         fireLevelInserted(index, index);
@@ -126,6 +126,7 @@ public class PackModel extends Model {
         int oldSize = pack.getNumberOfLevels();
         pack.addAll(modelToLevel(newLevels));
         models.addAll(newLevels);
+        newLevels.forEach((level) -> level.pack = this);
 
         modified = true;
         fireLevelInserted(oldSize, pack.getNumberOfLevels() - 1);
@@ -134,6 +135,7 @@ public class PackModel extends Model {
     public void setLevel(LevelModel level, int index) {
         pack.setLevel(level.getLevel(), index);
         models.set(index, level);
+        level.pack = this;
 
         modified = true;
         fireLevelChanged(index);
@@ -143,6 +145,7 @@ public class PackModel extends Model {
         LevelModel old = models.get(index);
         pack.removeLevel(index);
         models.remove(index);
+        old.pack = null;
 
         modified = true;
         fireLevelRemoved(index);
@@ -158,6 +161,7 @@ public class PackModel extends Model {
         if (toRemove != null && toRemove.size() > 0) {
             pack.removeAll(modelToLevel(toRemove));
             models.removeAll(toRemove);
+            toRemove.forEach((level) -> level.pack = null);
 
             modified = true;
             fireOrganisationChanged();
@@ -166,6 +170,10 @@ public class PackModel extends Model {
 
     public void swapLevels(int index1, int index2) {
         pack.swapLevels(index1, index2);
+
+        LevelModel temp = models.get(index1);
+        models.set(index1, models.get(index2));
+        models.set(index2, temp);
 
         modified = true;
         fireLevelsSwapped(index1, index2);

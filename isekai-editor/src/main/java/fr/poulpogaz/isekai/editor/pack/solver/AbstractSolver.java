@@ -33,6 +33,8 @@ public abstract class AbstractSolver implements ISolver {
     protected final boolean[] reachableTiles;
     protected final boolean[] deadlockTiles;
 
+    protected State solution;
+
     public AbstractSolver(LevelModel level) {
         this.level = level;
         this.width = level.getWidth();
@@ -96,7 +98,7 @@ public abstract class AbstractSolver implements ISolver {
     }
 
     @Override
-    public abstract boolean check();
+    public abstract State check();
 
     /**
      * We simulate a crate pushed by a player from

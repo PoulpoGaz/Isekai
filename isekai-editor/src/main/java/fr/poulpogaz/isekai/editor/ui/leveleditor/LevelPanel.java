@@ -22,7 +22,7 @@ public class LevelPanel extends JPanel implements LevelsOrganisationListener {
     private static final Logger LOGGER = LogManager.getLogger(LevelPanel.class);
 
     private final LevelEditorModel editor;
-    private PackModel pack;
+    private final PackModel pack;
 
     private JComboBox<Integer> levelsComboBox;
 

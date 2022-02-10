@@ -7,10 +7,15 @@ import fr.poulpogaz.isekai.editor.pack.solver.ISolver;
 import fr.poulpogaz.isekai.editor.pack.solver.State;
 import fr.poulpogaz.isekai.editor.ui.layout.HorizontalLayout;
 import fr.poulpogaz.isekai.editor.ui.layout.VerticalLayout;
+import fr.poulpogaz.isekai.editor.utils.GraphicsUtils;
+import org.joml.Vector2i;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 import static fr.poulpogaz.isekai.commons.pack.Tile.FLOOR;
 import static fr.poulpogaz.isekai.commons.pack.Tile.TARGET;
@@ -77,6 +82,7 @@ public class StateView extends JPanel {
 
         drawer = new Drawer();
         children = new JList<>();
+        children.setCellRenderer(new ChildrenCellRenderer());
         children.setModel(new DefaultListModel<>());
         children.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         children.addListSelectionListener((e) -> {
@@ -123,7 +129,8 @@ public class StateView extends JPanel {
     public void setState(State state) {
         this.state = state;
 
-        stateNumberLabel.setText("State n°" + state.number);
+        stateNumberLabel.setText("State n°" + (state.number + 1));
+        viewParent.setEnabled(state.parent != null);
 
         adjusting = true;
         DefaultListModel<State> model = (DefaultListModel<State>) children.getModel();
@@ -148,6 +155,7 @@ public class StateView extends JPanel {
     protected void drawImage() {
         Graphics2D g2d = image.createGraphics();
 
+        // draw map
         g2d.setColor(Color.black);
         for (int i = 0; i < map.length; i++) {
             Tile tile = map[i];
@@ -173,13 +181,54 @@ public class StateView extends JPanel {
 
         g2d.drawImage(PackSprites.getPlayer(), x, y, null);
 
+        if (state.parent != null) {
+            drawPath(g2d);
+        }
+
         g2d.dispose();
+    }
+
+    private void drawPath(Graphics2D g2d) {
+        g2d.setColor(Color.RED);
+
+        Vector2i[] mvt = PathFinder.getMovement(state.parent, state, width, height);
+        List<Vector2i> path = PathFinder.findPath(map, width, height, state.parent, mvt[2]);
+
+        if (path.size() > 0) {
+            path.get(0).mul(16).add(8, 8);
+            for (int i = 0; i < path.size() - 1; i++) {
+                Vector2i a = path.get(i);
+                Vector2i b = path.get(i + 1).mul(16).add(8, 8);
+
+                g2d.drawLine(a.x, a.y, b.x, b.y);
+            }
+        }
+
+        int deltaX = (mvt[2].x - mvt[0].x) * 2; // between -2 and 2
+        int deltaY = (mvt[2].y - mvt[0].y) * 2;
+
+        mvt[0].mul(16).add(8, 8);
+        mvt[2].mul(16).add(8, 8);
+
+        g2d.drawLine(mvt[0].x, mvt[0].y, mvt[2].x, mvt[2].y);
+
+        if (deltaX == 0) {
+            GraphicsUtils.fillTriangle(g2d,
+                    mvt[0].x, mvt[0].y,
+                    mvt[0].x + 4, mvt[0].y + deltaY,
+                    mvt[0].x - 4, mvt[0].y + deltaY);
+        } else {
+            GraphicsUtils.fillTriangle(g2d,
+                    mvt[0].x, mvt[0].y,
+                    mvt[0].x + deltaX, mvt[0].y + 4,
+                    mvt[0].x + deltaX, mvt[0].y - 4);
+        }
     }
 
     private class Drawer extends JComponent {
 
-        private int width = image.getWidth() * 2;
-        private int height = image.getHeight() * 2;
+        private final int width = image.getWidth() * 2;
+        private final int height = image.getHeight() * 2;
 
         public Drawer() {
             setPreferredSize(new Dimension(width, height));
@@ -197,6 +246,22 @@ public class StateView extends JPanel {
             int y = (size.height - height) / 2;
 
             g.drawImage(image, x, y, width, height, null);
+        }
+    }
+
+    private class ChildrenCellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            if (value instanceof State s) {
+                if (analyser.isInSolution(s)) {
+                    setForeground(Color.ORANGE);
+                }
+            }
+
+            return this;
         }
     }
 }

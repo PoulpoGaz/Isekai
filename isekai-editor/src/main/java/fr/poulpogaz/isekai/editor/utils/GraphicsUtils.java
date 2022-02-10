@@ -147,4 +147,20 @@ public class GraphicsUtils {
 
         return button;
     }
+
+    public static JPanel wrap(Component component, int top, int left,
+                              int bottom, int right) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(component, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+
+        return panel;
+    }
+
+    public static void fillTriangle(Graphics2D g2d, int x, int y, int x2, int y2, int x3, int y3) {
+        g2d.fillPolygon(new int[] {x, x2, x3},
+                new int[]{y, y2, y3},
+                3);
+    }
 }
