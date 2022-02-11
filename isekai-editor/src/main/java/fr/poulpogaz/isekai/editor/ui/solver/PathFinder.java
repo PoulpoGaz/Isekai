@@ -25,8 +25,9 @@ public class PathFinder {
         List<Integer> state1Crates = Arrays.stream(state1.cratesIndex).boxed().collect(Collectors.toList());
         List<Integer> state2Crates = Arrays.stream(state2.cratesIndex).boxed().collect(Collectors.toList());
 
+        List<Integer> state1Copy = state1Crates.stream().toList();
         state1Crates.removeAll(state2Crates);
-        state2Crates.removeAll(state1Crates);
+        state2Crates.removeAll(state1Copy);
 
         int mvt1X = (state1Crates.get(0) % width);
         int mvt1Y = (state1Crates.get(0) / width);

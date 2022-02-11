@@ -127,6 +127,7 @@ public class Analyser extends JPanel {
                 }
 
                 update();
+                repaint();
             }
         });
 
