@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL20.*;
 public class Shader implements Disposable {
 
     public static Shader newShader(String path) throws IOException {
-        return newShader("shaders/%s.vs".formatted(path), "shaders/%s.fs".formatted(path));
+        return newShader("shaders/%s.vert".formatted(path), "shaders/%s.frag".formatted(path));
     }
 
     public static Shader newShader(String vertexPath, String fragmentPath) throws IOException {

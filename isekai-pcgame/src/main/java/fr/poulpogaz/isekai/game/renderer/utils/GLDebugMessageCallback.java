@@ -42,8 +42,7 @@ public class GLDebugMessageCallback extends org.lwjgl.opengl.GLDebugMessageCallb
                     NAMES.get(type),
                     id,
                     NAMES.get(severity),
-                    MemoryUtil.memUTF8(message, length));
-
-        Thread.dumpStack();
+                    MemoryUtil.memUTF8(message, length),
+                    new Exception());
     }
 }

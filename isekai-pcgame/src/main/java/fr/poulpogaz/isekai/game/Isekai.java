@@ -4,12 +4,18 @@ import fr.poulpogaz.isekai.game.renderer.Color;
 import fr.poulpogaz.isekai.game.renderer.Colors;
 import fr.poulpogaz.isekai.game.renderer.Shaders;
 import fr.poulpogaz.isekai.game.renderer.Texture;
+import fr.poulpogaz.isekai.game.renderer.g2d.Graphics2D;
+import fr.poulpogaz.isekai.game.renderer.g2d.Paint;
+import fr.poulpogaz.isekai.game.renderer.io.Window;
 import fr.poulpogaz.isekai.game.renderer.mesh.MultiMesh;
 import fr.poulpogaz.isekai.game.renderer.io.*;
 import fr.poulpogaz.isekai.game.renderer.g2d.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
+
+import java.awt.*;
+import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -63,6 +69,9 @@ public class Isekai implements IGame {
         g2d = new Graphics2D(renderer);
         g2d.setProjection(projection2D);
 
+        //FontRenderer.init();
+        //FontRenderer.setDefaultFont(new ImageFont(new Font("dialog", Font.PLAIN, 24), StandardCharsets.ISO_8859_1));
+
         glClearColor(0, 0, 0, 1);
     }
 
@@ -77,6 +86,15 @@ public class Isekai implements IGame {
         if (GRAPHICS_2D) {
             _2DRenderWithGraphics2D();
         }
+
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        //Color color = Colors.fromHSV(hue, 1, 1);
+        //String text = "<c %f %f %f %f> Hello world!".formatted(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
+        //FontRenderer.drawStringMultipleColors(text, projection2D, 50, 50, FontRenderer.getDefaultFont().getHeight());
+        //glDisable(GL_BLEND);
     }
 
     private void _2DRenderWithRenderer2D() {
@@ -275,6 +293,7 @@ public class Isekai implements IGame {
         tileset.dispose();
         renderer.dispose();
         g2d.dispose();
+        FontRenderer.free();
         Shaders.dispose();
     }
 

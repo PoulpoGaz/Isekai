@@ -29,51 +29,6 @@ public class Colors {
     public static final IColor BLUE = new ImmutableColor(0, 0, 1, 1);
 
     public static Color fromHSV(float hue, float saturation, float brightness) {
-        float r = 0, g = 0, b = 0;
-        if (saturation == 0) {
-            r = g = b = brightness;
-        } else {
-            float h = (hue - (int) hue) * 6.0f;
-            int i = (int) h;
-            float f = h - i;
-            float p = brightness * (1.0f - saturation);
-            float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
-
-            switch (i) {
-                case 0 -> {
-                    r = brightness;
-                    g = t;
-                    b = p;
-                }
-                case 1 -> {
-                    r = q;
-                    g = brightness;
-                    b = p;
-                }
-                case 2 -> {
-                    r = p;
-                    g = brightness;
-                    b = t;
-                }
-                case 3 -> {
-                    r = p;
-                    g = q;
-                    b = brightness;
-                }
-                case 4 -> {
-                    r = t;
-                    g = p;
-                    b = brightness;
-                }
-                case 5 -> {
-                    r = brightness;
-                    g = p;
-                    b = q;
-                }
-            }
-        }
-
-        return new Color(r, g, b);
+        return new Color().fromHSV(hue, saturation, brightness);
     }
 }

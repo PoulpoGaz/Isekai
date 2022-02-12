@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args)  {
         Cache.setRoot();
-        Log4j2Init.init("editor");
+        Log4j2Init.init("game");
 
         System.setProperty("joml.format", "false");
 
