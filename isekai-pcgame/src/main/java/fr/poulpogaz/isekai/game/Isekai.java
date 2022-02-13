@@ -1,24 +1,29 @@
 package fr.poulpogaz.isekai.game;
 
+import fr.poulpogaz.isekai.game.renderer.*;
 import fr.poulpogaz.isekai.game.renderer.Color;
-import fr.poulpogaz.isekai.game.renderer.Colors;
-import fr.poulpogaz.isekai.game.renderer.Shaders;
-import fr.poulpogaz.isekai.game.renderer.Texture;
 import fr.poulpogaz.isekai.game.renderer.g2d.Graphics2D;
 import fr.poulpogaz.isekai.game.renderer.g2d.Paint;
 import fr.poulpogaz.isekai.game.renderer.io.Window;
-import fr.poulpogaz.isekai.game.renderer.mesh.MultiMesh;
+import fr.poulpogaz.isekai.game.renderer.mesh.*;
 import fr.poulpogaz.isekai.game.renderer.io.*;
 import fr.poulpogaz.isekai.game.renderer.g2d.*;
+import fr.poulpogaz.isekai.game.renderer.shaders.Program;
+import fr.poulpogaz.isekai.game.renderer.shaders.Shader;
+import fr.poulpogaz.isekai.game.renderer.shaders.Shaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
+import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
+import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class Isekai implements IGame {
 
@@ -52,6 +57,8 @@ public class Isekai implements IGame {
 
     private final BasicCamera camera = new BasicCamera();
 
+    private Mesh test;
+
     private Isekai() {
 
     }
@@ -64,13 +71,44 @@ public class Isekai implements IGame {
         amogus = new Texture("amogus.png");
         tileset = new Texture("tileset.png");
 
-        Shaders.createShaders();
+        Shaders.init();
         renderer = new Renderer2D(5000, 50000);
         g2d = new Graphics2D(renderer);
         g2d.setProjection(projection2D);
 
         //FontRenderer.init();
         //FontRenderer.setDefaultFont(new ImageFont(new Font("dialog", Font.PLAIN, 24), StandardCharsets.ISO_8859_1));
+
+        test = new Mesh(4, 6, GL_STATIC_DRAW, VertexAttribute.texture(0));
+
+        VertexAttributes instanceAttribs = new VertexAttributes(
+                new VertexAttribute(1, DataType.FLOAT_VEC_4, 1),
+                new VertexAttribute(2, DataType.MAT_4, 1)
+        );
+        test.enableInstanceRendering(instanceAttribs, 2, GL_STATIC_DRAW);
+
+        test.setVertices(new float[] {
+                0, 0,
+                1, 0,
+                1, 1,
+                0, 1});
+
+        test.setIndices(new int[] {
+                0, 1, 2,
+                0, 2, 3
+        });
+
+        Matrix4f model1 = new Matrix4f().scale(16);
+        Matrix4f model2 = new Matrix4f().translate(64, 64, 0).scale(16);
+
+        FloatBuffer buff = MemoryUtil.memAllocFloat(2 * instanceAttribs.vertexSize());
+        new Vector4f(1, 1, 1, 1).get(buff); buff.position(buff.position() + 4);
+        model1.get(buff); buff.position(buff.position() + 16);
+        new Vector4f(1, 0, 0, 1).get(buff); buff.position(buff.position() + 4);
+        model2.get(buff);
+
+        test.setInstanceData(buff);
+        MemoryUtil.memFree(buff);
 
         glClearColor(0, 0, 0, 1);
     }
@@ -86,6 +124,11 @@ public class Isekai implements IGame {
         if (GRAPHICS_2D) {
             _2DRenderWithGraphics2D();
         }
+
+        Shaders.INST_COLOR.bind();
+        Shaders.INST_COLOR.setUniform("projection", projection2D);
+        test.render(GL_TRIANGLES);
+        Program.unbind();
 
         //glEnable(GL_BLEND);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -162,20 +205,6 @@ public class Isekai implements IGame {
         int width = window.getWidth();
 
         int x2 = width - 300;
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        renderer.begin(GL_TRIANGLES, DrawMode.TEXTURE);
-        renderer.tex(0f, 0f).pos(x2, 0);
-        renderer.tex(1f, 0f).pos(width, 0);
-        renderer.tex(1f, 1f).pos(width, 300);
-        renderer.tex(0f, 1f).pos(x2, 300);
-        renderer.index((short) 0, (short) 1, (short) 2, (short) 0, (short) 2, (short) 3);
-
-        renderer.setCustomShader(Shaders.CIRCLE_2D);
-        renderer.end(projection2D, IDENTITY);
-        renderer.setCustomShader(null);
-        glDisable(GL_BLEND);
     }
 
     private void _2DRenderWithGraphics2D() {
@@ -288,6 +317,8 @@ public class Isekai implements IGame {
 
     @Override
     public void terminate() {
+        test.dispose();
+
         MultiMesh.disposeAll();
         amogus.dispose();
         tileset.dispose();

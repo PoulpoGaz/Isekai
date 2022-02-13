@@ -7,6 +7,8 @@ import org.lwjgl.system.MemoryUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL43.GL_DEBUG_SEVERITY_NOTIFICATION;
+
 public class GLDebugMessageCallback extends org.lwjgl.opengl.GLDebugMessageCallback {
 
     private static final Logger LOGGER = LogManager.getLogger(GLDebugMessageCallback.class);
@@ -37,12 +39,21 @@ public class GLDebugMessageCallback extends org.lwjgl.opengl.GLDebugMessageCallb
 
     @Override
     public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
-        LOGGER.warn("Source={}, type={}, id={}, severity={}, message={}",
+        if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
+            LOGGER.info("Source={}, type={}, id={}, severity={}, message={}",
+                    NAMES.get(source),
+                    NAMES.get(type),
+                    id,
+                    NAMES.get(severity),
+                    MemoryUtil.memUTF8(message, length));
+        } else {
+            LOGGER.warn("Source={}, type={}, id={}, severity={}, message={}",
                     NAMES.get(source),
                     NAMES.get(type),
                     id,
                     NAMES.get(severity),
                     MemoryUtil.memUTF8(message, length),
                     new Exception());
+        }
     }
 }

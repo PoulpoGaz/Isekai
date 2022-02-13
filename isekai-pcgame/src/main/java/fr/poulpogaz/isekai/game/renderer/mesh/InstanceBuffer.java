@@ -32,6 +32,14 @@ public class InstanceBuffer implements IGLBuffer {
         glBuffer = glGenBuffers();
     }
 
+    public void enableAttribs() {
+        bind();
+
+        for (VertexAttribute attribute : attributes) {
+            attribute.enable(attributes.vertexSizeInBytes(), true);
+        }
+    }
+
     public void setData(FloatBuffer buffer) {
         dirty = true;
         this.buffer.clear();

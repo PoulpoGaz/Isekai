@@ -21,8 +21,6 @@ public class Mesh implements IMesh {
 
     private boolean vaoDirty = true;
 
-    private boolean enableInstanceAttributes;
-
     public Mesh(VertexAttributes attributes, int nVertices, int numIndices, int usage) {
         this.attributes = attributes;
         this.usage = usage;
@@ -43,7 +41,11 @@ public class Mesh implements IMesh {
         // VBO
         vbo.bind();
         for (VertexAttribute attribute : attributes) {
-            attribute.enable(attributes.vertexSizeInBytes(), enableInstanceAttributes);
+            attribute.enable(attributes.vertexSizeInBytes(), false);
+        }
+
+        if (isInstanceRenderingEnable()) {
+            instanceBuffer.enableAttribs();
         }
     }
 
@@ -76,9 +78,9 @@ public class Mesh implements IMesh {
         glBindVertexArray(0);
     }
 
-    public void enableInstanceRendering(int numInstances) {
+    public void enableInstanceRendering(VertexAttributes attributes, int numInstances, int usage) {
         if (instanceBuffer == null) {
-            instanceBuffer = new InstanceBuffer(getVertexAttributes(), numInstances, getUsage());
+            instanceBuffer = new InstanceBuffer(attributes, numInstances, usage);
             vaoDirty = true;
         }
     }
@@ -245,28 +247,6 @@ public class Mesh implements IMesh {
 
     public int getUsage() {
         return usage;
-    }
-
-    /**
-     * Attributes with divisor greater than zero are
-     * enable even when instance rendering is disable
-     */
-    public void enableInstanceAttributes() {
-        if (!enableInstanceAttributes) {
-            enableInstanceAttributes = true;
-            vaoDirty = true;
-        }
-    }
-
-    public void disableInstanceAttributes() {
-        if (enableInstanceAttributes) {
-            enableInstanceAttributes = false;
-            vaoDirty = true;
-        }
-    }
-
-    public boolean isEnableInstanceAttributes() {
-        return enableInstanceAttributes;
     }
 
     @Override

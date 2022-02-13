@@ -1,9 +1,9 @@
 package fr.poulpogaz.isekai.game.renderer.g2d;
 
 import fr.poulpogaz.isekai.game.renderer.IColor;
-import fr.poulpogaz.isekai.game.renderer.Shader;
 import fr.poulpogaz.isekai.game.renderer.Texture;
 import fr.poulpogaz.isekai.game.renderer.mesh.Mesh;
+import fr.poulpogaz.isekai.game.renderer.shaders.Program;
 import fr.poulpogaz.isekai.game.renderer.utils.Disposable;
 import org.joml.Matrix4f;
 
@@ -14,7 +14,7 @@ public class Renderer2D implements Disposable {
     private final Mesh[] meshes;
 
     private DrawMode drawMode;
-    private Shader custom;
+    private Program custom;
     private int primitiveType;
 
     private Texture tex;
@@ -139,7 +139,7 @@ public class Renderer2D implements Disposable {
             return;
         }
 
-        Shader shader = custom == null ? drawMode.getShader() : custom;
+        Program shader = custom == null ? drawMode.getShader() : custom;
 
         Mesh mesh = meshes[drawMode.ordinal()];
         mesh.setVertices(vertices, 0, vertexIndex);
@@ -161,7 +161,7 @@ public class Renderer2D implements Disposable {
         mesh.render(primitiveType);
 
         if (autoBind) {
-            Shader.unbind();
+            Program.unbind();
         }
 
         if (drawMode.isTexture()) {
@@ -184,11 +184,11 @@ public class Renderer2D implements Disposable {
         }
     }
 
-    public Shader getCustom() {
+    public Program getCustom() {
         return custom;
     }
 
-    public void setCustomShader(Shader custom) {
+    public void setCustomShader(Program custom) {
         this.custom = custom;
     }
 

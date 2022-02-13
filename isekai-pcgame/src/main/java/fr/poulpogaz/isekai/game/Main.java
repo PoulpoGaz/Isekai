@@ -14,6 +14,7 @@ public class Main {
         Cache.setRoot();
         Log4j2Init.init("game");
 
+        System.setProperty("joml.debug", "true");
         System.setProperty("joml.format", "false");
 
         GameEngine engine = new GameEngine(Isekai.getInstance(), "Isekai", Isekai.DEFAULT_WIDTH, Isekai.DEFAULT_HEIGHT);

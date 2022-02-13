@@ -21,10 +21,8 @@ public class VertexAttributes implements Iterable<VertexAttribute> {
         int size = 0;
 
         for (VertexAttribute attribute : attributes) {
-            if (attribute.getDivisor() == 0) {
-                attribute.offset = size * 4;
-                size += attribute.size();
-            }
+            attribute.offset = size * 4;
+            size += attribute.size();
         }
 
         return size;

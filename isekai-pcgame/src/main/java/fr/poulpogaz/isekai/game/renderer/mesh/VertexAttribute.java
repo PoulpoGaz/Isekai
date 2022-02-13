@@ -18,6 +18,10 @@ public class VertexAttribute {
         return new VertexAttribute(index, DataType.FLOAT_VEC_2);
     }
 
+    public static VertexAttribute mat4(int index) {
+        return new VertexAttribute(index, DataType.MAT_4);
+    }
+
     protected final int index;
     protected final DataType dataType;
     protected final boolean normalized;
@@ -55,6 +59,8 @@ public class VertexAttribute {
 
     public void enable(int vertexSize, boolean instanced, int offset2) {
         int length = index + dataType.numAttributes();
+
+        int offset = this.offset;
         for (int i = index; i < length; i++) {
             glEnableVertexAttribArray(i);
 
@@ -63,6 +69,8 @@ public class VertexAttribute {
             if (instanced) {
                 glVertexAttribDivisor(i, divisor);
             }
+
+            offset += dataType.sizePerAttribute() * 4;
         }
     }
 
