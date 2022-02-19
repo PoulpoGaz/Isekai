@@ -123,6 +123,11 @@ public class InstanceBuffer implements IGLBuffer {
     }
 
     @Override
+    public void markDirty() {
+        dirty = true;
+    }
+
+    @Override
     public void bind() {
         if (!updateData()) {
             glBindBuffer(GL_ARRAY_BUFFER, glBuffer);

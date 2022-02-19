@@ -6,6 +6,8 @@ public interface IGLBuffer extends Disposable {
 
     boolean updateData();
 
+    void markDirty();
+
     void bind();
 
     void unbind();

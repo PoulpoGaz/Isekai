@@ -8,22 +8,15 @@ import fr.poulpogaz.isekai.game.renderer.io.Window;
 import fr.poulpogaz.isekai.game.renderer.mesh.*;
 import fr.poulpogaz.isekai.game.renderer.io.*;
 import fr.poulpogaz.isekai.game.renderer.g2d.*;
-import fr.poulpogaz.isekai.game.renderer.shaders.Program;
-import fr.poulpogaz.isekai.game.renderer.shaders.Shader;
 import fr.poulpogaz.isekai.game.renderer.shaders.Shaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
-import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
-import java.nio.FloatBuffer;
-import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class Isekai implements IGame {
 
@@ -47,13 +40,14 @@ public class Isekai implements IGame {
     private final Matrix4f projection2D = new Matrix4f().ortho2D(0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0);
     private final Matrix4f projection3D = new Matrix4f().perspective((float) Math.toRadians(70), (float) DEFAULT_WIDTH / DEFAULT_HEIGHT, 0.1f, 1000f);
 
-    private Texture amogus;
+    public static Texture amogus;
     private Texture tileset;
 
     private float hue = 0f;
 
     private Renderer2D renderer;
     private Graphics2D g2d;
+    private FontRenderer f2d;
 
     private final BasicCamera camera = new BasicCamera();
 
@@ -76,41 +70,12 @@ public class Isekai implements IGame {
         g2d = new Graphics2D(renderer);
         g2d.setProjection(projection2D);
 
-        //FontRenderer.init();
-        //FontRenderer.setDefaultFont(new ImageFont(new Font("dialog", Font.PLAIN, 24), StandardCharsets.ISO_8859_1));
+        f2d = new FontRenderer(100);
+        f2d.setProjection(projection2D);
+        f2d.setFont(new ImageFont(new Font("dialog", Font.PLAIN, 24), "Helo wrd!".toCharArray()));
+        f2d.setColor(Colors.WHITE);
 
-        test = new Mesh(4, 6, GL_STATIC_DRAW, VertexAttribute.texture(0));
-
-        VertexAttributes instanceAttribs = new VertexAttributes(
-                new VertexAttribute(1, DataType.FLOAT_VEC_4, 1),
-                new VertexAttribute(2, DataType.MAT_4, 1)
-        );
-        test.enableInstanceRendering(instanceAttribs, 2, GL_STATIC_DRAW);
-
-        test.setVertices(new float[] {
-                0, 0,
-                1, 0,
-                1, 1,
-                0, 1});
-
-        test.setIndices(new int[] {
-                0, 1, 2,
-                0, 2, 3
-        });
-
-        Matrix4f model1 = new Matrix4f().scale(16);
-        Matrix4f model2 = new Matrix4f().translate(64, 64, 0).scale(16);
-
-        FloatBuffer buff = MemoryUtil.memAllocFloat(2 * instanceAttribs.vertexSize());
-        new Vector4f(1, 1, 1, 1).get(buff); buff.position(buff.position() + 4);
-        model1.get(buff); buff.position(buff.position() + 16);
-        new Vector4f(1, 0, 0, 1).get(buff); buff.position(buff.position() + 4);
-        model2.get(buff);
-
-        test.setInstanceData(buff);
-        MemoryUtil.memFree(buff);
-
-        glClearColor(0, 0, 0, 1);
+        glClearColor(0.5f, 0.5f, 0.5f, 1);
     }
 
     @Override
@@ -125,19 +90,17 @@ public class Isekai implements IGame {
             _2DRenderWithGraphics2D();
         }
 
-        Shaders.INST_COLOR.bind();
-        Shaders.INST_COLOR.setUniform("projection", projection2D);
-        test.render(GL_TRIANGLES);
-        Program.unbind();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        //glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        f2d.drawString("Hello world!", 100, 100);
+        f2d.flush();
 
         //Color color = Colors.fromHSV(hue, 1, 1);
         //String text = "<c %f %f %f %f> Hello world!".formatted(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
         //FontRenderer.drawStringMultipleColors(text, projection2D, 50, 50, FontRenderer.getDefaultFont().getHeight());
-        //glDisable(GL_BLEND);
+        glDisable(GL_BLEND);
     }
 
     private void _2DRenderWithRenderer2D() {
@@ -201,10 +164,6 @@ public class Isekai implements IGame {
 
         renderer.index(0, nPoints, 1);
         renderer.end(projection2D, IDENTITY);
-
-        int width = window.getWidth();
-
-        int x2 = width - 300;
     }
 
     private void _2DRenderWithGraphics2D() {
@@ -317,14 +276,12 @@ public class Isekai implements IGame {
 
     @Override
     public void terminate() {
-        test.dispose();
-
         MultiMesh.disposeAll();
         amogus.dispose();
         tileset.dispose();
         renderer.dispose();
         g2d.dispose();
-        FontRenderer.free();
+        OldFontRenderer.free();
         Shaders.dispose();
     }
 

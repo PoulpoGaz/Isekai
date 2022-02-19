@@ -47,6 +47,8 @@ public class Mesh implements IMesh {
         if (isInstanceRenderingEnable()) {
             instanceBuffer.enableAttribs();
         }
+
+        vaoDirty = false;
     }
 
     public void render(int primitiveType) {
@@ -76,6 +78,10 @@ public class Mesh implements IMesh {
         }
 
         glBindVertexArray(0);
+    }
+
+    public void enableInstanceRendering(int numInstances, int usage, VertexAttribute... attributes) {
+        enableInstanceRendering(new VertexAttributes(attributes), numInstances, usage);
     }
 
     public void enableInstanceRendering(VertexAttributes attributes, int numInstances, int usage) {

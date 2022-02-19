@@ -26,6 +26,8 @@ public class Shaders {
     public static Program COLOR_TEXTURE;
     public static Program INST_COLOR_TEXTURE;
 
+    public static Program FONT;
+
     private static final Map<String, Shader> VERTEX = new HashMap<>();
     private static final Map<String, Shader> FRAGMENT = new HashMap<>();
 
@@ -43,6 +45,7 @@ public class Shaders {
         INST_TEXTURE = INFOS.get("inst_texture").createShader();
         COLOR_TEXTURE = INFOS.get("texture_color").createShader();
         INST_COLOR_TEXTURE = INFOS.get("inst_texture_color").createShader();
+        FONT = INFOS.get("font").createShader();
     }
 
     public static void dispose() {

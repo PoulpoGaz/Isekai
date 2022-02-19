@@ -33,5 +33,13 @@
         "parent": "color",
         "vert": "inst_texture_color",
         "uniforms_to_attribs": ["modelView"]
+    },
+
+
+    "font": {
+        "vert": "font",
+        "frag": "texture_color",
+        "attributes": ["vertex", "glyph_info", "color_", "model"],
+        "uniforms": ["projection", "texture_size", "font_height"]
     }
 }

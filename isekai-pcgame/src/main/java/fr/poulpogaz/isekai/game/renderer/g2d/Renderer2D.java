@@ -154,9 +154,9 @@ public class Renderer2D implements Disposable {
 
         if (autoBind) {
             shader.bind();
+            shader.setUniform("projection", projection);
+            shader.setUniform("modelView", modelView);
         }
-        shader.setUniform("projection", projection);
-        shader.setUniform("modelView", modelView);
 
         mesh.render(primitiveType);
 

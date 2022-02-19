@@ -118,6 +118,11 @@ public class VertexBufferObject implements IGLBuffer {
     }
 
     @Override
+    public void markDirty() {
+        dirty = true;
+    }
+
+    @Override
     public void bind() {
         if (!updateData()) {
             glBindBuffer(GL_ARRAY_BUFFER, bufferPointer);

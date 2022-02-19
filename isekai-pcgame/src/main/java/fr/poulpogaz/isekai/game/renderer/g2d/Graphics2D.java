@@ -10,6 +10,11 @@ import java.util.Objects;
 import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 
+/**
+ * /!\ Code doesn't check if the renderer has sufficiently
+ * space for drawing.
+ */
+@SuppressWarnings("DuplicatedCode")
 public class Graphics2D implements IGraphics2D {
 
     private static final float TWO_PI = (float) (Math.PI * 2);
